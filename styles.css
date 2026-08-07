@@ -206,6 +206,31 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   }
 }
 
+/* Rendimiento en móvil: el desenfoque de vidrio (backdrop-filter) es lo
+   más pesado para el GPU de celulares de gama media/baja. Se reduce la
+   intensidad del blur y se evita re-renderizarlo en cada scroll. */
+@media (max-width: 767px) {
+  .glass {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .glass-strong {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .gem-card, .glow-border {
+    transition-duration: .2s;
+  }
+}
+
+/* Todo lo que anima usa transform/opacity (acelerado por GPU) en vez de
+   propiedades que disparan layout, para que el scroll y las entradas
+   se sientan fluidas incluso en equipos modestos. */
+[data-aos] {
+  will-change: transform, opacity;
+}
+
+
 /* ============ Fondo del Hero: logo agrandado + degradado ============
    Usa el mismo logo del header (SETTINGS.logoUrl). Cuando reemplaces
    logo.svg por tu logo real, este fondo se actualiza solo. Si

@@ -43,16 +43,23 @@ function renderBanner() {
 
   const heroBg = $("#hero-bg-image");
   if (heroBg && (BANNER.imageUrlMobile || BANNER.imageUrlDesktop)) {
+    let currentUrl = "";
     const applyHeroBg = () => {
       const isMobile = window.matchMedia("(max-width: 767px)").matches;
       const url = isMobile
         ? BANNER.imageUrlMobile || BANNER.imageUrlDesktop
         : BANNER.imageUrlDesktop || BANNER.imageUrlMobile;
+      if (url === currentUrl) return; // evita re-pintar el fondo sin necesidad
+      currentUrl = url;
       heroBg.style.backgroundImage = `linear-gradient(180deg, rgba(5,5,5,.35), rgba(5,5,5,.9)), url('${url}')`;
       heroBg.style.opacity = "1";
     };
     applyHeroBg();
-    window.addEventListener("resize", applyHeroBg);
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(applyHeroBg, 200);
+    });
   }
 }
 
@@ -76,7 +83,7 @@ const DIAMOND_PLACEHOLDER_SVG = `
 
 function buildWhatsappLink(product, buyer) {
   const lines = [
-    "Hola. Ya realicé el pago por Naranja X, adjunto el comprobante.",
+    "Hola. Ya realicé el pago, adjunto el comprobante.",
     "",
     "Quiero comprar:",
     product.name,
@@ -323,7 +330,16 @@ function init() {
 
   $$(".js-year").forEach((el) => (el.textContent = new Date().getFullYear()));
 
-  if (window.AOS) window.AOS.init({ once: true, duration: 700, easing: "ease-out-cubic" });
+  if (window.AOS) {
+    const isMobile = window.innerWidth < 768;
+    window.AOS.init({
+      once: true,
+      duration: isMobile ? 450 : 700,
+      easing: "ease-out-cubic",
+      offset: isMobile ? 40 : 80,
+      disableMutationObserver: false,
+    });
+  }
 
   if (window.gsap) {
     gsap.from(".hero-title", { y: 24, opacity: 0, duration: 0.9, ease: "power3.out" });

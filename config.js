@@ -140,7 +140,7 @@ export const PRODUCTS = [
     name: "Pase Booyah",
     diamonds: 0, // no aplica: es un pase, no diamantes sueltos
     badge: "PASE", // se muestra en vez de "X 💎" cuando diamonds es 0
-    price: 7500,
+    price: 2000,
     image: "product-booyah.jpg",
     order: 7,
     visible: true,
