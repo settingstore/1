@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings Store — Diamantes Free Fire</title>
+  <meta name="description" content="Settings Store: recargas de diamantes Free Fire y Pase Booyah con entrega inmediata. +3 años de experiencia. Pagá con Naranja X." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://tu-usuario.github.io/settings-store/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Settings Store — Diamantes Free Fire" />
+  <meta property="og:description" content="Recargas de diamantes Free Fire y Pase Booyah con entrega inmediata. Pagá con Naranja X." />
+  <meta property="og:image" content="hero-bg-desktop.jpg" />
+  <meta property="og:locale" content="es_AR" />
+
+  <link rel="icon" type="image/png" href="logo.png" />
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN (sin build step, según requerimiento del proyecto) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            base: '#050505',
+            electric: '#00A8FF',
+            glow: '#00D9FF',
+          },
+          fontFamily: {
+            display: ['Orbitron', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- AOS (animaciones al hacer scroll) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="font-body bg-base text-white opacity-0 transition-opacity duration-500">
+
+  <!-- ============ HEADER ============ -->
+  <header class="fixed top-0 inset-x-0 z-50 glass">
+    <nav class="max-w-6xl mx-auto flex items-center justify-between px-5 py-3">
+      <a href="#top" class="flex items-center gap-2">
+        <img src="logo.svg" alt="Settings Store" class="js-logo h-8 w-auto" />
+      </a>
+
+      <ul class="hidden md:flex items-center gap-8 text-sm text-gray-300">
+        <li><a href="#productos" class="hover:text-electric transition-colors">Productos</a></li>
+        <li><a href="#como-comprar" class="hover:text-electric transition-colors">Cómo comprar</a></li>
+        <li><a href="#pagos" class="hover:text-electric transition-colors">Formas de pago</a></li>
+        <li><a href="#redes" class="hover:text-electric transition-colors">Contacto</a></li>
+      </ul>
+
+      <a href="#productos" class="hidden md:inline-block btn-primary px-5 py-2 rounded-full text-sm">Comprar ahora</a>
+
+      <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="md:hidden text-white">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </nav>
+
+    <div id="mobile-menu" class="mobile-menu md:hidden max-h-0 px-5">
+      <ul class="flex flex-col gap-4 pb-5 text-gray-300 text-sm">
+        <li><a href="#productos">Productos</a></li>
+        <li><a href="#como-comprar">Cómo comprar</a></li>
+        <li><a href="#pagos">Formas de pago</a></li>
+        <li><a href="#redes">Contacto</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section id="top" class="relative min-h-screen flex items-center justify-center overflow-hidden hero-gradient pt-24">
+    <!-- Marca de agua: el propio logo agrandado + degradado. Si más adelante
+         subís una foto en BANNER.imageUrl (config.js), esa foto se
+         superpone a esto automáticamente. -->
+    <div id="hero-logo-bg" class="hero-logo-bg" aria-hidden="true">
+      <img src="logo.svg" alt="" class="js-logo" />
+    </div>
+    <div id="hero-bg-image" class="absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-700"></div>
+    <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+    <div class="relative z-10 max-w-3xl mx-auto text-center px-6">
+      <img src="logo.svg" alt="Settings Store" class="js-logo mx-auto h-24 md:h-32 mb-6" data-aos="fade-down" />
+
+      <h1 class="sr-only">
+        <span class="js-banner-title">Settings Store</span>
+      </h1>
+      <p class="hero-sub font-display text-xl md:text-2xl mt-3" style="color:var(--c-blue-glow)">
+        <span class="js-banner-subtitle">Diamantes Free Fire</span>
+      </p>
+      <p class="hero-sub text-gray-400 mt-4 text-sm md:text-base">
+        <span class="js-banner-text">Entrega inmediata · +3 años de experiencia</span>
+      </p>
+
+      <div class="hero-cta flex flex-col sm:flex-row items-center justify-center gap-4 mt-9">
+        <a href="#productos" class="btn-primary w-full sm:w-auto text-center px-8 py-3 rounded-full">Comprar Ahora</a>
+        <a href="#productos" class="btn-ghost w-full sm:w-auto text-center px-8 py-3 rounded-full">Ver Productos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRODUCTOS ============ -->
+  <section id="productos" class="max-w-6xl mx-auto px-5 py-20">
+    <div class="text-center mb-12" data-aos="fade-up">
+      <p class="text-xs tracking-[0.3em] text-electric mb-2">RECARGAS</p>
+      <h2 class="font-display text-3xl md:text-4xl">Elegí tu paquete de diamantes</h2>
+    </div>
+
+    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Skeletons mientras carga Firebase -->
+      <div class="gem-card glass h-72 skeleton"></div>
+      <div class="gem-card glass h-72 skeleton"></div>
+      <div class="gem-card glass h-72 skeleton"></div>
+    </div>
+  </section>
+
+  <!-- ============ CÓMO COMPRAR ============ -->
+  <section id="como-comprar" class="bg-[#05070a] py-20 border-y border-white/5">
+    <div class="max-w-5xl mx-auto px-5">
+      <div class="text-center mb-14" data-aos="fade-up">
+        <p class="text-xs tracking-[0.3em] text-electric mb-2">PROCESO</p>
+        <h2 class="font-display text-3xl md:text-4xl">Cómo comprar</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+        <div class="hidden md:block step-line-h absolute top-6 left-[12%] right-[12%] h-px"></div>
+
+        <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+          <div class="w-12 h-12 mx-auto rounded-full glass glow-border flex items-center justify-center font-display text-electric mb-4">1</div>
+          <h3 class="font-display text-base mb-1">Elegí un paquete</h3>
+          <p class="text-sm text-gray-400">Seleccioná la cantidad de diamantes que necesitás.</p>
+        </div>
+        <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+          <div class="w-12 h-12 mx-auto rounded-full glass glow-border flex items-center justify-center font-display text-electric mb-4">2</div>
+          <h3 class="font-display text-base mb-1">Realizá la transferencia</h3>
+          <p class="text-sm text-gray-400">Cargá tu ID y nickname y pagá con Naranja X.</p>
+        </div>
+        <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+          <div class="w-12 h-12 mx-auto rounded-full glass glow-border flex items-center justify-center font-display text-electric mb-4">3</div>
+          <h3 class="font-display text-base mb-1">Enviá comprobante + UID</h3>
+          <p class="text-sm text-gray-400">Mandalo por WhatsApp junto a tu ID de jugador.</p>
+        </div>
+        <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+          <div class="w-12 h-12 mx-auto rounded-full glass glow-border flex items-center justify-center font-display text-electric mb-4">4</div>
+          <h3 class="font-display text-base mb-1">Recibí los diamantes</h3>
+          <p class="text-sm text-gray-400">Acreditación inmediata en tu cuenta.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FORMAS DE PAGO ============ -->
+  <section id="pagos" class="max-w-4xl mx-auto px-5 py-20">
+    <div class="text-center mb-10" data-aos="fade-up">
+      <p class="text-xs tracking-[0.3em] text-electric mb-2">PAGOS</p>
+      <h2 class="font-display text-3xl md:text-4xl">Formas de pago</h2>
+    </div>
+
+    <div class="flex items-center justify-center gap-8 mb-10 flex-wrap" data-aos="fade-up">
+      <span class="glass px-5 py-2 rounded-full text-sm text-gray-300">Naranja X</span>
+    </div>
+
+    <div class="gem-card glass-strong glow-border p-6 md:p-8 max-w-md mx-auto text-center" data-aos="zoom-in">
+      <div class="diamond-pulse mx-auto mb-4"></div>
+      <p class="text-sm text-gray-300">
+        Elegí tu paquete y tocá <span class="text-electric font-medium">Comprar</span>.
+        Te vamos a pedir tu <span class="text-white font-medium">ID y nombre de jugador</span>
+        y ahí mismo te mostramos el alias y CVU de Naranja X, listos para copiar.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ COMUNIDAD DE WHATSAPP ============ -->
+  <section id="comunidad" class="max-w-5xl mx-auto px-5 pb-20">
+    <div class="gem-card glass-strong glow-border p-6 md:p-10" data-aos="fade-up">
+      <div class="text-center mb-8">
+        <p class="text-xs tracking-[0.3em] text-electric mb-2">COMUNIDAD</p>
+        <h3 class="font-display text-xl md:text-2xl mb-3">Settings Store | Diamantes y servicios 🔥</h3>
+        <p class="text-sm text-gray-400 max-w-2xl mx-auto js-community-desc">—</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
+        <a href="#" target="_blank" rel="noopener" class="js-community-main btn-primary w-full sm:w-auto text-center px-6 py-3 rounded-full text-sm">Unirme a la comunidad</a>
+        <a href="#" target="_blank" rel="noopener" class="js-community-channel btn-ghost w-full sm:w-auto text-center px-6 py-3 rounded-full text-sm">Seguir el canal</a>
+      </div>
+
+      <div id="community-groups" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <!-- Se completa desde config.js (COMMUNITY.groups) -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REDES SOCIALES ============ -->
+  <section id="redes" class="bg-[#05070a] py-16 border-y border-white/5">
+    <div class="max-w-3xl mx-auto px-5 text-center" data-aos="fade-up">
+      <h2 class="font-display text-2xl mb-8">Seguinos y contactanos</h2>
+      <div class="flex items-center justify-center gap-6">
+        <a id="link-instagram" href="#" target="_blank" rel="noopener" aria-label="Instagram"
+           class="glass glow-border w-14 h-14 rounded-full flex items-center justify-center hover:text-electric transition-colors">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+        </a>
+        <a id="link-whatsapp" href="#" target="_blank" rel="noopener" aria-label="WhatsApp"
+           class="glass glow-border w-14 h-14 rounded-full flex items-center justify-center hover:text-electric transition-colors">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 11.5a8.5 8.5 0 0 1-12.35 7.56L3 20l1.06-5.4A8.5 8.5 0 1 1 21 11.5Z"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="py-8 text-center text-xs text-gray-500">
+    <p>&copy; <span class="js-year"></span> <span class="js-store-name">Settings Store</span>. Todos los derechos reservados.</p>
+    <p class="mt-2 flex items-center justify-center gap-4">
+      <a href="terminos.html" class="hover:text-electric transition-colors">Términos y condiciones</a>
+      <span class="text-gray-700">·</span>
+      <a href="privacidad.html" class="hover:text-electric transition-colors">Política de privacidad</a>
+    </p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- ============ MODAL: POP-UP COMUNIDAD DE WHATSAPP ============ -->
+  <div id="group-modal" class="modal-overlay" hidden>
+    <div class="modal-dialog gem-card glass-strong glow-border" role="dialog" aria-modal="true" aria-labelledby="group-modal-title">
+      <button type="button" class="modal-close js-group-modal-close" aria-label="Cerrar">✕</button>
+      <div class="p-6 md:p-8 text-center">
+        <img src="logo.svg" alt="" class="js-logo h-10 mx-auto mb-4" />
+        <h3 id="group-modal-title" class="font-display text-lg md:text-xl mb-2">¿Querés unirte a nuestra comunidad de WhatsApp?</h3>
+        <p class="text-sm text-gray-400 mb-6 js-community-desc">—</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="#" target="_blank" rel="noopener" class="js-community-main btn-primary px-6 py-3 rounded-full text-sm">Unirme a la comunidad</a>
+          <a href="#" target="_blank" rel="noopener" class="js-community-channel btn-ghost px-6 py-3 rounded-full text-sm">Seguir el canal</a>
+        </div>
+        <button type="button" class="js-group-modal-close text-xs text-gray-500 hover:text-gray-300 mt-5">Ahora no</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: CHECKOUT (paso 1 → datos del jugador) ============ -->
+  <div id="checkout-modal" class="modal-overlay" hidden>
+    <div class="modal-dialog gem-card glass-strong glow-border" role="dialog" aria-modal="true" aria-labelledby="checkout-step1-title">
+
+      <!-- Paso 1 -->
+      <div id="checkout-step-1" class="p-6 md:p-8">
+        <button type="button" class="modal-close js-checkout-close" aria-label="Cerrar">✕</button>
+        <p class="text-xs tracking-[0.3em] text-electric mb-2">PASO 1 DE 2</p>
+        <h3 id="checkout-step1-title" class="font-display text-lg md:text-xl mb-1">Datos del jugador</h3>
+        <p id="checkout-product-summary" class="text-sm text-gray-400 mb-6">—</p>
+
+        <form id="checkout-form" class="space-y-4 text-left" novalidate>
+          <div>
+            <label for="checkout-uid" class="block text-xs text-gray-400 mb-1">ID de jugador (UID)</label>
+            <input id="checkout-uid" name="uid" type="text" inputmode="numeric" required
+                   class="modal-input w-full px-4 py-3 rounded-lg text-sm" placeholder="Ej: 123456789" />
+          </div>
+          <div>
+            <label for="checkout-nickname" class="block text-xs text-gray-400 mb-1">Nombre de jugador (nickname)</label>
+            <input id="checkout-nickname" name="nickname" type="text" required
+                   class="modal-input w-full px-4 py-3 rounded-lg text-sm" placeholder="Ej: SettingsPro" />
+          </div>
+          <button type="submit" class="btn-primary w-full px-6 py-3 rounded-full text-sm mt-2">Continuar</button>
+        </form>
+      </div>
+
+      <!-- Paso 2 -->
+      <div id="checkout-step-2" class="p-6 md:p-8" hidden>
+        <button type="button" class="modal-close js-checkout-close" aria-label="Cerrar">✕</button>
+        <p class="text-xs tracking-[0.3em] text-electric mb-2">PASO 2 DE 2</p>
+        <h3 class="font-display text-lg md:text-xl mb-1">Pagá con Naranja X</h3>
+        <p id="checkout-product-summary-2" class="text-sm text-gray-400 mb-6">—</p>
+
+        <dl class="space-y-4 text-sm mb-6">
+          <div class="flex justify-between items-center gap-4">
+            <dt class="text-gray-400">Titular</dt>
+            <dd class="js-pay-holder text-right font-medium">—</dd>
+          </div>
+          <div class="flex justify-between items-center gap-4">
+            <dt class="text-gray-400">Alias</dt>
+            <dd class="flex items-center gap-2">
+              <span class="js-pay-alias font-medium" id="pay-alias">—</span>
+              <button type="button" class="js-copy copy-btn text-xs px-2 py-1 rounded border border-white/15 hover:border-electric transition-colors" data-copy-target="#pay-alias">Copiar</button>
+            </dd>
+          </div>
+          <div class="flex justify-between items-center gap-4">
+            <dt class="text-gray-400">CVU</dt>
+            <dd class="flex items-center gap-2">
+              <span class="js-pay-cvu font-medium" id="pay-cvu">—</span>
+              <button type="button" class="js-copy copy-btn text-xs px-2 py-1 rounded border border-white/15 hover:border-electric transition-colors" data-copy-target="#pay-cvu">Copiar</button>
+            </dd>
+          </div>
+        </dl>
+
+        <button type="button" id="checkout-send-whatsapp" class="btn-primary w-full px-6 py-3 rounded-full text-sm">Ya transferí, enviar comprobante</button>
+        <button type="button" id="checkout-back" class="btn-ghost w-full px-6 py-3 rounded-full text-sm mt-3">Volver</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

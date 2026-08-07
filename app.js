@@ -1,0 +1,337 @@
+/**
+ * app.js
+ * ------------------------------------------------------------------
+ * Orquesta la página: toma el contenido de config.js y lo renderiza
+ * en el DOM. Engancha las interacciones (menú móvil, copiar al
+ * portapapeles, animaciones). Todo el contenido editable vive en un
+ * solo lugar: config.js.
+ * ------------------------------------------------------------------
+ */
+
+import { SETTINGS, BANNER, SOCIALS, COMMUNITY, NARANJAX, PRODUCTS } from "./config.js";
+import { initParticles } from "./particles.js";
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+
+const formatPrice = (value) =>
+  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
+
+function showToast(message) {
+  const toast = $("#toast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1800);
+}
+
+/* ================= RENDER: MARCA / HEADER ================= */
+
+function renderBrand() {
+  $$(".js-store-name").forEach((el) => (el.textContent = SETTINGS.storeName));
+  $$(".js-logo").forEach((el) => (el.src = SETTINGS.logoUrl));
+  document.title = `${SETTINGS.storeName} — Diamantes Free Fire`;
+}
+
+/* ================= RENDER: HERO / BANNER ================= */
+
+function renderBanner() {
+  $$(".js-banner-title").forEach((el) => (el.textContent = BANNER.title));
+  $$(".js-banner-subtitle").forEach((el) => (el.textContent = BANNER.subtitle));
+  $$(".js-banner-text").forEach((el) => (el.textContent = BANNER.text));
+
+  const heroBg = $("#hero-bg-image");
+  if (heroBg && (BANNER.imageUrlMobile || BANNER.imageUrlDesktop)) {
+    const applyHeroBg = () => {
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+      const url = isMobile
+        ? BANNER.imageUrlMobile || BANNER.imageUrlDesktop
+        : BANNER.imageUrlDesktop || BANNER.imageUrlMobile;
+      heroBg.style.backgroundImage = `linear-gradient(180deg, rgba(5,5,5,.35), rgba(5,5,5,.9)), url('${url}')`;
+      heroBg.style.opacity = "1";
+    };
+    applyHeroBg();
+    window.addEventListener("resize", applyHeroBg);
+  }
+}
+
+/* ================= RENDER: PRODUCTOS ================= */
+
+// Ícono de diamante por defecto para paquetes sin foto propia todavía.
+// Reemplazá `product.image` en config.js por tu propia foto cuando quieras.
+const DIAMOND_PLACEHOLDER_SVG = `
+  <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" class="diamond-icon">
+    <polygon points="23,3 40,16 23,43 6,16" fill="url(#diamondGrad)" stroke="var(--c-blue-glow)" stroke-width="1.2"/>
+    <polygon points="6,16 23,3 23,43" fill="#000" opacity="0.14"/>
+    <line x1="6" y1="16" x2="40" y2="16" stroke="var(--c-blue-glow)" stroke-width="0.6" opacity="0.6"/>
+    <defs>
+      <linearGradient id="diamondGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e9f6ff"/>
+        <stop offset="55%" stop-color="#7fd6ff"/>
+        <stop offset="100%" stop-color="#00a8ff"/>
+      </linearGradient>
+    </defs>
+  </svg>`;
+
+function buildWhatsappLink(product, buyer) {
+  const lines = [
+    "Hola. Ya realicé el pago por Naranja X, adjunto el comprobante.",
+    "",
+    "Quiero comprar:",
+    product.name,
+    "",
+    "Precio:",
+    formatPrice(product.price),
+  ];
+  if (buyer) {
+    lines.push("", "Mi ID (UID):", buyer.uid, "Nombre en el juego:", buyer.nickname);
+  }
+  const msg = lines.join("\n");
+  return `https://wa.me/${SETTINGS.whatsappNumber}?text=${encodeURIComponent(msg)}`;
+}
+
+function productCardTemplate(product, index) {
+  const img = product.image
+    ? `<img src="${product.image}" alt="${product.name}" loading="lazy" class="w-full h-40 object-cover">`
+    : `<div class="w-full h-40 flex items-center justify-center bg-[#0a0e14]">${DIAMOND_PLACEHOLDER_SVG}</div>`;
+
+  const countLabel = product.diamonds ? `${product.diamonds} 💎` : (product.badge || "");
+
+  return `
+    <article class="gem-card glass glow-border flex flex-col overflow-hidden" data-aos="fade-up">
+      ${img}
+      <div class="p-5 flex flex-col flex-1">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-display text-lg text-white">${product.name}</h3>
+          ${countLabel ? `<span class="text-xs text-[var(--c-gray-soft)]">${countLabel}</span>` : ""}
+        </div>
+        <p class="text-sm text-[var(--c-gray-soft)] flex-1 mb-4">${product.description || "Entrega inmediata"}</p>
+        <div class="flex items-center justify-between">
+          <span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.price)}</span>
+          <button type="button" class="js-buy-btn btn-primary text-sm px-4 py-2 rounded-full" data-product-index="${index}">Comprar</button>
+        </div>
+      </div>
+    </article>`;
+}
+
+function renderProducts() {
+  const grid = $("#products-grid");
+  if (!grid) return;
+
+  const visible = PRODUCTS.filter((p) => p.visible !== false).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  if (!visible.length) {
+    grid.innerHTML = `<p class="col-span-full text-center text-[var(--c-gray-soft)]">Pronto vamos a agregar productos. ¡Volvé más tarde!</p>`;
+    return;
+  }
+
+  // Guardamos el índice real (dentro de PRODUCTS) en cada tarjeta para
+  // poder recuperar el producto elegido cuando se abra el checkout.
+  grid.innerHTML = visible
+    .map((product) => productCardTemplate(product, PRODUCTS.indexOf(product)))
+    .join("");
+
+  $$(".js-buy-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const product = PRODUCTS[Number(btn.dataset.productIndex)];
+      if (product) openCheckout(product);
+    });
+  });
+}
+
+/* ================= RENDER: REDES SOCIALES ================= */
+
+function renderSocials() {
+  const map = { instagram: "#link-instagram", whatsapp: "#link-whatsapp" };
+  Object.entries(map).forEach(([key, sel]) => {
+    $$(sel).forEach((el) => {
+      if (SOCIALS[key]) el.href = SOCIALS[key];
+    });
+  });
+}
+
+/* ================= RENDER: COMUNIDAD DE WHATSAPP ================= */
+
+function renderCommunity() {
+  $$(".js-community-desc").forEach((el) => (el.textContent = COMMUNITY.description));
+  $$(".js-community-main").forEach((el) => (el.href = COMMUNITY.mainGroupUrl));
+  $$(".js-community-channel").forEach((el) => (el.href = COMMUNITY.channelUrl));
+
+  const wrap = $("#community-groups");
+  if (wrap && COMMUNITY.groups?.length) {
+    wrap.innerHTML = COMMUNITY.groups
+      .map(
+        (g) => `
+      <a href="${g.url}" target="_blank" rel="noopener"
+         class="glass glow-border rounded-lg px-4 py-3 text-sm text-center text-gray-300 hover:text-electric transition-colors">
+        ${g.label}
+      </a>`
+      )
+      .join("");
+  }
+}
+
+function bindGroupPopup() {
+  const modal = $("#group-modal");
+  if (!modal) return;
+
+  const close = () => (modal.hidden = true);
+  $$(".js-group-modal-close").forEach((btn) => btn.addEventListener("click", close));
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+
+  // Se muestra una vez por sesión, sin molestar en cada recarga de página.
+  if (!sessionStorage.getItem("ss_group_popup_shown")) {
+    setTimeout(() => {
+      modal.hidden = false;
+      sessionStorage.setItem("ss_group_popup_shown", "1");
+    }, 2500);
+  }
+}
+
+/* ================= CHECKOUT: PASO 1 (UID + NICK) → PASO 2 (NARANJA X) ================= */
+
+let checkoutProduct = null;
+let checkoutBuyer = null;
+
+function renderNaranjaXData() {
+  $$(".js-pay-holder").forEach((el) => (el.textContent = NARANJAX.holder));
+  $$(".js-pay-alias").forEach((el) => (el.textContent = NARANJAX.alias));
+  $$(".js-pay-cvu").forEach((el) => (el.textContent = NARANJAX.cvu));
+}
+
+function openCheckout(product) {
+  checkoutProduct = product;
+  checkoutBuyer = null;
+
+  const modal = $("#checkout-modal");
+  const step1 = $("#checkout-step-1");
+  const step2 = $("#checkout-step-2");
+  if (!modal || !step1 || !step2) return;
+
+  const summary = `${product.name} — ${formatPrice(product.price)}`;
+  $("#checkout-product-summary").textContent = summary;
+  $("#checkout-product-summary-2").textContent = summary;
+
+  $("#checkout-form")?.reset();
+  step1.hidden = false;
+  step2.hidden = true;
+  modal.hidden = false;
+}
+
+function closeCheckout() {
+  const modal = $("#checkout-modal");
+  if (modal) modal.hidden = true;
+  checkoutProduct = null;
+  checkoutBuyer = null;
+}
+
+function bindCheckout() {
+  const modal = $("#checkout-modal");
+  const step1 = $("#checkout-step-1");
+  const step2 = $("#checkout-step-2");
+  const form = $("#checkout-form");
+  if (!modal || !form) return;
+
+  $$(".js-checkout-close").forEach((btn) => btn.addEventListener("click", closeCheckout));
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeCheckout();
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const uid = $("#checkout-uid")?.value.trim();
+    const nickname = $("#checkout-nickname")?.value.trim();
+    if (!uid || !nickname) return;
+
+    checkoutBuyer = { uid, nickname };
+    step1.hidden = true;
+    step2.hidden = false;
+  });
+
+  $("#checkout-back")?.addEventListener("click", () => {
+    step2.hidden = true;
+    step1.hidden = false;
+  });
+
+  $("#checkout-send-whatsapp")?.addEventListener("click", () => {
+    if (!checkoutProduct || !checkoutBuyer) return;
+    window.open(buildWhatsappLink(checkoutProduct, checkoutBuyer), "_blank", "noopener");
+    closeCheckout();
+  });
+}
+
+function bindCopyButtons() {
+  $$(".js-copy").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const targetSel = btn.dataset.copyTarget;
+      const text = $(targetSel)?.textContent?.trim();
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+      showToast("Copiado");
+      btn.classList.add("copied");
+      setTimeout(() => btn.classList.remove("copied"), 1200);
+    });
+  });
+}
+
+/* ================= INTERACCIÓN: MENÚ MÓVIL ================= */
+
+function bindMobileMenu() {
+  const toggle = $("#menu-toggle");
+  const menu = $("#mobile-menu");
+  if (!toggle || !menu) return;
+  toggle.addEventListener("click", () => {
+    const isOpen = menu.classList.toggle("open");
+    menu.style.maxHeight = isOpen ? menu.scrollHeight + "px" : "0px";
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
+  $$("#mobile-menu a").forEach((a) =>
+    a.addEventListener("click", () => {
+      menu.classList.remove("open");
+      menu.style.maxHeight = "0px";
+    })
+  );
+}
+
+/* ================= INIT ================= */
+
+function init() {
+  bindMobileMenu();
+  bindCopyButtons();
+  bindCheckout();
+  bindGroupPopup();
+  initParticles("particles-canvas");
+
+  renderBrand();
+  renderBanner();
+  renderSocials();
+  renderCommunity();
+  renderNaranjaXData();
+  renderProducts();
+
+  $$(".js-year").forEach((el) => (el.textContent = new Date().getFullYear()));
+
+  if (window.AOS) window.AOS.init({ once: true, duration: 700, easing: "ease-out-cubic" });
+
+  if (window.gsap) {
+    gsap.from(".hero-title", { y: 24, opacity: 0, duration: 0.9, ease: "power3.out" });
+    gsap.from(".hero-sub", { y: 16, opacity: 0, duration: 0.9, delay: 0.15, ease: "power3.out" });
+    gsap.from(".hero-cta", { y: 16, opacity: 0, duration: 0.9, delay: 0.3, ease: "power3.out" });
+  }
+
+  document.body.classList.remove("opacity-0");
+}
+
+document.addEventListener("DOMContentLoaded", init);

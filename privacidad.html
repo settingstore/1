@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Política de privacidad — Settings Store</title>
+  <meta name="description" content="Política de privacidad y tratamiento de datos de Settings Store." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { base: '#050505', electric: '#00A8FF', glow: '#00D9FF' },
+          fontFamily: { display: ['Orbitron', 'sans-serif'], body: ['Inter', 'sans-serif'] },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="font-body bg-base text-white">
+
+  <!-- ============ HEADER ============ -->
+  <header class="fixed top-0 inset-x-0 z-50 glass">
+    <nav class="max-w-6xl mx-auto flex items-center justify-between px-5 py-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="logo.png" alt="Settings Store" class="js-logo h-8 w-auto" />
+      </a>
+      <a href="index.html" class="btn-ghost px-5 py-2 rounded-full text-sm">← Volver a la tienda</a>
+    </nav>
+  </header>
+
+  <!-- ============ CONTENIDO ============ -->
+  <main class="max-w-3xl mx-auto px-5 pt-32 pb-24">
+    <p class="text-xs tracking-[0.3em] text-electric mb-2">LEGAL</p>
+    <h1 class="font-display text-3xl md:text-4xl mb-2">Política de privacidad</h1>
+    <p class="text-sm text-gray-500 mb-10">Última actualización: <span id="fecha-actualizacion"></span></p>
+
+    <div class="space-y-8 text-sm md:text-base text-gray-300 leading-relaxed">
+
+      <section>
+        <h2 class="font-display text-lg text-white mb-2">1. Qué datos recopilamos</h2>
+        <p>Para procesar una compra te pedimos únicamente tu ID de jugador (UID) y tu nombre de usuario dentro del juego. Si nos contactás por WhatsApp, también accedemos al número de teléfono y nombre asociados a tu cuenta de WhatsApp, y al comprobante de pago que nos envíes voluntariamente para confirmar la transferencia.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-lg text-white mb-2">2. Para qué usamos tus datos</h2>
+        <p>Usamos estos datos exclusivamente para: identificar tu cuenta y realizar la recarga o entrega correspondiente, confirmar el pago recibido, y comunicarnos con vos sobre tu pedido. No usamos tus datos con fines publicitarios ni los utilizamos para ningún propósito distinto al de completar tu compra.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-lg text-white mb-2">3. Con quién compartimos tus datos</h2>
+        <p>No vendemos ni compartimos tus datos personales con terceros. El UID y nombre de usuario que nos das se ingresan directamente en la plataforma del juego o servicio correspondiente únicamente para completar la recarga o entrega solicitada.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-lg text-white mb-2">4. Datos de pago</h2>
+        <p>No almacenamos datos de tarjetas ni credenciales bancarias en este sitio. Los pagos se coordinan directamente a través de Naranja X y del comprobante que nos compartís por WhatsApp; ese comprobante se conserva solo el tiempo necesario para verificar la operación.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-lg text-white mb-2">5. Almacenamiento en el navegador</h2>
+        <p>Este sitio guarda una marca temporal en tu navegador (almacenamiento de sesión) únicamente para no mostrarte más de una vez el mensaje de invitación a nuestra comunidad de WhatsApp durante la misma visita. Esta información no se envía a ningún servidor ni se usa para identificarte.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-lg text-white mb-2">6. Tus derechos</h2>
+        <p>Podés pedirnos en cualquier momento, por WhatsApp, que te informemos qué datos tuyos conservamos vinculados a un pedido, o que los eliminemos una vez que la operación esté cerrada y no exista una obligación legal o de soporte que requiera conservarlos.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-lg text-white mb-2">7. Cambios en esta política</h2>
+        <p>Podemos actualizar esta política de privacidad en cualquier momento. Los cambios entran en vigencia desde su publicación en esta página.</p>
+      </section>
+
+      <section>
+        <h2 class="font-display text-lg text-white mb-2">8. Contacto</h2>
+        <p>Para cualquier consulta sobre el tratamiento de tus datos, escribinos por WhatsApp desde los enlaces disponibles en la página principal.</p>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="py-8 text-center text-xs text-gray-500">
+    <p>&copy; <span class="js-year"></span> Settings Store. Todos los derechos reservados.</p>
+    <p class="mt-2 flex items-center justify-center gap-4">
+      <a href="terminos.html" class="hover:text-electric transition-colors">Términos y condiciones</a>
+      <span class="text-gray-700">·</span>
+      <a href="privacidad.html" class="text-electric">Política de privacidad</a>
+    </p>
+  </footer>
+
+  <script>
+    document.getElementById("fecha-actualizacion").textContent = new Date().toLocaleDateString("es-AR", { year: "numeric", month: "long", day: "numeric" });
+    document.querySelectorAll(".js-year").forEach((el) => (el.textContent = new Date().getFullYear()));
+  </script>
+</body>
+</html>
