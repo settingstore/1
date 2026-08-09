@@ -4,9 +4,6 @@
  * ÚNICO ARCHIVO QUE NECESITÁS EDITAR para actualizar la tienda:
  * productos, banner, redes sociales y datos bancarios.
  *
- * No requiere ninguna cuenta, API ni base de datos: es JavaScript
- * plano. Cuando quieras cambiar algo, editás este archivo y volvés
- * a subir el proyecto a GitHub (o a donde lo tengas alojado).
  * ------------------------------------------------------------------
  */
 
@@ -99,7 +96,7 @@ export const PRODUCTS = [
   {
     name: "341 Diamantes",
     diamonds: 341,
-    price: 4500,
+    price: 3750,
     image: "product-341.jpg",
     order: 2,
     visible: true,
@@ -107,7 +104,7 @@ export const PRODUCTS = [
   {
     name: "572 Diamantes",
     diamonds: 572,
-    price: 6500,
+    price: 5800,
     image: "product-572.jpg",
     order: 3,
     visible: true,
@@ -115,7 +112,7 @@ export const PRODUCTS = [
   {
     name: "1.166 Diamantes",
     diamonds: 1166,
-    price: 12000,
+    price: 11800,
     image: "product-1166.jpg",
     order: 4,
     visible: true,
@@ -123,7 +120,7 @@ export const PRODUCTS = [
   {
     name: "2.398 Diamantes",
     diamonds: 2398,
-    price: 22500,
+    price: 21800,
     image: "product-2398.jpg",
     order: 5,
     visible: true,
@@ -131,7 +128,7 @@ export const PRODUCTS = [
   {
     name: "6.160 Diamantes",
     diamonds: 6160,
-    price: 55000,
+    price: 54500,
     image: "product-6160.jpg",
     order: 6,
     visible: true,
@@ -140,7 +137,7 @@ export const PRODUCTS = [
     name: "Pase Booyah",
     diamonds: 0, // no aplica: es un pase, no diamantes sueltos
     badge: "PASE", // se muestra en vez de "X 💎" cuando diamonds es 0
-    price: 2000,
+    price: 2800,
     image: "product-booyah.jpg",
     order: 7,
     visible: true,
