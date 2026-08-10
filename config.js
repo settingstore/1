@@ -19,7 +19,7 @@ export const SETTINGS = {
 export const BANNER = {
   title: "Settings Store",
   subtitle: "Diamantes Free Fire",
-  text: "Entrega inmediata · +3 años de experiencia",
+  text: "Entrega inmediata · +3 años de experiencia",      
   // Fotos de fondo del Hero. Se elige una según el tamaño de pantalla:
   // imageUrlMobile en celulares y imageUrlDesktop en pantallas más
   // grandes. Para cambiarlas, reemplazá los archivos o estas rutas.
