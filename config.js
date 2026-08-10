@@ -104,7 +104,7 @@ export const PRODUCTS = [
   {
     name: "572 Diamantes",
     diamonds: 572,
-    price: 5800,
+    price: 58678,
     image: "product-572.jpg",
     order: 3,
     visible: true,
