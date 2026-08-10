@@ -1,5 +1,5 @@
 /**
- * config.js
+ * config.js   
  * ------------------------------------------------------------------
  * ÚNICO ARCHIVO QUE NECESITÁS EDITAR para actualizar la tienda:
  * productos, banner, redes sociales y datos bancarios.
