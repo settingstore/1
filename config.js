@@ -96,7 +96,7 @@ export const PRODUCTS = [
   {
     name: "341 Diamantes",
     diamonds: 341,
-    price: 3750,
+    price: 3800,
     image: "product-341.jpg",
     order: 2,
     visible: true,
@@ -104,7 +104,7 @@ export const PRODUCTS = [
   {
     name: "572 Diamantes",
     diamonds: 572,
-    price: 5800,
+    price: 6000,
     image: "product-572.jpg",
     order: 3,
     visible: true,
@@ -120,7 +120,7 @@ export const PRODUCTS = [
   {
     name: "2.398 Diamantes",
     diamonds: 2398,
-    price: 21800,
+    price: 22000,
     image: "product-2398.jpg",
     order: 5,
     visible: true,
@@ -128,7 +128,7 @@ export const PRODUCTS = [
   {
     name: "6.160 Diamantes",
     diamonds: 6160,
-    price: 54500,
+    price: 56500,
     image: "product-6160.jpg",
     order: 6,
     visible: true,
