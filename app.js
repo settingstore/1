@@ -17,6 +17,17 @@ const $$ = (sel) => document.querySelectorAll(sel);
 const formatPrice = (value) =>
   new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
 
+// Precio final de un producto: si tiene discountPrice (y es menor al
+// precio normal), ese es el que se cobra. Si no, se usa price.
+const finalPrice = (product) =>
+  product.discountPrice != null && product.discountPrice < product.price
+    ? product.discountPrice
+    : product.price;
+
+// % de descuento redondeado, para el badge ("-15%").
+const discountPercent = (product) =>
+  Math.round((1 - finalPrice(product) / product.price) * 100);
+
 function showToast(message) {
   const toast = $("#toast");
   if (!toast) return;
@@ -89,7 +100,7 @@ function buildWhatsappLink(product, buyer) {
     product.name,
     "",
     "Precio:",
-    formatPrice(product.price),
+    formatPrice(finalPrice(product)),
   ];
   if (buyer) {
     lines.push("", "Mi ID (UID):", buyer.uid, "Nombre en el juego:", buyer.nickname);
@@ -104,9 +115,19 @@ function productCardTemplate(product, index) {
     : `<div class="w-full h-40 flex items-center justify-center bg-[#0a0e14]">${DIAMOND_PLACEHOLDER_SVG}</div>`;
 
   const countLabel = product.diamonds ? `${product.diamonds} 💎` : (product.badge || "");
+  const hasDiscount = product.discountPrice != null && product.discountPrice < product.price;
+  const pct = hasDiscount ? discountPercent(product) : 0;
+
+  const priceBlock = hasDiscount
+    ? `<div class="flex flex-col leading-tight">
+         <span class="text-xs text-[var(--c-gray-soft)] line-through">${formatPrice(product.price)}</span>
+         <span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.discountPrice)}</span>
+       </div>`
+    : `<span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.price)}</span>`;
 
   return `
-    <article class="gem-card glass glow-border flex flex-col overflow-hidden" data-aos="fade-up">
+    <article class="gem-card glass glow-border flex flex-col overflow-hidden relative" data-aos="fade-up">
+      ${hasDiscount ? `<span class="discount-badge">-${pct}%</span>` : ""}
       ${img}
       <div class="p-5 flex flex-col flex-1">
         <div class="flex items-center justify-between mb-2">
@@ -115,7 +136,7 @@ function productCardTemplate(product, index) {
         </div>
         <p class="text-sm text-[var(--c-gray-soft)] flex-1 mb-4">${product.description || "Entrega inmediata"}</p>
         <div class="flex items-center justify-between">
-          <span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.price)}</span>
+          ${priceBlock}
           <button type="button" class="js-buy-btn btn-primary text-sm px-4 py-2 rounded-full" data-product-index="${index}">Comprar</button>
         </div>
       </div>
@@ -218,7 +239,7 @@ function openCheckout(product) {
   const step2 = $("#checkout-step-2");
   if (!modal || !step1 || !step2) return;
 
-  const summary = `${product.name} — ${formatPrice(product.price)}`;
+  const summary = `${product.name} — ${formatPrice(finalPrice(product))}`;
   $("#checkout-product-summary").textContent = summary;
   $("#checkout-product-summary-2").textContent = summary;
 
@@ -348,6 +369,9 @@ function init() {
   }
 
   document.body.classList.remove("opacity-0");
+}
+
+document.addEventListener("DOMContentLoaded", init);
 }
 
 document.addEventListener("DOMContentLoaded", init);
