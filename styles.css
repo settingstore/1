@@ -266,6 +266,23 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 /* Ícono de diamante por defecto en las tarjetas de producto */
 .diamond-icon { filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.45)); }
 
+/* Etiqueta de descuento sobre la tarjeta de producto */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  background: linear-gradient(135deg, #ff3d63, #d6003f);
+  color: #fff;
+  font-family: var(--f-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 16px rgba(214, 0, 63, 0.55);
+}
+
 /* ============ Modales (checkout / pop-up de grupo) ============ */
 .modal-overlay {
   position: fixed;
