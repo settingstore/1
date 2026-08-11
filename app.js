@@ -116,7 +116,6 @@ function productCardTemplate(product, index) {
 
   const countLabel = product.diamonds ? `${product.diamonds} 💎` : (product.badge || "");
   const hasDiscount = product.discountPrice != null && product.discountPrice < product.price;
-  const pct = hasDiscount ? discountPercent(product) : 0;
 
   const priceBlock = hasDiscount
     ? `<div class="flex flex-col leading-tight">
@@ -127,7 +126,6 @@ function productCardTemplate(product, index) {
 
   return `
     <article class="gem-card glass glow-border flex flex-col overflow-hidden relative" data-aos="fade-up">
-      ${hasDiscount ? `<span class="discount-badge">-${pct}%</span>` : ""}
       ${img}
       <div class="p-5 flex flex-col flex-1">
         <div class="flex items-center justify-between mb-2">
