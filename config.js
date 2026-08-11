@@ -1,9 +1,8 @@
 /**
- * config.js   
+ * config.js
  * ------------------------------------------------------------------
  * ÚNICO ARCHIVO QUE NECESITÁS EDITAR para actualizar la tienda:
  * productos, banner, redes sociales y datos bancarios.
- *
  * ------------------------------------------------------------------
  */
 
@@ -19,7 +18,7 @@ export const SETTINGS = {
 export const BANNER = {
   title: "Settings Store",
   subtitle: "Diamantes Free Fire",
-  text: "Entrega inmediata · +3 años de experiencia",      
+  text: "Entrega inmediata · +3 años de experiencia",
   // Fotos de fondo del Hero. Se elige una según el tamaño de pantalla:
   // imageUrlMobile en celulares y imageUrlDesktop en pantallas más
   // grandes. Para cambiarlas, reemplazá los archivos o estas rutas.
@@ -83,12 +82,17 @@ export const NARANJAX = {
  * - order: define la posición en la grilla (menor = primero)
  * - visible: poné "false" para ocultar un producto sin borrarlo
  * - image: dejalo vacío ("") si todavía no tenés foto del paquete
+ * - discountPrice: PONÉ ACÁ el precio con descuento para activar la
+ *   oferta en ese producto. La tarjeta va a mostrar automáticamente
+ *   el precio original tachado, el nuevo precio y el % de descuento.
+ *   Dejalo sin este campo (o borralo) para vender al precio normal.
  */
 export const PRODUCTS = [
   {
     name: "110 Diamantes",
     diamonds: 110,
     price: 1300,
+    discountPrice: 1180, // ej: 15% OFF — borrá esta línea para quitar el descuento
     image: "product-110.jpg",
     order: 1,
     visible: true,
@@ -97,6 +101,7 @@ export const PRODUCTS = [
     name: "341 Diamantes",
     diamonds: 341,
     price: 3800,
+    discountPrice: 3520,
     image: "product-341.jpg",
     order: 2,
     visible: true,
@@ -105,6 +110,7 @@ export const PRODUCTS = [
     name: "572 Diamantes",
     diamonds: 572,
     price: 6000,
+    discountPrice: 5950,
     image: "product-572.jpg",
     order: 3,
     visible: true,
@@ -113,6 +119,7 @@ export const PRODUCTS = [
     name: "1.166 Diamantes",
     diamonds: 1166,
     price: 11800,
+    discountPrice: 11000,
     image: "product-1166.jpg",
     order: 4,
     visible: true,
@@ -121,6 +128,7 @@ export const PRODUCTS = [
     name: "2.398 Diamantes",
     diamonds: 2398,
     price: 22000,
+    discountPrice: 21500,
     image: "product-2398.jpg",
     order: 5,
     visible: true,
@@ -129,6 +137,7 @@ export const PRODUCTS = [
     name: "6.160 Diamantes",
     diamonds: 6160,
     price: 56500,
+    discountPrice: 54500,
     image: "product-6160.jpg",
     order: 6,
     visible: true,
