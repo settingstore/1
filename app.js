@@ -284,6 +284,17 @@ function bindCheckout() {
 
   $("#checkout-send-whatsapp")?.addEventListener("click", () => {
     if (!checkoutProduct || !checkoutBuyer) return;
+    // Evento de Analytics: se dispara cuando alguien completa el
+    // checkout y va a mandar el comprobante por WhatsApp. Es la señal
+    // más cercana a una "intención de compra" que podemos medir sin
+    // backend (la venta se confirma manualmente por WhatsApp).
+    if (typeof gtag === "function") {
+      gtag("event", "generate_lead", {
+        currency: "ARS",
+        value: finalPrice(checkoutProduct),
+        item_name: checkoutProduct.name,
+      });
+    }
     window.open(buildWhatsappLink(checkoutProduct, checkoutBuyer), "_blank", "noopener");
     closeCheckout();
   });
