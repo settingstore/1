@@ -69,7 +69,7 @@ export const COMMUNITY = {
  */
 export const NARANJAX = {
   holder: "Jonathan Jehova Lagunas Arrieta",
-  alias: "settings77",
+  alias: "settings88",
   cvu: "4530000800010888788882",
 };
 
@@ -92,7 +92,7 @@ export const PRODUCTS = [
     name: "110 Diamantes",
     diamonds: 110,
     price: 1300,
-    discountPrice: 1180, // ej: 15% OFF — borrá esta línea para quitar el descuento
+    discountPrice: 1160, // ej: 15% OFF — borrá esta línea para quitar el descuento
     image: "product-110.jpg",
     order: 1,
     visible: true,
@@ -101,7 +101,7 @@ export const PRODUCTS = [
     name: "341 Diamantes",
     diamonds: 341,
     price: 3800,
-    discountPrice: 3520,
+    discountPrice: 3490,
     image: "product-341.jpg",
     order: 2,
     visible: true,
@@ -110,7 +110,7 @@ export const PRODUCTS = [
     name: "572 Diamantes",
     diamonds: 572,
     price: 6000,
-    discountPrice: 5950,
+    discountPrice: 5850,
     image: "product-572.jpg",
     order: 3,
     visible: true,
@@ -119,7 +119,7 @@ export const PRODUCTS = [
     name: "1.166 Diamantes",
     diamonds: 1166,
     price: 11800,
-    discountPrice: 11000,
+    discountPrice: 10850,
     image: "product-1166.jpg",
     order: 4,
     visible: true,
@@ -128,7 +128,7 @@ export const PRODUCTS = [
     name: "2.398 Diamantes",
     diamonds: 2398,
     price: 22000,
-    discountPrice: 21500,
+    discountPrice: 21250,
     image: "product-2398.jpg",
     order: 5,
     visible: true,
@@ -137,7 +137,7 @@ export const PRODUCTS = [
     name: "6.160 Diamantes",
     diamonds: 6160,
     price: 56500,
-    discountPrice: 54500,
+    discountPrice: 54900,
     image: "product-6160.jpg",
     order: 6,
     visible: true,
