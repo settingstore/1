@@ -25,12 +25,6 @@ import {
   onAuthStateChanged,
   signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA1yOfML1BFT0ug696tJBxgAzaW4ozWqTY",
@@ -44,12 +38,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const storage = getStorage(app);
 
 export {
   db,
   auth,
-  storage,
   doc,
   getDoc,
   setDoc,
@@ -64,7 +56,4 @@ export {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-  ref,
-  uploadBytes,
-  getDownloadURL,
 };
