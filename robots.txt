@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
 
-Sitemap: https://tu-usuario.github.io/settings-store/sitemap.xml
+Sitemap: https://settings.sbs/sitemap.xml

@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png" />
 <title>Acceso Revendedores — Settings Store</title>
 
 <!-- Fuentes -->
@@ -183,7 +185,7 @@
     <div id="checkout-step-2" class="p-6 md:p-8" hidden>
       <button type="button" class="modal-close js-checkout-close" aria-label="Cerrar">✕</button>
       <p class="text-xs tracking-[0.3em] text-electric mb-2">PASO 2 DE 2</p>
-      <h3 class="font-display text-lg md:text-xl mb-1">Pagá con Naranja X</h3>
+      <h3 class="font-display text-lg md:text-xl mb-1">Pagá por transferencia</h3>
       <p id="checkout-product-summary-2" class="text-sm text-gray-400 mb-6">—</p>
 
       <dl class="space-y-4 text-sm mb-6">
@@ -206,6 +208,10 @@
           </dd>
         </div>
       </dl>
+
+      <p class="text-xs text-amber-400/90 bg-amber-400/5 border border-amber-400/20 rounded-lg px-3 py-2 mb-6">
+        ⚠️ <strong>Importante:</strong> Settings Store no se responsabiliza por pagos realizados a números que no sean el oficial indicado en este sitio.
+      </p>
 
       <button type="button" id="checkout-send-whatsapp" class="btn-primary w-full px-6 py-3 rounded-full text-sm">Ya transferí, enviar comprobante</button>
       <button type="button" id="checkout-back" class="btn-ghost w-full px-6 py-3 rounded-full text-sm mt-3">Volver</button>

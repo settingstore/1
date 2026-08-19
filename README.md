@@ -2,12 +2,13 @@
 
 Sitio web para venta de diamantes de Free Fire. HTML5 + CSS3 +
 JavaScript vanilla (ES6) + Tailwind CSS (CDN), sin build step. Usa
-**Firebase** (Firestore + Auth + Storage) solo para lo que necesita
+**Firebase** (Firestore + Auth) solo para lo que necesita
 actualizarse en vivo sin volver a publicar el sitio: el acceso de
-revendedores, el catálogo y precios, las imágenes de producto, los
-datos bancarios y las estadísticas de ventas. No hay pasarela de
-pago ni entrega automática — los pedidos se coordinan por WhatsApp
-como siempre.
+revendedores, el catálogo y precios, los datos bancarios y las
+estadísticas de ventas. No hay pasarela de pago ni entrega
+automática — los pedidos se coordinan por WhatsApp como siempre. Las
+fotos de producto se suben a mano al repositorio de GitHub, igual
+que el resto de las imágenes del sitio.
 
 ```
 /
@@ -16,9 +17,8 @@ como siempre.
 ├── revendedores.html      → acceso y catálogo con precios de revendedor
 ├── terminos.html          → términos y condiciones
 ├── privacidad.html         → política de privacidad
-├── firebase-init.js        → configuración central de Firebase (Firestore/Auth/Storage)
+├── firebase-init.js        → configuración central de Firebase (Firestore/Auth)
 ├── firestore.rules         → reglas de seguridad de Firestore
-├── storage.rules            → reglas de seguridad de Storage (imágenes de producto)
 ├── styles.css              → diseño (tokens, glassmorphism, glow)
 ├── app.js                    → renderiza el contenido de index.html
 ├── config.js                 → ⭐ contenido fijo de la tienda (nombre, banner, redes, etc.)
@@ -45,7 +45,7 @@ Hay dos lugares distintos según qué quieras cambiar:
 ### b) Lo que se edita en `admin.html` (con tu cuenta, sin tocar código)
 
 - **Productos y precios**: alta, baja, edición, precio tienda vs.
-  precio revendedor, subida de imágenes.
+  precio revendedor. La imagen sigue subiéndose al repo de GitHub.
 - **Datos de pago**: titular, alias y CVU/CBU reales que ve el
   comprador en el paso 2 del checkout.
 - **Revendedores**: código de acceso y quién está registrado/en línea.
@@ -140,20 +140,13 @@ sin tocar código:
   a partir de cada pedido que un revendedor confirma en el paso 2 del
   checkout de `/revendedores.html`.
 - **Productos y precios**: alta, baja y edición de productos, precio
-  tienda y precio revendedor por separado, y **subida de imágenes**
-  directamente desde tu computadora (se guardan en Firebase Storage,
-  ya no hace falta subirlas al repo de GitHub). Tamaño recomendado:
-  foto cuadrada (1:1) o 4:3, mínimo 800×800 px, formato JPG o WEBP,
-  menos de 500 KB.
+  tienda y precio revendedor por separado. La imagen se sigue subiendo
+  al repositorio de GitHub (como al principio) y en el panel solo
+  ponés el nombre del archivo. Tamaño recomendado: foto cuadrada (1:1)
+  o 4:3, mínimo 800×800 px, formato JPG o WEBP, menos de 500 KB.
 - **Datos de pago**: titular, alias y CVU/CBU que se le muestran al
   comprador en el paso 2 del checkout. Se actualiza al instante en el
   sitio.
-
-Para que la subida de imágenes funcione hace falta habilitar
-**Firebase Storage** en la consola del proyecto (Build → Storage →
-Get started) y desplegar las reglas de `storage.rules` de este
-repositorio (`firebase deploy --only storage`), igual que ya hacés con
-`firestore.rules`.
 
 ## 7. Próximos pasos (cuando quieras sumarlos)
 

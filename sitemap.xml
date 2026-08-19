@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://tu-usuario.github.io/settings-store/</loc>
+    <loc>https://settings.sbs/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://tu-usuario.github.io/settings-store/terminos.html</loc>
+    <loc>https://settings.sbs/terminos.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://tu-usuario.github.io/settings-store/privacidad.html</loc>
+    <loc>https://settings.sbs/privacidad.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>

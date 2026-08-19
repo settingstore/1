@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <!-- Cookies: se define el consentimiento ANTES de cargar Analytics -->
+  <script src="cookie-consent.js"></script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-91SP8S0PM3"></script>
   <script>
@@ -12,19 +14,43 @@
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings Store — Diamantes Free Fire</title>
-  <meta name="description" content="Settings Store: recargas de diamantes Free Fire y Pase Booyah con entrega inmediata. +3 años de experiencia. Pagá con Naranja X." />
+  <title>Settings Store — Diamantes Free Fire baratos en Argentina</title>
+  <meta name="description" content="Comprá diamantes Free Fire baratos en Argentina con recarga al instante. Pagá desde tu billetera virtual o banco favorito y recibí en minutos. +3 años de experiencia." />
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://tu-usuario.github.io/settings-store/" />
+  <link rel="canonical" href="https://settings.sbs/" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Settings Store — Diamantes Free Fire" />
-  <meta property="og:description" content="Recargas de diamantes Free Fire y Pase Booyah con entrega inmediata. Pagá con Naranja X." />
-  <meta property="og:image" content="hero-bg-desktop.jpg" />
+  <meta property="og:title" content="Settings Store — Diamantes Free Fire baratos en Argentina" />
+  <meta property="og:description" content="Comprá diamantes Free Fire baratos en Argentina con recarga al instante. Pagá desde tu billetera virtual o banco favorito y recibí en minutos." />
+  <meta property="og:image" content="https://settings.sbs/hero-bg-desktop.jpg" />
+  <meta property="og:url" content="https://settings.sbs/" />
   <meta property="og:locale" content="es_AR" />
 
-  <link rel="icon" type="image/png" href="logo.png" />
+  <!-- Twitter/X Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Settings Store — Diamantes Free Fire baratos en Argentina" />
+  <meta name="twitter:description" content="Comprá diamantes Free Fire baratos en Argentina con recarga al instante. Pagá desde tu billetera virtual o banco favorito y recibí en minutos." />
+  <meta name="twitter:image" content="https://settings.sbs/hero-bg-desktop.jpg" />
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Datos estructurados: le dicen a Google qué tipo de negocio es esto -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "OnlineStore",
+    "name": "Settings Store",
+    "url": "https://settings.sbs/",
+    "description": "Diamantes Free Fire baratos en Argentina, con recarga al instante y Pase Booyah. Pagá desde cualquier billetera virtual o banco.",
+    "areaServed": "AR",
+    "priceRange": "$$"
+  }
+  </script>
 
   <!-- Precarga la foto de fondo correcta según el tamaño de pantalla -->
   <link rel="preload" as="image" href="hero-bg-mobile.jpg" media="(max-width: 767px)" />
@@ -75,6 +101,7 @@
         <li><a href="#como-comprar" class="hover:text-electric transition-colors">Cómo comprar</a></li>
         <li><a href="#pagos" class="hover:text-electric transition-colors">Formas de pago</a></li>
         <li><a href="#redes" class="hover:text-electric transition-colors">Contacto</a></li>
+        <li><a href="revendedores.html" class="hover:text-electric transition-colors">Revendedores</a></li>
       </ul>
 
       <a href="#productos" class="hidden md:inline-block btn-primary px-5 py-2 rounded-full text-sm">Comprar ahora</a>
@@ -92,6 +119,7 @@
         <li><a href="#como-comprar">Cómo comprar</a></li>
         <li><a href="#pagos">Formas de pago</a></li>
         <li><a href="#redes">Contacto</a></li>
+        <li><a href="revendedores.html">Revendedores</a></li>
       </ul>
     </div>
   </header>
@@ -111,7 +139,7 @@
       <img src="logo.svg" alt="Settings Store" class="js-logo mx-auto h-24 md:h-32 mb-6" data-aos="fade-down" />
 
       <h1 class="sr-only">
-        <span class="js-banner-title">Settings Store</span>
+        <span class="js-banner-title">Settings Store</span> — Diamantes Free Fire baratos en Argentina, recarga al instante
       </h1>
       <p class="hero-sub font-display text-xl md:text-2xl mt-3" style="color:var(--c-blue-glow)">
         <span class="js-banner-subtitle">Diamantes Free Fire</span>
@@ -161,7 +189,7 @@
         <div class="text-center" data-aos="fade-up" data-aos-delay="100">
           <div class="w-12 h-12 mx-auto rounded-full glass glow-border flex items-center justify-center font-display text-electric mb-4">2</div>
           <h3 class="font-display text-base mb-1">Realizá la transferencia</h3>
-          <p class="text-sm text-gray-400">Cargá tu ID y nickname y pagá con Naranja X.</p>
+          <p class="text-sm text-gray-400">Cargá tu ID y nickname y pagá desde tu billetera o banco.</p>
         </div>
         <div class="text-center" data-aos="fade-up" data-aos-delay="200">
           <div class="w-12 h-12 mx-auto rounded-full glass glow-border flex items-center justify-center font-display text-electric mb-4">3</div>
@@ -184,8 +212,11 @@
       <h2 class="font-display text-3xl md:text-4xl">Formas de pago</h2>
     </div>
 
-    <div class="flex items-center justify-center gap-8 mb-10 flex-wrap" data-aos="fade-up">
+    <div class="flex items-center justify-center gap-3 mb-10 flex-wrap" data-aos="fade-up">
+      <span class="glass px-5 py-2 rounded-full text-sm text-gray-300">Mercado Pago</span>
       <span class="glass px-5 py-2 rounded-full text-sm text-gray-300">Naranja X</span>
+      <span class="glass px-5 py-2 rounded-full text-sm text-gray-300">Ualá</span>
+      <span class="glass px-5 py-2 rounded-full text-sm text-gray-300">Banco (transferencia)</span>
     </div>
 
     <div class="gem-card glass-strong glow-border p-6 md:p-8 max-w-md mx-auto text-center" data-aos="zoom-in">
@@ -193,7 +224,7 @@
       <p class="text-sm text-gray-300">
         Elegí tu paquete y tocá <span class="text-electric font-medium">Comprar</span>.
         Te vamos a pedir tu <span class="text-white font-medium">ID y nombre de jugador</span>
-        y ahí mismo te mostramos el alias y CVU de Naranja X, listos para copiar.
+        y ahí mismo te mostramos el alias y CVU para transferir desde la billetera o banco que prefieras.
       </p>
     </div>
   </section>
@@ -234,10 +265,12 @@
   <!-- ============ FOOTER ============ -->
   <footer class="py-8 text-center text-xs text-gray-500">
     <p>&copy; <span class="js-year"></span> <span class="js-store-name">Settings Store</span>. Todos los derechos reservados.</p>
-    <p class="mt-2 flex items-center justify-center gap-4">
+    <p class="mt-2 flex items-center justify-center gap-4 flex-wrap">
       <a href="terminos.html" class="hover:text-electric transition-colors">Términos y condiciones</a>
       <span class="text-gray-700">·</span>
       <a href="privacidad.html" class="hover:text-electric transition-colors">Política de privacidad</a>
+      <span class="text-gray-700">·</span>
+      <a href="revendedores.html" class="hover:text-electric transition-colors">Revendedores</a>
     </p>
   </footer>
 
@@ -290,7 +323,7 @@
       <div id="checkout-step-2" class="p-6 md:p-8" hidden>
         <button type="button" class="modal-close js-checkout-close" aria-label="Cerrar">✕</button>
         <p class="text-xs tracking-[0.3em] text-electric mb-2">PASO 2 DE 2</p>
-        <h3 class="font-display text-lg md:text-xl mb-1">Pagá con Naranja X</h3>
+        <h3 class="font-display text-lg md:text-xl mb-1">Pagá por transferencia</h3>
         <p id="checkout-product-summary-2" class="text-sm text-gray-400 mb-6">—</p>
 
         <dl class="space-y-4 text-sm mb-6">
@@ -313,6 +346,10 @@
             </dd>
           </div>
         </dl>
+
+        <p class="text-xs text-amber-400/90 bg-amber-400/5 border border-amber-400/20 rounded-lg px-3 py-2 mb-6">
+          ⚠️ <strong>Importante:</strong> Settings Store no se responsabiliza por pagos realizados a números que no sean el oficial indicado en este sitio.
+        </p>
 
         <button type="button" id="checkout-send-whatsapp" class="btn-primary w-full px-6 py-3 rounded-full text-sm">Ya transferí, enviar comprobante</button>
         <button type="button" id="checkout-back" class="btn-ghost w-full px-6 py-3 rounded-full text-sm mt-3">Volver</button>
