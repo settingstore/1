@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Acceso Revendedores — Settings Store</title>
+
+<!-- Fuentes -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- Tailwind CDN (mismo criterio que index.html: sin build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: { base: '#050505', electric: '#00A8FF', glow: '#00D9FF' },
+        fontFamily: { display: ['Orbitron', 'sans-serif'], body: ['Inter', 'sans-serif'] },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .rv-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .rv-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--c-card);
+    border: var(--border-glow);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+    padding: 32px 28px;
+  }
+  .rv-card h1 {
+    font-family: var(--f-display);
+    font-size: 1.3rem;
+    margin: 0 0 6px;
+    color: var(--c-white);
+  }
+  .rv-card p.sub {
+    color: var(--c-gray-soft);
+    font-size: 0.9rem;
+    margin: 0 0 24px;
+  }
+  .rv-field { margin-bottom: 16px; }
+  .rv-field label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--c-gray-soft);
+    margin-bottom: 6px;
+  }
+  .rv-field input {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--c-bg-alt);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--c-white);
+    font-family: var(--f-body);
+    font-size: 0.95rem;
+  }
+  .rv-field input:focus {
+    outline: none;
+    border-color: var(--c-blue);
+  }
+  .rv-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--c-blue);
+    color: var(--c-bg);
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .rv-btn:hover { background: var(--c-blue-glow); }
+  .rv-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .rv-msg {
+    margin-top: 14px;
+    font-size: 0.85rem;
+    text-align: center;
+    min-height: 18px;
+  }
+  .rv-msg.error { color: #ff6b6b; }
+  .rv-msg.ok { color: var(--c-blue-glow); }
+  .rv-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(0,168,255,0.12);
+    border: 1px solid rgba(0,168,255,0.35);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--c-blue-glow);
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body class="font-body bg-base text-white">
+
+<!-- ============ LOGIN ============ -->
+<div class="rv-wrap" id="rvLoginSection">
+  <div class="rv-card">
+    <h1>Acceso Revendedores</h1>
+    <p class="sub">Ingresá tu nombre y el código que te compartieron.</p>
+
+    <div class="rv-field">
+      <label for="rvName">Tu nombre</label>
+      <input type="text" id="rvName" placeholder="Ej: Juan / Nick del clan" autocomplete="off" />
+    </div>
+
+    <div class="rv-field">
+      <label for="rvCode">Código de acceso</label>
+      <input type="password" id="rvCode" placeholder="••••••••" autocomplete="off" />
+    </div>
+
+    <button class="rv-btn" id="rvSubmit">Ingresar</button>
+    <div class="rv-msg" id="rvMsg"></div>
+  </div>
+</div>
+
+<!-- ============ CATÁLOGO REVENDEDORES (después de entrar) ============ -->
+<div id="rvCatalogSection" class="hidden">
+  <header class="max-w-6xl mx-auto px-5 pt-10 pb-4 flex items-center justify-between flex-wrap gap-3">
+    <div>
+      <span class="rv-badge">Acceso concedido</span>
+      <h1 class="font-display text-2xl md:text-3xl">¡Bienvenido, <span id="rvNameDisplay"></span>!</h1>
+      <p class="text-sm text-[var(--c-gray-soft)] mt-1">Estos son tus precios preferenciales de revendedor. Elegí un paquete y coordinamos el pago por WhatsApp.</p>
+    </div>
+    <button type="button" id="rvLogoutBtn" class="btn-ghost text-xs px-4 py-2 rounded-full">No soy yo / salir</button>
+  </header>
+
+  <section class="max-w-6xl mx-auto px-5 pb-20">
+    <div id="rvProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="gem-card glass h-72 skeleton"></div>
+      <div class="gem-card glass h-72 skeleton"></div>
+      <div class="gem-card glass h-72 skeleton"></div>
+    </div>
+  </section>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- ============ MODAL: CHECKOUT (paso 1 → datos del jugador) ============ -->
+<div id="checkout-modal" class="modal-overlay" hidden>
+  <div class="modal-dialog gem-card glass-strong glow-border" role="dialog" aria-modal="true" aria-labelledby="checkout-step1-title">
+
+    <!-- Paso 1 -->
+    <div id="checkout-step-1" class="p-6 md:p-8">
+      <button type="button" class="modal-close js-checkout-close" aria-label="Cerrar">✕</button>
+      <p class="text-xs tracking-[0.3em] text-electric mb-2">PASO 1 DE 2</p>
+      <h3 id="checkout-step1-title" class="font-display text-lg md:text-xl mb-1">Datos del jugador</h3>
+      <p id="checkout-product-summary" class="text-sm text-gray-400 mb-6">—</p>
+
+      <form id="checkout-form" class="space-y-4 text-left" novalidate>
+        <div>
+          <label for="checkout-uid" class="block text-xs text-gray-400 mb-1">ID de jugador (UID)</label>
+          <input id="checkout-uid" name="uid" type="text" inputmode="numeric" required
+                 class="modal-input w-full px-4 py-3 rounded-lg text-sm" placeholder="Ej: 123456789" />
+        </div>
+        <div>
+          <label for="checkout-nickname" class="block text-xs text-gray-400 mb-1">Nombre de jugador (nickname)</label>
+          <input id="checkout-nickname" name="nickname" type="text" required
+                 class="modal-input w-full px-4 py-3 rounded-lg text-sm" placeholder="Ej: SettingsPro" />
+        </div>
+        <button type="submit" class="btn-primary w-full px-6 py-3 rounded-full text-sm mt-2">Continuar</button>
+      </form>
+    </div>
+
+    <!-- Paso 2 -->
+    <div id="checkout-step-2" class="p-6 md:p-8" hidden>
+      <button type="button" class="modal-close js-checkout-close" aria-label="Cerrar">✕</button>
+      <p class="text-xs tracking-[0.3em] text-electric mb-2">PASO 2 DE 2</p>
+      <h3 class="font-display text-lg md:text-xl mb-1">Pagá con Naranja X</h3>
+      <p id="checkout-product-summary-2" class="text-sm text-gray-400 mb-6">—</p>
+
+      <dl class="space-y-4 text-sm mb-6">
+        <div class="flex justify-between items-center gap-4">
+          <dt class="text-gray-400">Titular</dt>
+          <dd class="js-pay-holder text-right font-medium">—</dd>
+        </div>
+        <div class="flex justify-between items-center gap-4">
+          <dt class="text-gray-400">Alias</dt>
+          <dd class="flex items-center gap-2">
+            <span class="js-pay-alias font-medium" id="pay-alias">—</span>
+            <button type="button" class="js-copy copy-btn text-xs px-2 py-1 rounded border border-white/15 hover:border-electric transition-colors" data-copy-target="#pay-alias">Copiar</button>
+          </dd>
+        </div>
+        <div class="flex justify-between items-center gap-4">
+          <dt class="text-gray-400">CVU</dt>
+          <dd class="flex items-center gap-2">
+            <span class="js-pay-cvu font-medium" id="pay-cvu">—</span>
+            <button type="button" class="js-copy copy-btn text-xs px-2 py-1 rounded border border-white/15 hover:border-electric transition-colors" data-copy-target="#pay-cvu">Copiar</button>
+          </dd>
+        </div>
+      </dl>
+
+      <button type="button" id="checkout-send-whatsapp" class="btn-primary w-full px-6 py-3 rounded-full text-sm">Ya transferí, enviar comprobante</button>
+      <button type="button" id="checkout-back" class="btn-ghost w-full px-6 py-3 rounded-full text-sm mt-3">Volver</button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import {
+    db, doc, getDoc, collection, addDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp
+  } from "./firebase-init.js";
+  import { SETTINGS, NARANJAX } from "./config.js";
+
+  // Datos de pago (alias/CBU): viven en Firestore (settings/payment) y
+  // se editan desde admin.html → pestaña "Datos de pago". NARANJAX de
+  // config.js queda como valor de respaldo hasta el primer guardado.
+  let PAYMENT_DATA = NARANJAX;
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  const formatPrice = (value) =>
+    new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
+
+  /* ================= LOGIN ================= */
+
+  const loginSection = document.getElementById("rvLoginSection");
+  const catalogSection = document.getElementById("rvCatalogSection");
+  const nameInput = document.getElementById("rvName");
+  const codeInput = document.getElementById("rvCode");
+  const submitBtn = document.getElementById("rvSubmit");
+  const msgEl = document.getElementById("rvMsg");
+  const nameDisplay = document.getElementById("rvNameDisplay");
+  const logoutBtn = document.getElementById("rvLogoutBtn");
+
+  const STORAGE_KEY = "rv_session_id";
+
+  // Se guardan acá para poder asociar cada pedido (resellerOrders) al
+  // revendedor que lo hizo, sin tener que volver a pedir el nombre.
+  let currentSessionId = null;
+  let currentResellerName = null;
+
+  function setMsg(text, type) {
+    msgEl.textContent = text;
+    msgEl.className = "rv-msg " + (type || "");
+  }
+
+  async function startHeartbeat(sessionId) {
+    const ref = doc(db, "resellerSessions", sessionId);
+    // Actualiza "última actividad" cada 30s mientras la página esté abierta
+    setInterval(() => {
+      updateDoc(ref, { lastSeen: serverTimestamp() }).catch(() => {});
+    }, 30000);
+    window.addEventListener("beforeunload", () => {
+      updateDoc(ref, { lastSeen: serverTimestamp() }).catch(() => {});
+    });
+  }
+
+  function showCatalog(name) {
+    loginSection.style.display = "none";
+    catalogSection.classList.remove("hidden");
+    nameDisplay.textContent = name;
+    subscribeResellerProducts();
+  }
+
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem("rv_name");
+    window.location.reload();
+  });
+
+  // Si ya tiene sesión guardada en este navegador, entra directo
+  const existingSessionId = localStorage.getItem(STORAGE_KEY);
+  const existingName = localStorage.getItem("rv_name");
+  if (existingSessionId && existingName) {
+    currentSessionId = existingSessionId;
+    currentResellerName = existingName;
+    showCatalog(existingName);
+    startHeartbeat(existingSessionId);
+  }
+
+  submitBtn.addEventListener("click", async () => {
+    const name = nameInput.value.trim();
+    const code = codeInput.value.trim();
+
+    if (!name || !code) {
+      setMsg("Completá tu nombre y el código.", "error");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    setMsg("Verificando...", "");
+
+    try {
+      const codeDocRef = doc(db, "settings", "resellerAccess");
+      const codeSnap = await getDoc(codeDocRef);
+
+      if (!codeSnap.exists() || codeSnap.data().code !== code) {
+        setMsg("Código incorrecto.", "error");
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // Código correcto: registramos la sesión
+      const sessionRef = await addDoc(collection(db, "resellerSessions"), {
+        name,
+        code,
+        loggedInAt: serverTimestamp(),
+        lastSeen: serverTimestamp(),
+        userAgent: navigator.userAgent,
+      });
+
+      localStorage.setItem(STORAGE_KEY, sessionRef.id);
+      localStorage.setItem("rv_name", name);
+      currentSessionId = sessionRef.id;
+      currentResellerName = name;
+
+      setMsg("¡Acceso concedido!", "ok");
+      showCatalog(name);
+      startHeartbeat(sessionRef.id);
+    } catch (err) {
+      console.error(err);
+      setMsg("Hubo un error. Probá de nuevo.", "error");
+      submitBtn.disabled = false;
+    }
+  });
+
+  /* ================= CATÁLOGO CON PRECIOS DE REVENDEDOR ================= */
+  // Los productos (nombre, foto, etc.) viven en la colección "products".
+  // El PRECIO de revendedor vive aparte, en "resellerPricing" (mismo ID
+  // que el producto), para que nunca se mezcle con el precio de la
+  // tienda que se muestra en index.html.
+
+  let productsById = new Map();
+  let resellerPricingById = new Map();
+  let mergedProducts = [];
+
+  const DIAMOND_PLACEHOLDER_SVG = `
+    <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" class="diamond-icon">
+      <polygon points="23,3 40,16 23,43 6,16" fill="url(#diamondGrad)" stroke="var(--c-blue-glow)" stroke-width="1.2"/>
+      <polygon points="6,16 23,3 23,43" fill="#000" opacity="0.14"/>
+      <line x1="6" y1="16" x2="40" y2="16" stroke="var(--c-blue-glow)" stroke-width="0.6" opacity="0.6"/>
+      <defs>
+        <linearGradient id="diamondGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#e9f6ff"/>
+          <stop offset="55%" stop-color="#7fd6ff"/>
+          <stop offset="100%" stop-color="#00a8ff"/>
+        </linearGradient>
+      </defs>
+    </svg>`;
+
+  const finalPrice = (p) => (p.discountPrice != null && p.discountPrice < p.price ? p.discountPrice : p.price);
+
+  function mergeAndRender() {
+    mergedProducts = Array.from(productsById.values())
+      .filter((p) => p.visible !== false)
+      .map((p) => {
+        const rp = resellerPricingById.get(p.id);
+        return {
+          ...p,
+          price: rp ? rp.price : null, // precio de revendedor (nunca el de tienda)
+          discountPrice: rp ? rp.discountPrice : null,
+        };
+      })
+      .filter((p) => p.price != null) // sin precio de revendedor cargado todavía → no se muestra
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    renderResellerProducts();
+  }
+
+  function subscribeResellerProducts() {
+    onSnapshot(query(collection(db, "products"), orderBy("order")), (snap) => {
+      productsById = new Map(snap.docs.map((d) => [d.id, { id: d.id, ...d.data() }]));
+      mergeAndRender();
+    });
+    onSnapshot(collection(db, "resellerPricing"), (snap) => {
+      resellerPricingById = new Map(snap.docs.map((d) => [d.id, d.data()]));
+      mergeAndRender();
+    });
+  }
+
+  function cardTemplate(product) {
+    const img = product.image
+      ? `<img src="${product.image}" alt="${product.name}" loading="lazy" class="w-full h-40 object-cover">`
+      : `<div class="w-full h-40 flex items-center justify-center bg-[#0a0e14]">${DIAMOND_PLACEHOLDER_SVG}</div>`;
+
+    const countLabel = product.diamonds ? `${product.diamonds} 💎` : (product.badge || "");
+    const hasDiscount = product.discountPrice != null && product.discountPrice < product.price;
+
+    const priceBlock = hasDiscount
+      ? `<div class="flex flex-col leading-tight">
+           <span class="text-xs text-[var(--c-gray-soft)] line-through">${formatPrice(product.price)}</span>
+           <span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.discountPrice)}</span>
+         </div>`
+      : `<span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.price)}</span>`;
+
+    return `
+      <article class="gem-card glass glow-border flex flex-col overflow-hidden relative">
+        ${img}
+        <div class="p-5 flex flex-col flex-1">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-display text-lg text-white">${product.name}</h3>
+            ${countLabel ? `<span class="text-xs text-[var(--c-gray-soft)]">${countLabel}</span>` : ""}
+          </div>
+          <p class="text-sm text-[var(--c-gray-soft)] flex-1 mb-4">${product.description || "Precio preferencial de revendedor"}</p>
+          <div class="flex items-center justify-between">
+            ${priceBlock}
+            <button type="button" class="js-rv-buy-btn btn-primary text-sm px-4 py-2 rounded-full" data-product-id="${product.id}">Comprar</button>
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function renderResellerProducts() {
+    const grid = document.getElementById("rvProductsGrid");
+    if (!grid) return;
+
+    if (!mergedProducts.length) {
+      grid.innerHTML = `<p class="col-span-full text-center text-[var(--c-gray-soft)]">Todavía no hay precios de revendedor cargados. Escribinos por WhatsApp.</p>`;
+      return;
+    }
+
+    grid.innerHTML = mergedProducts.map(cardTemplate).join("");
+
+    grid.querySelectorAll(".js-rv-buy-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const product = mergedProducts.find((p) => p.id === btn.dataset.productId);
+        if (product) openCheckout(product);
+      });
+    });
+  }
+
+  /* ================= CHECKOUT: PASO 1 (UID + NICK) → PASO 2 (NARANJA X) ================= */
+
+  let checkoutProduct = null;
+  let checkoutBuyer = null;
+
+  function renderNaranjaXData() {
+    $$(".js-pay-holder").forEach((el) => (el.textContent = PAYMENT_DATA.holder));
+    $$(".js-pay-alias").forEach((el) => (el.textContent = PAYMENT_DATA.alias));
+    $$(".js-pay-cvu").forEach((el) => (el.textContent = PAYMENT_DATA.cvu));
+  }
+
+  function subscribePayment() {
+    onSnapshot(doc(db, "settings", "payment"), (snap) => {
+      PAYMENT_DATA = snap.exists() ? snap.data() : NARANJAX;
+      renderNaranjaXData();
+    });
+  }
+
+  function buildWhatsappLink(product, buyer) {
+    const lines = [
+      "Hola, soy revendedor. Ya realicé el pago, adjunto el comprobante.",
+      "",
+      "Quiero comprar:",
+      product.name,
+      "",
+      "Precio revendedor:",
+      formatPrice(finalPrice(product)),
+    ];
+    if (buyer) {
+      lines.push("", "Mi ID (UID):", buyer.uid, "Nombre en el juego:", buyer.nickname);
+    }
+    const msg = lines.join("\n");
+    return `https://wa.me/${SETTINGS.whatsappNumber}?text=${encodeURIComponent(msg)}`;
+  }
+
+  function openCheckout(product) {
+    checkoutProduct = product;
+    checkoutBuyer = null;
+
+    const modal = $("#checkout-modal");
+    const step1 = $("#checkout-step-1");
+    const step2 = $("#checkout-step-2");
+    if (!modal || !step1 || !step2) return;
+
+    const summary = `${product.name} — ${formatPrice(finalPrice(product))}`;
+    $("#checkout-product-summary").textContent = summary;
+    $("#checkout-product-summary-2").textContent = summary;
+
+    $("#checkout-form")?.reset();
+    step1.hidden = false;
+    step2.hidden = true;
+    modal.hidden = false;
+  }
+
+  function closeCheckout() {
+    const modal = $("#checkout-modal");
+    if (modal) modal.hidden = true;
+    checkoutProduct = null;
+    checkoutBuyer = null;
+  }
+
+  function bindCheckout() {
+    const modal = $("#checkout-modal");
+    const step1 = $("#checkout-step-1");
+    const step2 = $("#checkout-step-2");
+    const form = $("#checkout-form");
+    if (!modal || !form) return;
+
+    $$(".js-checkout-close").forEach((btn) => btn.addEventListener("click", closeCheckout));
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeCheckout();
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const uid = $("#checkout-uid")?.value.trim();
+      const nickname = $("#checkout-nickname")?.value.trim();
+      if (!uid || !nickname) return;
+
+      checkoutBuyer = { uid, nickname };
+      step1.hidden = true;
+      step2.hidden = false;
+    });
+
+    $("#checkout-back")?.addEventListener("click", () => {
+      step2.hidden = true;
+      step1.hidden = false;
+    });
+
+    $("#checkout-send-whatsapp")?.addEventListener("click", async () => {
+      if (!checkoutProduct || !checkoutBuyer) return;
+
+      // Registra el pedido para las estadísticas de ventas por
+      // revendedor en admin.html (hoy / semana / mes / total). No
+      // bloquea la apertura de WhatsApp si falla el guardado.
+      try {
+        await addDoc(collection(db, "resellerOrders"), {
+          resellerSessionId: currentSessionId || null,
+          resellerName: currentResellerName || "—",
+          productId: checkoutProduct.id || null,
+          productName: checkoutProduct.name,
+          price: finalPrice(checkoutProduct),
+          buyerUid: checkoutBuyer.uid,
+          buyerNickname: checkoutBuyer.nickname,
+          createdAt: serverTimestamp(),
+        });
+      } catch (err) {
+        console.error("No se pudo registrar el pedido:", err);
+      }
+
+      window.open(buildWhatsappLink(checkoutProduct, checkoutBuyer), "_blank", "noopener");
+      closeCheckout();
+    });
+  }
+
+  function bindCopyButtons() {
+    $$(".js-copy").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const targetSel = btn.dataset.copyTarget;
+        const text = $(targetSel)?.textContent?.trim();
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        showToast("Copiado");
+        btn.classList.add("copied");
+        setTimeout(() => btn.classList.remove("copied"), 1200);
+      });
+    });
+  }
+
+  function showToast(message) {
+    const toast = $("#toast");
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  renderNaranjaXData();
+  subscribePayment();
+  bindCheckout();
+  bindCopyButtons();
+</script>
+
+</body>
+</html>

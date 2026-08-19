@@ -66,6 +66,12 @@ export const COMMUNITY = {
  * Estos datos YA NO se muestran en la página principal. Se le
  * entregan al comprador recién en el paso 2 del formulario de compra,
  * después de que carga su ID y nombre de jugador.
+ *
+ * IMPORTANTE: esto ahora es solo el valor de RESPALDO inicial. El
+ * titular/alias/CVU reales se editan desde admin.html → pestaña
+ * "Datos de pago" (quedan guardados en Firestore) y se actualizan en
+ * vivo en la web sin tocar este archivo. Estos valores de acá solo se
+ * usan si todavía no se guardó nada desde el panel.
  */
 export const NARANJAX = {
   holder: "Jonathan Jehova Lagunas Arrieta",
@@ -74,81 +80,18 @@ export const NARANJAX = {
 };
 
 /**
- * PRODUCTOS
+ * PRODUCTOS Y PRECIOS
  * ------------------------------------------------------------------
- * Para agregar un producto, copiá un bloque { ... } y pegalo antes
- * del cierre del array (agregá una coma después del bloque anterior).
+ * Los productos y sus precios YA NO viven acá. Ahora están en
+ * Firestore, en dos lugares separados para que el precio de la
+ * tienda y el de revendedores nunca se mezclen:
  *
- * - order: define la posición en la grilla (menor = primero)
- * - visible: poné "false" para ocultar un producto sin borrarlo
- * - image: dejalo vacío ("") si todavía no tenés foto del paquete
- * - discountPrice: PONÉ ACÁ el precio con descuento para activar la
- *   oferta en ese producto. La tarjeta va a mostrar automáticamente
- *   el precio original tachado, el nuevo precio y el % de descuento.
- *   Dejalo sin este campo (o borralo) para vender al precio normal.
+ *   - colección "products"        → catálogo + precio de la TIENDA
+ *   - colección "resellerPricing" → precio de REVENDEDORES (mismo ID
+ *                                    que el producto correspondiente)
+ *
+ * Para agregar productos, cambiar precios o activar descuentos
+ * (tanto de tienda como de revendedores), entrá a admin.html con tu
+ * cuenta de admin → pestaña "Productos". No hace falta tocar código
+ * ni volver a publicar el sitio: los cambios se ven al instante.
  */
-export const PRODUCTS = [
-  {
-    name: "110 Diamantes",
-    diamonds: 110,
-    price: 1300,
-    discountPrice: 1160, // ej: 15% OFF — borrá esta línea para quitar el descuento
-    image: "product-110.jpg",
-    order: 1,
-    visible: true,
-  },
-  {
-    name: "341 Diamantes",
-    diamonds: 341,
-    price: 3800,
-    discountPrice: 3490,
-    image: "product-341.jpg",
-    order: 2,
-    visible: true,
-  },
-  {
-    name: "572 Diamantes",
-    diamonds: 572,
-    price: 6000,
-    discountPrice: 5850,
-    image: "product-572.jpg",
-    order: 3,
-    visible: true,
-  },
-  {
-    name: "1.166 Diamantes",
-    diamonds: 1166,
-    price: 11800,
-    discountPrice: 10850,
-    image: "product-1166.jpg",
-    order: 4,
-    visible: true,
-  },
-  {
-    name: "2.398 Diamantes",
-    diamonds: 2398,
-    price: 22000,
-    discountPrice: 21250,
-    image: "product-2398.jpg",
-    order: 5,
-    visible: true,
-  },
-  {
-    name: "6.160 Diamantes",
-    diamonds: 6160,
-    price: 56500,
-    discountPrice: 54900,
-    image: "product-6160.jpg",
-    order: 6,
-    visible: true,
-  },
-  {
-    name: "Pase Booyah",
-    diamonds: 0, // no aplica: es un pase, no diamantes sueltos
-    badge: "PASE", // se muestra en vez de "X 💎" cuando diamonds es 0
-    price: 2800,
-    image: "product-booyah.jpg",
-    order: 7,
-    visible: true,
-  },
-];

@@ -1,21 +1,29 @@
-# Settings Store 💎 (versión simple, sin Firebase)
+# Settings Store 💎
 
-Sitio web para venta de diamantes de Free Fire. Solo HTML5 + CSS3 +
-JavaScript vanilla (ES6) + Tailwind CSS (CDN). Sin backend, sin base de
-datos, sin login, sin API de pagos — el catálogo, los datos bancarios y
-las redes sociales viven en un solo archivo de configuración. Los
-pedidos se coordinan por WhatsApp.
+Sitio web para venta de diamantes de Free Fire. HTML5 + CSS3 +
+JavaScript vanilla (ES6) + Tailwind CSS (CDN), sin build step. Usa
+**Firebase** (Firestore + Auth + Storage) solo para lo que necesita
+actualizarse en vivo sin volver a publicar el sitio: el acceso de
+revendedores, el catálogo y precios, las imágenes de producto, los
+datos bancarios y las estadísticas de ventas. No hay pasarela de
+pago ni entrega automática — los pedidos se coordinan por WhatsApp
+como siempre.
 
 ```
 /
 ├── index.html          → todo el sitio
-├── terminos.html        → términos y condiciones
-├── privacidad.html       → política de privacidad
-├── css/styles.css       → diseño (tokens, glassmorphism, glow)
-├── js/app.js             → renderiza el contenido en la página
-├── js/config.js          → ⭐ ÚNICO archivo que editás para actualizar la tienda
-├── js/particles.js       → fondo de partículas del Hero
-├── assets/logo.svg       → logo vectorial propio
+├── admin.html            → panel de administración (login con Firebase Auth)
+├── revendedores.html      → acceso y catálogo con precios de revendedor
+├── terminos.html          → términos y condiciones
+├── privacidad.html         → política de privacidad
+├── firebase-init.js        → configuración central de Firebase (Firestore/Auth/Storage)
+├── firestore.rules         → reglas de seguridad de Firestore
+├── storage.rules            → reglas de seguridad de Storage (imágenes de producto)
+├── styles.css              → diseño (tokens, glassmorphism, glow)
+├── app.js                    → renderiza el contenido de index.html
+├── config.js                 → ⭐ contenido fijo de la tienda (nombre, banner, redes, etc.)
+├── particles.js               → fondo de partículas del Hero
+├── logo.svg / logo.png          → logo propio
 ├── robots.txt / sitemap.xml
 └── README.md
 ```
@@ -24,31 +32,36 @@ pedidos se coordinan por WhatsApp.
 
 ## 1. Editar el contenido de la tienda
 
-Abrí `js/config.js`. Ahí está todo:
+Hay dos lugares distintos según qué quieras cambiar:
+
+### a) Lo que se edita en `config.js` (código, sin login)
 
 - **SETTINGS** → nombre de la tienda, logo, número de WhatsApp
 - **BANNER** → título, subtítulo, texto del Hero y foto de fondo opcional
 - **SOCIALS** → links de Instagram y WhatsApp
 - **COMMUNITY** → link de la comunidad principal, del canal, y de los grupos temáticos (pop-up + sección "Comunidad")
-- **MERCADOPAGO** → titular, alias y CBU (se muestran recién en el paso 2 del checkout, nunca en la página principal)
-- **PRODUCTS** → un array con cada paquete de diamantes (y el Pase Booyah)
+- **NARANJAX** → titular/alias/CVU de *respaldo*, solo se usan hasta el primer guardado desde el panel (ver más abajo)
+
+### b) Lo que se edita en `admin.html` (con tu cuenta, sin tocar código)
+
+- **Productos y precios**: alta, baja, edición, precio tienda vs.
+  precio revendedor, subida de imágenes.
+- **Datos de pago**: titular, alias y CVU/CBU reales que ve el
+  comprador en el paso 2 del checkout.
+- **Revendedores**: código de acceso y quién está registrado/en línea.
+- **Ventas revendedores**: pedidos por revendedor (hoy/semana/mes/total).
+
+Ver el punto 6.1 más abajo para el detalle de cada pestaña del panel.
 
 ### Logo y fondo del Hero
 
-`assets/logo.jpg` y `assets/hero-bg.jpg` son las artes que subiste. El
-logo se usa en el header, el logo grande del Hero y el pop-up de la
-comunidad; el fondo se usa como imagen del Hero completo. Para
+`logo.png` y `hero-bg-mobile.jpg` / `hero-bg-desktop.jpg` son las
+artes que subiste. El logo se usa en el header, el logo grande del
+Hero y el pop-up de la comunidad; los fondos se usan en el Hero
+completo (uno para celular, otro para pantallas más grandes). Para
 cambiarlos más adelante, reemplazá esos mismos archivos por otros
 (mismo nombre) o cambiá las rutas en `SETTINGS.logoUrl` /
-`BANNER.imageUrl`.
-
-Para agregar un producto nuevo, copiá un bloque `{ ... }` dentro del
-array `PRODUCTS` y cambiá los valores. Para ocultar uno sin borrarlo,
-poné `visible: false`. El campo `order` define en qué posición aparece
-(menor número = primero).
-
-No hace falta ninguna cuenta, API key ni configuración adicional —
-es JavaScript plano.
+`BANNER.imageUrlMobile` / `BANNER.imageUrlDesktop`.
 
 ---
 
@@ -85,12 +98,14 @@ coordinación manual):
 
 1. **Paso 1**: le pide al comprador su ID de jugador (UID) y su
    nickname.
-2. **Paso 2**: le muestra el alias y CBU de Mercado Pago (`MERCADOPAGO`
-   en `config.js`), con botones para copiar cada dato. Al tocar
-   "Ya transferí, enviar comprobante" se abre WhatsApp
-   (`https://wa.me/`) con un mensaje pre-cargado que incluye el
-   producto, el precio, el UID y el nickname, usando el número de
-   `SETTINGS.whatsappNumber`.
+2. **Paso 2**: le muestra el titular, alias y CVU/CBU cargados desde
+   `admin.html` → "Datos de pago" (con respaldo en `NARANJAX` de
+   `config.js` si todavía no guardaste nada), con botones para copiar
+   cada dato. Al tocar "Ya transferí, enviar comprobante" se abre
+   WhatsApp (`https://wa.me/`) con un mensaje pre-cargado que incluye
+   el producto, el precio, el UID y el nickname, usando el número de
+   `SETTINGS.whatsappNumber`. Si el pedido viene de `revendedores.html`,
+   además queda registrado para las estadísticas de ventas del panel.
 
 ## 5. Comunidad de WhatsApp
 
@@ -112,6 +127,33 @@ que un abogado las revise antes de tomarlas como definitivas,
 sobre todo la política de reembolsos.
 
 ---
+
+## 6.1 Panel de administración (admin.html)
+
+Desde `admin.html` (con tu cuenta de Firebase Auth) podés manejar todo
+sin tocar código:
+
+- **Revendedores**: código de acceso, quién está en línea y quién se
+  registró.
+- **Ventas revendedores**: cuántos pedidos hizo cada revendedor hoy,
+  esta semana, este mes y en total, más el monto vendido. Se arma solo
+  a partir de cada pedido que un revendedor confirma en el paso 2 del
+  checkout de `/revendedores.html`.
+- **Productos y precios**: alta, baja y edición de productos, precio
+  tienda y precio revendedor por separado, y **subida de imágenes**
+  directamente desde tu computadora (se guardan en Firebase Storage,
+  ya no hace falta subirlas al repo de GitHub). Tamaño recomendado:
+  foto cuadrada (1:1) o 4:3, mínimo 800×800 px, formato JPG o WEBP,
+  menos de 500 KB.
+- **Datos de pago**: titular, alias y CVU/CBU que se le muestran al
+  comprador en el paso 2 del checkout. Se actualiza al instante en el
+  sitio.
+
+Para que la subida de imágenes funcione hace falta habilitar
+**Firebase Storage** en la consola del proyecto (Build → Storage →
+Get started) y desplegar las reglas de `storage.rules` de este
+repositorio (`firebase deploy --only storage`), igual que ya hacés con
+`firestore.rules`.
 
 ## 7. Próximos pasos (cuando quieras sumarlos)
 

@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Documentos de configuración (código de acceso de revendedores,
+    // datos de pago/alias/CBU, etc). Cualquiera puede LEERLOS (la
+    // tienda y el formulario de revendedores los necesitan sin login),
+    // pero solo vos (logueado como admin) podés cambiarlos.
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Sesiones de revendedores: cualquiera puede crear una (al
+    // ingresar el código) y actualizar su propia actividad
+    // (heartbeat). Solo el admin puede LEER la lista completa
+    // o borrar registros.
+    match /resellerSessions/{sessionId} {
+      allow create: if true;
+      allow update: if true;
+      allow read: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+
+    // Pedidos de revendedores: se crea uno cada vez que un revendedor
+    // completa el paso 2 del checkout (toca "Ya transferí"). Cualquiera
+    // puede crear (no requiere login, igual que las sesiones), pero
+    // solo el admin puede leer la lista completa para armar las
+    // estadísticas de ventas por revendedor.
+    match /resellerOrders/{orderId} {
+      allow create: if true;
+      allow read: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+
+    // Catálogo de productos (precios de la TIENDA original, los que
+    // ve cualquier visitante en index.html). Lectura pública porque
+    // la tienda necesita mostrarlos sin login. Solo el admin logueado
+    // puede crear/editar/borrar productos.
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Precios de REVENDEDORES, en una colección aparte (mismo ID que
+    // el producto en /products) para que nunca se mezclen con los
+    // precios de la tienda original. IMPORTANTE: como el acceso de
+    // revendedores no usa Firebase Auth (solo un código verificado
+    // desde el cliente, igual que /settings/resellerAccess), esta
+    // colección es técnicamente de lectura pública — cualquiera que
+    // consulte la API de Firestore directamente podría leerla, aunque
+    // en la web nunca se muestra sin pasar el código. Es el mismo
+    // nivel de protección que ya tenía el código de acceso. Para una
+    // separación 100% segura haría falta backend propio (Cloud
+    // Functions) autenticando a cada revendedor.
+    match /resellerPricing/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

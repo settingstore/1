@@ -8,8 +8,20 @@
  * ------------------------------------------------------------------
  */
 
-import { SETTINGS, BANNER, SOCIALS, COMMUNITY, NARANJAX, PRODUCTS } from "./config.js";
+import { SETTINGS, BANNER, SOCIALS, COMMUNITY, NARANJAX } from "./config.js";
 import { initParticles } from "./particles.js";
+import { db, doc, collection, query, orderBy, onSnapshot } from "./firebase-init.js";
+
+// Datos de pago (alias/CBU): viven en Firestore (settings/payment) y se
+// editan desde admin.html → pestaña "Datos de pago". NARANJAX de
+// config.js queda solo como valor de respaldo hasta el primer guardado.
+let PAYMENT_DATA = NARANJAX;
+
+// Productos y precios de la TIENDA (no revendedores) viven en
+// Firestore, colección "products". Se editan desde admin.html →
+// pestaña "Productos", sin tocar código. Esta lista se mantiene
+// actualizada en vivo con onSnapshot.
+let PRODUCTS = [];
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -166,6 +178,28 @@ function renderProducts() {
   });
 }
 
+// Se suscribe a la colección "products" de Firestore (precios de la
+// tienda) y vuelve a renderizar la grilla cada vez que admin.html
+// guarda un cambio, sin que el visitante tenga que recargar la
+// página.
+function subscribeProducts() {
+  const grid = $("#products-grid");
+  const q = query(collection(db, "products"), orderBy("order"));
+  onSnapshot(
+    q,
+    (snap) => {
+      PRODUCTS = snap.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+      renderProducts();
+    },
+    (err) => {
+      console.error("Error al cargar productos:", err);
+      if (grid) {
+        grid.innerHTML = `<p class="col-span-full text-center text-[var(--c-gray-soft)]">No pudimos cargar los productos. Probá recargar la página.</p>`;
+      }
+    }
+  );
+}
+
 /* ================= RENDER: REDES SOCIALES ================= */
 
 function renderSocials() {
@@ -223,9 +257,18 @@ let checkoutProduct = null;
 let checkoutBuyer = null;
 
 function renderNaranjaXData() {
-  $$(".js-pay-holder").forEach((el) => (el.textContent = NARANJAX.holder));
-  $$(".js-pay-alias").forEach((el) => (el.textContent = NARANJAX.alias));
-  $$(".js-pay-cvu").forEach((el) => (el.textContent = NARANJAX.cvu));
+  $$(".js-pay-holder").forEach((el) => (el.textContent = PAYMENT_DATA.holder));
+  $$(".js-pay-alias").forEach((el) => (el.textContent = PAYMENT_DATA.alias));
+  $$(".js-pay-cvu").forEach((el) => (el.textContent = PAYMENT_DATA.cvu));
+}
+
+// Se suscribe a settings/payment en Firestore. Si el admin todavía no
+// guardó nada desde el panel, se sigue mostrando el valor de config.js.
+function subscribePayment() {
+  onSnapshot(doc(db, "settings", "payment"), (snap) => {
+    PAYMENT_DATA = snap.exists() ? snap.data() : NARANJAX;
+    renderNaranjaXData();
+  });
 }
 
 function openCheckout(product) {
@@ -356,7 +399,8 @@ function init() {
   renderSocials();
   renderCommunity();
   renderNaranjaXData();
-  renderProducts();
+  subscribePayment();
+  subscribeProducts();
 
   $$(".js-year").forEach((el) => (el.textContent = new Date().getFullYear()));
 
