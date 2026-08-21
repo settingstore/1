@@ -244,6 +244,8 @@
       <div class="ad-add-grid">
         <div><label>Nombre</label><input class="ad-mini-input" id="newName" placeholder="Ej: 500 Diamantes" /></div>
         <div><label>Diamantes (0 si es un pase)</label><input class="ad-mini-input" id="newDiamonds" type="number" value="0" /></div>
+        <div><label>Bono (opcional)</label><input class="ad-mini-input" id="newBonus" type="number" placeholder="Ej: 50" /></div>
+        <div><label>Máximo por compra (uds., opcional)</label><input class="ad-mini-input" id="newMaxPerPurchase" type="number" placeholder="Ej: 50" /></div>
         <div><label>Badge (si no son diamantes)</label><input class="ad-mini-input" id="newBadge" placeholder="Ej: PASE" /></div>
         <div><label>Imagen (nombre de archivo)</label><input class="ad-mini-input" id="newImage" placeholder="Ej: product-500.jpg" /></div>
         <div><label>Orden</label><input class="ad-mini-input" id="newOrder" type="number" value="1" /></div>
@@ -275,6 +277,8 @@
           <tr>
             <th>Imagen</th>
             <th>Producto</th>
+            <th>Bono</th>
+            <th>Máx. por compra</th>
             <th>Orden</th>
             <th>Visible</th>
             <th class="grp-store">Precio tienda</th>
@@ -285,7 +289,7 @@
           </tr>
         </thead>
         <tbody id="adProductsTableBody">
-          <tr><td colspan="9" class="ad-empty">Cargando...</td></tr>
+          <tr><td colspan="11" class="ad-empty">Cargando...</td></tr>
         </tbody>
       </table>
     </div>
@@ -294,11 +298,13 @@
   <!-- ===== TAB: DATOS DE PAGO ===== -->
   <div class="ad-panel" id="panelPagos">
     <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:560px; margin-bottom:16px;">
-      Estos son los datos que se le muestran al comprador en el paso 2 del checkout (tienda y
-      revendedores), con botones para copiar. Se actualizan al instante en el sitio, sin volver
-      a publicar nada.
+      Alias/CVU distintos para la tienda principal y para revendedores. Cada uno se le muestra
+      solo al comprador correspondiente, en el paso 2 del checkout, con botones para copiar. Se
+      actualizan al instante en el sitio, sin volver a publicar nada.
     </p>
-    <div class="ad-code-box" style="flex-direction:column; align-items:stretch; gap:14px;">
+
+    <div class="ad-section-label">Tienda principal (index.html)</div>
+    <div class="ad-code-box" style="flex-direction:column; align-items:stretch; gap:14px; margin-bottom:28px;">
       <div class="ad-field">
         <label for="payHolder">Titular</label>
         <input type="text" id="payHolder" placeholder="Nombre y apellido" />
@@ -311,7 +317,24 @@
         <label for="payCvu">CVU / CBU</label>
         <input type="text" id="payCvu" placeholder="Ej: 4530000800010888788882" />
       </div>
-      <button class="ad-btn" id="paySaveBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar datos de pago</button>
+      <button class="ad-btn" id="paySaveBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar datos de tienda</button>
+    </div>
+
+    <div class="ad-section-label">Revendedores (revendedores.html)</div>
+    <div class="ad-code-box" style="flex-direction:column; align-items:stretch; gap:14px;">
+      <div class="ad-field">
+        <label for="payHolderRv">Titular</label>
+        <input type="text" id="payHolderRv" placeholder="Nombre y apellido" />
+      </div>
+      <div class="ad-field">
+        <label for="payAliasRv">Alias</label>
+        <input type="text" id="payAliasRv" placeholder="Ej: settings88-rev" />
+      </div>
+      <div class="ad-field">
+        <label for="payCvuRv">CVU / CBU</label>
+        <input type="text" id="payCvuRv" placeholder="Ej: 4530000800010888788882" />
+      </div>
+      <button class="ad-btn" id="paySaveRvBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar datos de revendedores</button>
     </div>
   </div>
 </div>
@@ -322,7 +345,7 @@
     addDoc, onSnapshot, query, orderBy, signInWithEmailAndPassword,
     onAuthStateChanged, signOut,
   } from "./firebase-init.js";
-  import { NARANJAX } from "./config.js";
+  import { NARANJAX, NARANJAX_RESELLER } from "./config.js";
 
   const loginWrap = document.getElementById("adLoginWrap");
   const panel = document.getElementById("adPanel");
@@ -359,6 +382,7 @@
       listenProducts();
       listenVentas();
       loadPayment();
+      loadPaymentReseller();
     } else {
       loginWrap.style.display = "flex";
       panel.style.display = "none";
@@ -443,8 +467,51 @@
       paySaveBtn.textContent = "Error";
     } finally {
       setTimeout(() => {
-        paySaveBtn.textContent = "Guardar datos de pago";
+        paySaveBtn.textContent = "Guardar datos de tienda";
         paySaveBtn.disabled = false;
+      }, 1500);
+    }
+  });
+
+  /* ================= DATOS DE PAGO — REVENDEDORES ================= */
+  // Alias/CVU propios para /revendedores.html, separados de los de la
+  // tienda (settings/paymentReseller en Firestore).
+
+  const payHolderRvInput = document.getElementById("payHolderRv");
+  const payAliasRvInput = document.getElementById("payAliasRv");
+  const payCvuRvInput = document.getElementById("payCvuRv");
+  const paySaveRvBtn = document.getElementById("paySaveRvBtn");
+
+  async function loadPaymentReseller() {
+    const ref = doc(db, "settings", "paymentReseller");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : NARANJAX_RESELLER;
+    payHolderRvInput.value = data.holder || "";
+    payAliasRvInput.value = data.alias || "";
+    payCvuRvInput.value = data.cvu || "";
+  }
+
+  paySaveRvBtn.addEventListener("click", async () => {
+    const ref = doc(db, "settings", "paymentReseller");
+    paySaveRvBtn.disabled = true;
+    try {
+      await setDoc(
+        ref,
+        {
+          holder: payHolderRvInput.value.trim(),
+          alias: payAliasRvInput.value.trim(),
+          cvu: payCvuRvInput.value.trim(),
+        },
+        { merge: true }
+      );
+      paySaveRvBtn.textContent = "¡Guardado!";
+    } catch (err) {
+      console.error(err);
+      paySaveRvBtn.textContent = "Error";
+    } finally {
+      setTimeout(() => {
+        paySaveRvBtn.textContent = "Guardar datos de revendedores";
+        paySaveRvBtn.disabled = false;
       }, 1500);
     }
   });
@@ -637,7 +704,7 @@
 
   function renderProductsTable() {
     if (!productsById.size) {
-      adProductsTableBody.innerHTML = '<tr><td colspan="9" class="ad-empty">Todavía no hay productos cargados.</td></tr>';
+      adProductsTableBody.innerHTML = '<tr><td colspan="11" class="ad-empty">Todavía no hay productos cargados.</td></tr>';
       return;
     }
 
@@ -657,6 +724,8 @@
               </div>
             </td>
             <td><input class="ad-name-input js-f-name" value="${escapeHtml(p.name || "")}" /></td>
+            <td><input class="ad-mini-input js-f-bonus" type="number" value="${p.bonus ?? ""}" placeholder="—" style="width:70px;" /></td>
+            <td><input class="ad-mini-input js-f-maxPerPurchase" type="number" value="${p.maxPerPurchase ?? ""}" placeholder="—" style="width:80px;" /></td>
             <td><input class="ad-mini-input js-f-order" type="number" value="${p.order ?? 0}" style="width:70px;" /></td>
             <td class="ad-checkbox-row"><input type="checkbox" class="js-f-visible" ${p.visible !== false ? "checked" : ""} /></td>
             <td class="grp-store"><input class="ad-mini-input js-f-price" type="number" value="${p.price ?? ""}" /></td>
@@ -683,6 +752,8 @@
         try {
           await updateDoc(doc(db, "products", id), {
             name: val(".js-f-name"),
+            bonus: numOrNull(val(".js-f-bonus")),
+            maxPerPurchase: numOrNull(val(".js-f-maxPerPurchase")),
             order: Number(val(".js-f-order")) || 0,
             visible: tr.querySelector(".js-f-visible").checked,
             image: val(".js-f-image"),
@@ -772,6 +843,8 @@
       const ref = await addDoc(collection(db, "products"), {
         name,
         diamonds: Number(val("newDiamonds")) || 0,
+        bonus: numOrNull(val("newBonus")),
+        maxPerPurchase: numOrNull(val("newMaxPerPurchase")),
         badge: val("newBadge"),
         image: val("newImage"),
         order: Number(val("newOrder")) || 0,
@@ -784,7 +857,7 @@
         discountPrice: numOrNull(val("newResellerDiscountPrice")),
       });
 
-      ["newName", "newDiamonds", "newBadge", "newImage", "newOrder", "newPrice", "newDiscountPrice", "newResellerPrice", "newResellerDiscountPrice"]
+      ["newName", "newDiamonds", "newBonus", "newMaxPerPurchase", "newBadge", "newImage", "newOrder", "newPrice", "newDiscountPrice", "newResellerPrice", "newResellerDiscountPrice"]
         .forEach((id) => (document.getElementById(id).value = id === "newDiamonds" || id === "newOrder" ? "1" : ""));
       adAddForm.classList.remove("open");
     } catch (err) {

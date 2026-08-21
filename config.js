@@ -80,6 +80,23 @@ export const NARANJAX = {
 };
 
 /**
+ * ALIAS PARA REVENDEDORES
+ * ------------------------------------------------------------------
+ * Igual que NARANJAX, pero para /revendedores.html. Vive por separado
+ * a propósito: así el alias que ve un comprador normal y el que ve un
+ * revendedor NUNCA se mezclan, aunque los dos se editen (por
+ * separado) desde admin.html → pestaña "Datos de pago".
+ *
+ * Este bloque es solo el valor de RESPALDO inicial. El real se edita
+ * desde el panel y queda guardado en Firestore (settings/paymentReseller).
+ */
+export const NARANJAX_RESELLER = {
+  holder: "Jonathan Jehova Lagunas Arrieta",
+  alias: "settings88-rev",
+  cvu: "4530000800010888788882",
+};
+
+/**
  * PRODUCTOS Y PRECIOS
  * ------------------------------------------------------------------
  * Los productos y sus precios YA NO viven acá. Ahora están en

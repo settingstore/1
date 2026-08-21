@@ -123,32 +123,41 @@ function buildWhatsappLink(product, buyer) {
 
 function productCardTemplate(product, index) {
   const img = product.image
-    ? `<img src="${product.image}" alt="${product.name}" loading="lazy" class="w-full h-40 object-cover">`
-    : `<div class="w-full h-40 flex items-center justify-center bg-[#0a0e14]">${DIAMOND_PLACEHOLDER_SVG}</div>`;
+    ? `<img src="${product.image}" alt="${product.name}" loading="lazy">`
+    : `<div class="w-full h-full flex items-center justify-center">${DIAMOND_PLACEHOLDER_SVG}</div>`;
 
-  const countLabel = product.diamonds ? `${product.diamonds} 💎` : (product.badge || "");
   const hasDiscount = product.discountPrice != null && product.discountPrice < product.price;
+  const hasBonus = product.bonus != null && product.bonus > 0;
+
+  // Título grande del pack: "100+10 DIAMANTES" si hay bono, si no el nombre tal cual.
+  const title =
+    product.diamonds && hasBonus
+      ? `${product.diamonds}+${product.bonus} DIAMANTES`
+      : product.diamonds
+      ? `${product.diamonds} DIAMANTES`
+      : product.name;
+
+  // Línea de detalle: "100 diamantes + 10 bono" o la descripción/badge que haya cargado el admin.
+  const detailLine =
+    product.diamonds && hasBonus
+      ? `${product.diamonds} diamantes + ${product.bonus} bono`
+      : product.description || (product.badge ? product.badge : "Entrega inmediata");
+
+  const maxLine = product.maxPerPurchase ? `Máximo por compra: ${product.maxPerPurchase} uds.` : "";
 
   const priceBlock = hasDiscount
-    ? `<div class="flex flex-col leading-tight">
-         <span class="text-xs text-[var(--c-gray-soft)] line-through">${formatPrice(product.price)}</span>
-         <span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.discountPrice)}</span>
-       </div>`
-    : `<span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.price)}</span>`;
+    ? `<span class="pack-card__price--strike">${formatPrice(product.price)}</span><span class="pack-card__price">${formatPrice(product.discountPrice)}</span>`
+    : `<span class="pack-card__price">${formatPrice(product.price)}</span>`;
 
   return `
-    <article class="gem-card glass glow-border flex flex-col overflow-hidden relative" data-aos="fade-up">
-      ${img}
-      <div class="p-5 flex flex-col flex-1">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-display text-lg text-white">${product.name}</h3>
-          ${countLabel ? `<span class="text-xs text-[var(--c-gray-soft)]">${countLabel}</span>` : ""}
-        </div>
-        <p class="text-sm text-[var(--c-gray-soft)] flex-1 mb-4">${product.description || "Entrega inmediata"}</p>
-        <div class="flex items-center justify-between">
-          ${priceBlock}
-          <button type="button" class="js-buy-btn btn-primary text-sm px-4 py-2 rounded-full" data-product-index="${index}">Comprar</button>
-        </div>
+    <article class="gem-card pack-card glass glow-border relative" data-aos="fade-up">
+      <div class="pack-card__media">${img}</div>
+      <div class="pack-card__body">
+        <h3 class="pack-card__title">${title}</h3>
+        <p class="pack-card__detail">${detailLine}</p>
+        ${maxLine ? `<p class="pack-card__max">${maxLine}</p>` : ""}
+        <div class="pack-card__price-row">${priceBlock}</div>
+        <button type="button" class="js-buy-btn btn-primary pack-card__buy text-sm px-4 py-3 rounded-full" data-product-index="${index}">Comprar</button>
       </div>
     </article>`;
 }

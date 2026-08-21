@@ -145,7 +145,7 @@
   </header>
 
   <section class="max-w-6xl mx-auto px-5 pb-20">
-    <div id="rvProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div id="rvProductsGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
       <div class="gem-card glass h-72 skeleton"></div>
       <div class="gem-card glass h-72 skeleton"></div>
       <div class="gem-card glass h-72 skeleton"></div>
@@ -224,12 +224,14 @@
   import {
     db, doc, getDoc, collection, addDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp
   } from "./firebase-init.js";
-  import { SETTINGS, NARANJAX } from "./config.js";
+  import { SETTINGS, NARANJAX_RESELLER } from "./config.js";
 
-  // Datos de pago (alias/CBU): viven en Firestore (settings/payment) y
-  // se editan desde admin.html → pestaña "Datos de pago". NARANJAX de
-  // config.js queda como valor de respaldo hasta el primer guardado.
-  let PAYMENT_DATA = NARANJAX;
+  // Datos de pago de REVENDEDORES (alias/CBU propios, distintos a los
+  // de la tienda principal): viven en Firestore (settings/paymentReseller)
+  // y se editan desde admin.html → pestaña "Datos de pago" → sección
+  // "Revendedores". NARANJAX_RESELLER de config.js queda como valor de
+  // respaldo hasta el primer guardado.
+  let PAYMENT_DATA = NARANJAX_RESELLER;
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -396,32 +398,39 @@
 
   function cardTemplate(product) {
     const img = product.image
-      ? `<img src="${product.image}" alt="${product.name}" loading="lazy" class="w-full h-40 object-cover">`
-      : `<div class="w-full h-40 flex items-center justify-center bg-[#0a0e14]">${DIAMOND_PLACEHOLDER_SVG}</div>`;
+      ? `<img src="${product.image}" alt="${product.name}" loading="lazy">`
+      : `<div class="w-full h-full flex items-center justify-center">${DIAMOND_PLACEHOLDER_SVG}</div>`;
 
-    const countLabel = product.diamonds ? `${product.diamonds} 💎` : (product.badge || "");
     const hasDiscount = product.discountPrice != null && product.discountPrice < product.price;
+    const hasBonus = product.bonus != null && product.bonus > 0;
+
+    const title =
+      product.diamonds && hasBonus
+        ? `${product.diamonds}+${product.bonus} DIAMANTES`
+        : product.diamonds
+        ? `${product.diamonds} DIAMANTES`
+        : product.name;
+
+    const detailLine =
+      product.diamonds && hasBonus
+        ? `${product.diamonds} diamantes + ${product.bonus} bono`
+        : product.description || (product.badge ? product.badge : "Precio preferencial de revendedor");
+
+    const maxLine = product.maxPerPurchase ? `Máximo por compra: ${product.maxPerPurchase} uds.` : "";
 
     const priceBlock = hasDiscount
-      ? `<div class="flex flex-col leading-tight">
-           <span class="text-xs text-[var(--c-gray-soft)] line-through">${formatPrice(product.price)}</span>
-           <span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.discountPrice)}</span>
-         </div>`
-      : `<span class="font-display text-xl text-glow" style="color:var(--c-blue-glow)">${formatPrice(product.price)}</span>`;
+      ? `<span class="pack-card__price--strike">${formatPrice(product.price)}</span><span class="pack-card__price">${formatPrice(product.discountPrice)}</span>`
+      : `<span class="pack-card__price">${formatPrice(product.price)}</span>`;
 
     return `
-      <article class="gem-card glass glow-border flex flex-col overflow-hidden relative">
-        ${img}
-        <div class="p-5 flex flex-col flex-1">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="font-display text-lg text-white">${product.name}</h3>
-            ${countLabel ? `<span class="text-xs text-[var(--c-gray-soft)]">${countLabel}</span>` : ""}
-          </div>
-          <p class="text-sm text-[var(--c-gray-soft)] flex-1 mb-4">${product.description || "Precio preferencial de revendedor"}</p>
-          <div class="flex items-center justify-between">
-            ${priceBlock}
-            <button type="button" class="js-rv-buy-btn btn-primary text-sm px-4 py-2 rounded-full" data-product-id="${product.id}">Comprar</button>
-          </div>
+      <article class="gem-card pack-card glass glow-border relative">
+        <div class="pack-card__media">${img}</div>
+        <div class="pack-card__body">
+          <h3 class="pack-card__title">${title}</h3>
+          <p class="pack-card__detail">${detailLine}</p>
+          ${maxLine ? `<p class="pack-card__max">${maxLine}</p>` : ""}
+          <div class="pack-card__price-row">${priceBlock}</div>
+          <button type="button" class="js-rv-buy-btn btn-primary pack-card__buy text-sm px-4 py-3 rounded-full" data-product-id="${product.id}">Comprar</button>
         </div>
       </article>`;
   }
@@ -457,8 +466,8 @@
   }
 
   function subscribePayment() {
-    onSnapshot(doc(db, "settings", "payment"), (snap) => {
-      PAYMENT_DATA = snap.exists() ? snap.data() : NARANJAX;
+    onSnapshot(doc(db, "settings", "paymentReseller"), (snap) => {
+      PAYMENT_DATA = snap.exists() ? snap.data() : NARANJAX_RESELLER;
       renderNaranjaXData();
     });
   }
