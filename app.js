@@ -425,9 +425,7 @@ function init() {
   }
 
   if (window.gsap) {
-    gsap.from(".hero-title", { y: 24, opacity: 0, duration: 0.9, ease: "power3.out" });
-    gsap.from(".hero-sub", { y: 16, opacity: 0, duration: 0.9, delay: 0.15, ease: "power3.out" });
-    gsap.from(".hero-cta", { y: 16, opacity: 0, duration: 0.9, delay: 0.3, ease: "power3.out" });
+    gsap.from("#productos .text-center", { y: 24, opacity: 0, duration: 0.9, ease: "power3.out" });
   }
 
   document.body.classList.remove("opacity-0");
