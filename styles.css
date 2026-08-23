@@ -354,6 +354,72 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   text-align: center;
   margin-top: auto;
 }
+.pack-card__buy:disabled,
+.pack-card__buy[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Selector de cantidad (Tokens, Cajas, etc.) */
+.qty-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.qty-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 168, 255, 0.4);
+  background: rgba(0, 168, 255, 0.08);
+  color: var(--c-white);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.qty-btn:hover:not(:disabled) { background: rgba(0, 168, 255, 0.2); }
+.qty-btn:active:not(:disabled) { transform: scale(0.94); }
+.qty-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.qty-value {
+  flex: 1;
+  text-align: center;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--c-white);
+}
+
+/* Insignia "Sin stock" sobre la tarjeta */
+.stock-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: rgba(20, 22, 28, 0.9);
+  color: #ff5d6c;
+  border: 1px solid rgba(255, 93, 108, 0.5);
+  font-family: var(--f-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.pack-card--oos .pack-card__media { filter: grayscale(0.6) brightness(0.6); }
+
+@media (max-width: 639px) {
+  .qty-btn { width: 30px; height: 30px; font-size: 1rem; }
+  .qty-value { font-size: 0.95rem; }
+  .qty-row { gap: 8px; margin-bottom: 10px; }
+}
 
 /* En pantallas angostas mostramos 2 productos por fila: achicamos
    tipografía y paddings para que la tarjeta no se sienta apretada. */
@@ -490,4 +556,48 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 @media (max-width: 480px) {
   .cookie-banner-inner { flex-direction: column; align-items: stretch; }
   .cookie-banner-actions { justify-content: flex-end; }
+}
+
+/* ============ Pantalla de mantenimiento ============
+   Se activa/desactiva desde admin.html → pestaña "Mantenimiento".
+   Es una capa fija que tapa todo el sitio; el contenido de abajo
+   sigue existiendo pero queda inaccesible mientras esté activa. */
+#maintenance-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(80% 80% at 50% 30%, rgba(0,168,255,0.10), transparent 70%), var(--c-bg);
+}
+.maintenance-card {
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  padding: 44px 32px;
+  border-radius: var(--radius);
+}
+.maintenance-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin: 0 auto 22px;
+  display: block;
+}
+.maintenance-card h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--c-white);
+  margin-bottom: 12px;
+}
+.maintenance-card p {
+  color: var(--c-gray-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+body.maintenance-active {
+  overflow: hidden;
 }
