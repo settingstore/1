@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png" />
+<title>Panel Admin — Settings Store</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  body { min-height: 100vh; }
+  .ad-wrap { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+
+  /* Login */
+  .ad-login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .ad-login-card {
+    width: 100%;
+    max-width: 360px;
+    background: var(--c-card);
+    border: var(--border-glow);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+    padding: 32px 28px;
+  }
+  .ad-login-card h1 {
+    font-family: var(--f-display);
+    font-size: 1.2rem;
+    margin: 0 0 20px;
+  }
+  .ad-field { margin-bottom: 14px; }
+  .ad-field label { display:block; font-size:0.85rem; color: var(--c-gray-soft); margin-bottom:6px; }
+  .ad-field input {
+    width: 100%; padding: 12px 14px; background: var(--c-bg-alt);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+    color: var(--c-white); font-family: var(--f-body); font-size: 0.95rem;
+  }
+  .ad-field input:focus { outline:none; border-color: var(--c-blue); }
+  .ad-btn {
+    width: 100%; padding: 12px; background: var(--c-blue); color: var(--c-bg);
+    border: none; border-radius: 10px; font-weight: 700; cursor: pointer;
+  }
+  .ad-btn:hover { background: var(--c-blue-glow); }
+  .ad-btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--c-white); }
+  .ad-msg { margin-top: 12px; font-size: 0.85rem; color: #ff6b6b; text-align:center; min-height: 16px; }
+
+  /* Panel */
+  #adPanel { display: none; }
+  .ad-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+  .ad-header h1 { font-family: var(--f-display); font-size: 1.4rem; margin:0; }
+  .ad-logout { padding: 8px 16px; font-size: 0.85rem; }
+
+  .ad-code-box {
+    background: var(--c-card); border: var(--border-glow); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 28px; display:flex; gap:12px; align-items:flex-end; flex-wrap: wrap;
+  }
+  .ad-code-box .ad-field { margin-bottom:0; flex: 1; min-width: 200px; }
+  .ad-code-box button { width:auto; padding: 12px 20px; }
+
+  .ad-stats { display:flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .ad-stat {
+    background: var(--c-card); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius);
+    padding: 16px 20px; min-width: 140px;
+  }
+  .ad-stat .n { font-family: var(--f-display); font-size: 1.6rem; color: var(--c-blue-glow); }
+  .ad-stat .l { font-size: 0.8rem; color: var(--c-gray-soft); }
+
+  table { width: 100%; border-collapse: collapse; background: var(--c-card); border-radius: var(--radius); overflow: hidden; }
+  thead th {
+    text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--c-gray-soft); padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  tbody td { padding: 12px 16px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  tbody tr:last-child td { border-bottom: none; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+  .dot.online { background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
+  .dot.offline { background: #555; }
+  .ad-del { background: transparent; border: none; color: #ff6b6b; cursor: pointer; font-size: 0.8rem; }
+  .ad-empty { text-align:center; padding: 30px; color: var(--c-gray-soft); }
+
+  /* Tabs */
+  .ad-tabs { display:flex; gap: 8px; margin-bottom: 24px; }
+  .ad-tab {
+    padding: 9px 18px; border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+    background: transparent; border: 1px solid rgba(255,255,255,0.14); color: var(--c-gray-soft); cursor: pointer;
+  }
+  .ad-tab.active { background: var(--c-blue); border-color: var(--c-blue); color: var(--c-bg); }
+  .ad-panel { display: none; }
+  .ad-panel.active { display: block; }
+
+  /* Productos */
+  .ad-prod-toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .ad-import-box {
+    background: rgba(0,168,255,0.08); border: 1px dashed rgba(0,168,255,0.4); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 20px; font-size: 0.85rem; color: var(--c-gray-soft); display:flex;
+    justify-content:space-between; align-items:center; gap: 12px; flex-wrap: wrap;
+  }
+  .ad-prod-table-wrap { overflow-x: auto; }
+  #adProductsTable { min-width: 1080px; }
+  #adProductsTable th.grp-store { border-left: 2px solid rgba(0,168,255,0.35); }
+  #adProductsTable th.grp-reseller { border-left: 2px solid rgba(0,217,255,0.5); }
+  #adProductsTable td.grp-store { border-left: 2px solid rgba(0,168,255,0.2); }
+  #adProductsTable td.grp-reseller { border-left: 2px solid rgba(0,217,255,0.3); }
+  .ad-mini-input {
+    width: 100%; min-width: 90px; padding: 7px 9px; background: var(--c-bg-alt);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: var(--c-white); font-size: 0.85rem;
+  }
+  .ad-mini-input:focus { outline:none; border-color: var(--c-blue); }
+  .ad-name-input { width: 100%; min-width: 140px; padding: 7px 9px; background: var(--c-bg-alt);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: var(--c-white); font-size: 0.85rem; }
+  .ad-save-row { background: var(--c-blue); color: var(--c-bg); border:none; border-radius: 8px; padding: 7px 12px; font-size: 0.78rem; font-weight:700; cursor:pointer; white-space:nowrap; }
+  .ad-save-row:hover { background: var(--c-blue-glow); }
+  .ad-add-form {
+    background: var(--c-card); border: var(--border-glow); border-radius: var(--radius); padding: 20px;
+    margin-bottom: 20px; display:none;
+  }
+  .ad-add-form.open { display:block; }
+  .ad-add-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin-bottom: 14px; }
+  .ad-add-grid label { display:block; font-size: 0.75rem; color: var(--c-gray-soft); margin-bottom: 4px; }
+  .ad-section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--c-blue-glow); margin: 6px 0 2px; }
+  .ad-checkbox-row { display:flex; align-items:center; gap: 8px; font-size: 0.85rem; color: var(--c-gray-soft); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="ad-login-wrap" id="adLoginWrap">
+  <div class="ad-login-card">
+    <h1>Panel de Admin</h1>
+    <div class="ad-field">
+      <label for="adEmail">Email</label>
+      <input type="email" id="adEmail" autocomplete="username" />
+    </div>
+    <div class="ad-field">
+      <label for="adPass">Contraseña</label>
+      <input type="password" id="adPass" autocomplete="current-password" />
+    </div>
+    <button class="ad-btn" id="adLoginBtn">Entrar</button>
+    <div class="ad-msg" id="adLoginMsg"></div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="ad-wrap" id="adPanel">
+  <div class="ad-header">
+    <h1>Panel Admin</h1>
+    <button class="ad-btn secondary ad-logout" id="adLogoutBtn">Cerrar sesión</button>
+  </div>
+
+  <div class="ad-tabs">
+    <button type="button" class="ad-tab active" id="tabBtnRevendedores">Revendedores</button>
+    <button type="button" class="ad-tab" id="tabBtnVentas">Ventas revendedores</button>
+    <button type="button" class="ad-tab" id="tabBtnProductos">Productos y precios</button>
+    <button type="button" class="ad-tab" id="tabBtnPagos">Datos de pago</button>
+  </div>
+
+  <!-- ===== TAB: REVENDEDORES ===== -->
+  <div class="ad-panel active" id="panelRevendedores">
+    <div class="ad-code-box">
+      <div class="ad-field">
+        <label for="adCodeInput">Código de acceso actual (revendedores / clan)</label>
+        <input type="text" id="adCodeInput" placeholder="Cargando..." />
+      </div>
+      <button class="ad-btn" id="adCodeSaveBtn">Guardar código</button>
+    </div>
+
+    <div class="ad-stats">
+      <div class="ad-stat"><div class="n" id="statTotal">0</div><div class="l">Total registrados</div></div>
+      <div class="ad-stat"><div class="n" id="statOnline">0</div><div class="l">En línea ahora</div></div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Estado</th>
+          <th>Nombre</th>
+          <th>Conectado desde</th>
+          <th>Última actividad</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="adTableBody">
+        <tr><td colspan="5" class="ad-empty">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== TAB: VENTAS REVENDEDORES ===== -->
+  <div class="ad-panel" id="panelVentas">
+    <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:620px; margin-bottom:16px;">
+      Se cuenta un "pedido" cada vez que un revendedor completa el paso 2 del checkout y toca
+      "Ya transferí, enviar comprobante" en /revendedores.html. El monto es el precio de
+      revendedor que tenía el producto en ese momento.
+    </p>
+
+    <div class="ad-stats" id="ventasResumen">
+      <div class="ad-stat"><div class="n" id="ventasHoyN">0</div><div class="l">Pedidos hoy</div></div>
+      <div class="ad-stat"><div class="n" id="ventasSemanaN">0</div><div class="l">Pedidos esta semana</div></div>
+      <div class="ad-stat"><div class="n" id="ventasMesN">0</div><div class="l">Pedidos este mes</div></div>
+      <div class="ad-stat"><div class="n" id="ventasTotalN">0</div><div class="l">Pedidos históricos</div></div>
+    </div>
+
+    <div class="ad-prod-table-wrap">
+      <table id="adVentasTable">
+        <thead>
+          <tr>
+            <th>Revendedor</th>
+            <th>Pedidos hoy</th>
+            <th>Pedidos semana</th>
+            <th>Pedidos mes</th>
+            <th>Pedidos total</th>
+            <th>Monto vendido (total)</th>
+          </tr>
+        </thead>
+        <tbody id="adVentasTableBody">
+          <tr><td colspan="6" class="ad-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== TAB: PRODUCTOS Y PRECIOS ===== -->
+  <div class="ad-panel" id="panelProductos">
+    <div class="ad-import-box" id="adImportBox" style="display:none;">
+      <span>Todavía no cargaste productos en Firestore. Podés importar los 7 productos actuales (los mismos que estaban en config.js) para arrancar y después editarlos acá.</span>
+      <button class="ad-btn" id="adImportBtn" style="width:auto; white-space:nowrap;">Importar productos actuales</button>
+    </div>
+
+    <div class="ad-prod-toolbar">
+      <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:520px;">
+        Precio tienda = lo que ve cualquier visitante en la web. Precio revendedor = lo que ve solo quien entra con el código en /revendedores.html. Son dos columnas separadas: cambiar una no toca la otra.
+      </p>
+      <button class="ad-btn" id="adAddProductBtn" style="width:auto;">+ Agregar producto</button>
+    </div>
+
+    <div class="ad-add-form" id="adAddForm">
+      <div class="ad-section-label">Producto nuevo</div>
+      <div class="ad-add-grid">
+        <div><label>Nombre</label><input class="ad-mini-input" id="newName" placeholder="Ej: 500 Diamantes" /></div>
+        <div><label>Diamantes (0 si es un pase)</label><input class="ad-mini-input" id="newDiamonds" type="number" value="0" /></div>
+        <div><label>Bono (opcional)</label><input class="ad-mini-input" id="newBonus" type="number" placeholder="Ej: 50" /></div>
+        <div><label>Máximo por compra (uds., opcional)</label><input class="ad-mini-input" id="newMaxPerPurchase" type="number" placeholder="Ej: 50" /></div>
+        <div><label>Badge (si no son diamantes)</label><input class="ad-mini-input" id="newBadge" placeholder="Ej: PASE" /></div>
+        <div><label>Imagen (nombre de archivo)</label><input class="ad-mini-input" id="newImage" placeholder="Ej: product-500.jpg" /></div>
+        <div><label>Orden</label><input class="ad-mini-input" id="newOrder" type="number" value="1" /></div>
+      </div>
+      <p style="font-size:0.75rem; color:var(--c-gray-soft); margin: -6px 0 14px;">
+        Subí la foto al repositorio de GitHub (misma carpeta que las demás) y poné acá el
+        nombre exacto del archivo. Recomendado: cuadrada (1:1) o 4:3, mínimo 800×800 px,
+        JPG o WEBP y menos de 500 KB.
+      </p>
+      <div class="ad-section-label">Precio tienda</div>
+      <div class="ad-add-grid">
+        <div><label>Precio</label><input class="ad-mini-input" id="newPrice" type="number" placeholder="0" /></div>
+        <div><label>Precio con descuento (opcional)</label><input class="ad-mini-input" id="newDiscountPrice" type="number" placeholder="" /></div>
+      </div>
+      <div class="ad-section-label">Precio revendedor</div>
+      <div class="ad-add-grid">
+        <div><label>Precio</label><input class="ad-mini-input" id="newResellerPrice" type="number" placeholder="0" /></div>
+        <div><label>Precio con descuento (opcional)</label><input class="ad-mini-input" id="newResellerDiscountPrice" type="number" placeholder="" /></div>
+      </div>
+      <div style="display:flex; gap:10px; margin-top: 6px;">
+        <button class="ad-btn" id="adSaveNewProductBtn" style="width:auto;">Crear producto</button>
+        <button class="ad-btn secondary" id="adCancelNewProductBtn" style="width:auto;">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="ad-prod-table-wrap">
+      <table id="adProductsTable">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Producto</th>
+            <th>Bono</th>
+            <th>Máx. por compra</th>
+            <th>Orden</th>
+            <th>Visible</th>
+            <th>Sin stock</th>
+            <th class="grp-store">Precio tienda</th>
+            <th class="grp-store">Descuento tienda</th>
+            <th class="grp-reseller">Precio revendedor</th>
+            <th class="grp-reseller">Descuento revendedor</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="adProductsTableBody">
+          <tr><td colspan="12" class="ad-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== SECCIÓN: PRODUCTOS POR CANTIDAD (Tokens, Cajas, etc.) ===== -->
+  <div class="ad-panel" id="panelProductosCantidad" style="margin-top:36px; padding-top:28px; border-top:1px solid rgba(255,255,255,0.08);">
+    <div class="ad-prod-toolbar">
+      <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:560px;">
+        Productos donde el cliente elige la cantidad (ej: Tokens de 50 en 50, Cajas de 10 en 10).
+        El precio se calcula como cantidad × precio por unidad, y se muestra igual en
+        tienda y en revendedores.html, cada uno con su propio precio.
+      </p>
+      <button class="ad-btn" id="adAddQtyProductBtn" style="width:auto;">+ Agregar producto por cantidad</button>
+    </div>
+
+    <div class="ad-add-form" id="adAddQtyForm">
+      <div class="ad-section-label">Producto nuevo</div>
+      <div class="ad-add-grid">
+        <div><label>Nombre de la unidad</label><input class="ad-mini-input" id="newQtyName" placeholder="Ej: Tokens" /></div>
+        <div><label>De cuánto en cuánto (paso)</label><input class="ad-mini-input" id="newQtyStep" type="number" placeholder="Ej: 50" /></div>
+        <div><label>Mínimo de pasos</label><input class="ad-mini-input" id="newQtyMinSteps" type="number" value="1" /></div>
+        <div><label>Máximo de pasos (opcional)</label><input class="ad-mini-input" id="newQtyMaxSteps" type="number" placeholder="Sin límite" /></div>
+        <div><label>Imagen (nombre de archivo)</label><input class="ad-mini-input" id="newQtyImage" placeholder="Ej: tokens.jpg" /></div>
+        <div><label>Orden</label><input class="ad-mini-input" id="newQtyOrder" type="number" value="1" /></div>
+      </div>
+      <div class="ad-section-label">Precio por unidad</div>
+      <div class="ad-add-grid">
+        <div><label>Tienda</label><input class="ad-mini-input" id="newQtyStorePrice" type="number" placeholder="Ej: 55" /></div>
+        <div><label>Revendedor</label><input class="ad-mini-input" id="newQtyResellerPrice" type="number" placeholder="Ej: 55" /></div>
+      </div>
+      <div style="display:flex; gap:10px; margin-top: 6px;">
+        <button class="ad-btn" id="adSaveNewQtyProductBtn" style="width:auto;">Crear producto</button>
+        <button class="ad-btn secondary" id="adCancelNewQtyProductBtn" style="width:auto;">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="ad-prod-table-wrap">
+      <table id="adQtyProductsTable">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Unidad</th>
+            <th>Paso</th>
+            <th>Mín. pasos</th>
+            <th>Máx. pasos</th>
+            <th>Orden</th>
+            <th>Visible</th>
+            <th>Sin stock</th>
+            <th class="grp-store">Precio/unidad tienda</th>
+            <th class="grp-reseller">Precio/unidad revendedor</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="adQtyProductsTableBody">
+          <tr><td colspan="11" class="ad-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== TAB: DATOS DE PAGO ===== -->
+  <div class="ad-panel" id="panelPagos">
+    <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:560px; margin-bottom:16px;">
+      Alias/CVU distintos para la tienda principal y para revendedores. Cada uno se le muestra
+      solo al comprador correspondiente, en el paso 2 del checkout, con botones para copiar. Se
+      actualizan al instante en el sitio, sin volver a publicar nada.
+    </p>
+
+    <div class="ad-section-label">Tienda principal (index.html)</div>
+    <div class="ad-code-box" style="flex-direction:column; align-items:stretch; gap:14px; margin-bottom:28px;">
+      <div class="ad-field">
+        <label for="payHolder">Titular</label>
+        <input type="text" id="payHolder" placeholder="Nombre y apellido" />
+      </div>
+      <div class="ad-field">
+        <label for="payAlias">Alias</label>
+        <input type="text" id="payAlias" placeholder="Ej: settings88" />
+      </div>
+      <div class="ad-field">
+        <label for="payCvu">CVU / CBU</label>
+        <input type="text" id="payCvu" placeholder="Ej: 4530000800010888788882" />
+      </div>
+      <button class="ad-btn" id="paySaveBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar datos de tienda</button>
+    </div>
+
+    <div class="ad-section-label">Revendedores (revendedores.html)</div>
+    <div class="ad-code-box" style="flex-direction:column; align-items:stretch; gap:14px;">
+      <div class="ad-field">
+        <label for="payHolderRv">Titular</label>
+        <input type="text" id="payHolderRv" placeholder="Nombre y apellido" />
+      </div>
+      <div class="ad-field">
+        <label for="payAliasRv">Alias</label>
+        <input type="text" id="payAliasRv" placeholder="Ej: settings88-rev" />
+      </div>
+      <div class="ad-field">
+        <label for="payCvuRv">CVU / CBU</label>
+        <input type="text" id="payCvuRv" placeholder="Ej: 4530000800010888788882" />
+      </div>
+      <button class="ad-btn" id="paySaveRvBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar datos de revendedores</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import {
+    db, auth, doc, getDoc, updateDoc, setDoc, deleteDoc, collection,
+    addDoc, onSnapshot, query, orderBy, signInWithEmailAndPassword,
+    onAuthStateChanged, signOut,
+  } from "./firebase-init.js";
+  import { NARANJAX, NARANJAX_RESELLER } from "./config.js";
+
+  const loginWrap = document.getElementById("adLoginWrap");
+  const panel = document.getElementById("adPanel");
+  const loginBtn = document.getElementById("adLoginBtn");
+  const logoutBtn = document.getElementById("adLogoutBtn");
+  const loginMsg = document.getElementById("adLoginMsg");
+  const emailInput = document.getElementById("adEmail");
+  const passInput = document.getElementById("adPass");
+  const codeInput = document.getElementById("adCodeInput");
+  const codeSaveBtn = document.getElementById("adCodeSaveBtn");
+  const tbody = document.getElementById("adTableBody");
+  const statTotal = document.getElementById("statTotal");
+  const statOnline = document.getElementById("statOnline");
+
+  const ONLINE_THRESHOLD_MS = 2 * 60 * 1000; // 2 minutos
+
+  loginBtn.addEventListener("click", async () => {
+    loginMsg.textContent = "";
+    try {
+      await signInWithEmailAndPassword(auth, emailInput.value.trim(), passInput.value);
+    } catch (err) {
+      loginMsg.textContent = "Email o contraseña incorrectos.";
+    }
+  });
+
+  logoutBtn.addEventListener("click", () => signOut(auth));
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginWrap.style.display = "none";
+      panel.style.display = "block";
+      loadCode();
+      listenSessions();
+      listenProducts();
+      listenVentas();
+      loadPayment();
+      loadPaymentReseller();
+    } else {
+      loginWrap.style.display = "flex";
+      panel.style.display = "none";
+    }
+  });
+
+  /* ================= TABS ================= */
+
+  const tabBtnRevendedores = document.getElementById("tabBtnRevendedores");
+  const tabBtnVentas = document.getElementById("tabBtnVentas");
+  const tabBtnProductos = document.getElementById("tabBtnProductos");
+  const tabBtnPagos = document.getElementById("tabBtnPagos");
+  const panelRevendedores = document.getElementById("panelRevendedores");
+  const panelVentas = document.getElementById("panelVentas");
+  const panelProductos = document.getElementById("panelProductos");
+  const panelProductosCantidad = document.getElementById("panelProductosCantidad");
+  const panelPagos = document.getElementById("panelPagos");
+
+  const allTabs = [
+    [tabBtnRevendedores, panelRevendedores],
+    [tabBtnVentas, panelVentas],
+    [tabBtnProductos, panelProductos],
+    [tabBtnPagos, panelPagos],
+  ];
+
+  allTabs.forEach(([btn, panel]) => {
+    btn.addEventListener("click", () => {
+      allTabs.forEach(([b, p]) => {
+        b.classList.toggle("active", b === btn);
+        p.classList.toggle("active", p === panel);
+      });
+      panelProductosCantidad.classList.toggle("active", panel === panelProductos);
+    });
+  });
+
+  async function loadCode() {
+    const ref = doc(db, "settings", "resellerAccess");
+    const snap = await getDoc(ref);
+    codeInput.value = snap.exists() ? snap.data().code : "";
+  }
+
+  codeSaveBtn.addEventListener("click", async () => {
+    const ref = doc(db, "settings", "resellerAccess");
+    await setDoc(ref, { code: codeInput.value.trim() }, { merge: true });
+    codeSaveBtn.textContent = "¡Guardado!";
+    setTimeout(() => (codeSaveBtn.textContent = "Guardar código"), 1500);
+  });
+
+  /* ================= DATOS DE PAGO (ALIAS / CBU) ================= */
+  // Viven en Firestore (settings/payment) para poder editarlos sin
+  // tocar código. Si todavía no se guardó nunca, se precargan los
+  // valores que había hardcodeados en config.js como punto de partida.
+
+  const payHolderInput = document.getElementById("payHolder");
+  const payAliasInput = document.getElementById("payAlias");
+  const payCvuInput = document.getElementById("payCvu");
+  const paySaveBtn = document.getElementById("paySaveBtn");
+
+  async function loadPayment() {
+    const ref = doc(db, "settings", "payment");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : NARANJAX;
+    payHolderInput.value = data.holder || "";
+    payAliasInput.value = data.alias || "";
+    payCvuInput.value = data.cvu || "";
+  }
+
+  paySaveBtn.addEventListener("click", async () => {
+    const ref = doc(db, "settings", "payment");
+    paySaveBtn.disabled = true;
+    try {
+      await setDoc(
+        ref,
+        {
+          holder: payHolderInput.value.trim(),
+          alias: payAliasInput.value.trim(),
+          cvu: payCvuInput.value.trim(),
+        },
+        { merge: true }
+      );
+      paySaveBtn.textContent = "¡Guardado!";
+    } catch (err) {
+      console.error(err);
+      paySaveBtn.textContent = "Error";
+    } finally {
+      setTimeout(() => {
+        paySaveBtn.textContent = "Guardar datos de tienda";
+        paySaveBtn.disabled = false;
+      }, 1500);
+    }
+  });
+
+  /* ================= DATOS DE PAGO — REVENDEDORES ================= */
+  // Alias/CVU propios para /revendedores.html, separados de los de la
+  // tienda (settings/paymentReseller en Firestore).
+
+  const payHolderRvInput = document.getElementById("payHolderRv");
+  const payAliasRvInput = document.getElementById("payAliasRv");
+  const payCvuRvInput = document.getElementById("payCvuRv");
+  const paySaveRvBtn = document.getElementById("paySaveRvBtn");
+
+  async function loadPaymentReseller() {
+    const ref = doc(db, "settings", "paymentReseller");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : NARANJAX_RESELLER;
+    payHolderRvInput.value = data.holder || "";
+    payAliasRvInput.value = data.alias || "";
+    payCvuRvInput.value = data.cvu || "";
+  }
+
+  paySaveRvBtn.addEventListener("click", async () => {
+    const ref = doc(db, "settings", "paymentReseller");
+    paySaveRvBtn.disabled = true;
+    try {
+      await setDoc(
+        ref,
+        {
+          holder: payHolderRvInput.value.trim(),
+          alias: payAliasRvInput.value.trim(),
+          cvu: payCvuRvInput.value.trim(),
+        },
+        { merge: true }
+      );
+      paySaveRvBtn.textContent = "¡Guardado!";
+    } catch (err) {
+      console.error(err);
+      paySaveRvBtn.textContent = "Error";
+    } finally {
+      setTimeout(() => {
+        paySaveRvBtn.textContent = "Guardar datos de revendedores";
+        paySaveRvBtn.disabled = false;
+      }, 1500);
+    }
+  });
+
+  /* ================= VENTAS DE REVENDEDORES ================= */
+  // Cada pedido se guarda en "resellerOrders" cuando el revendedor
+  // termina el paso 2 del checkout en /revendedores.html. Acá se
+  // agrupan por nombre de revendedor y se calculan los totales de
+  // hoy / semana / mes / histórico.
+
+  const adVentasTableBody = document.getElementById("adVentasTableBody");
+  const ventasHoyN = document.getElementById("ventasHoyN");
+  const ventasSemanaN = document.getElementById("ventasSemanaN");
+  const ventasMesN = document.getElementById("ventasMesN");
+  const ventasTotalN = document.getElementById("ventasTotalN");
+
+  function startOfToday() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+  function startOfWeek() {
+    const d = startOfToday();
+    const day = d.getDay(); // 0 = domingo
+    const diff = day === 0 ? 6 : day - 1; // semana arranca el lunes
+    d.setDate(d.getDate() - diff);
+    return d;
+  }
+  function startOfMonth() {
+    const d = startOfToday();
+    d.setDate(1);
+    return d;
+  }
+
+  function listenVentas() {
+    onSnapshot(
+      query(collection(db, "resellerOrders"), orderBy("createdAt", "desc")),
+      (snap) => {
+        const today = startOfToday();
+        const week = startOfWeek();
+        const month = startOfMonth();
+
+        const byReseller = new Map();
+        let totalHoy = 0, totalSemana = 0, totalMes = 0, totalTodo = 0;
+
+        snap.forEach((docSnap) => {
+          const d = docSnap.data();
+          const createdMs = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().getTime() : 0;
+          const name = d.resellerName || "—";
+          const price = Number(d.price) || 0;
+
+          if (!byReseller.has(name)) {
+            byReseller.set(name, { hoy: 0, semana: 0, mes: 0, total: 0, monto: 0 });
+          }
+          const r = byReseller.get(name);
+          r.total++;
+          r.monto += price;
+          totalTodo++;
+          if (createdMs >= today.getTime()) { r.hoy++; totalHoy++; }
+          if (createdMs >= week.getTime()) { r.semana++; totalSemana++; }
+          if (createdMs >= month.getTime()) { r.mes++; totalMes++; }
+        });
+
+        ventasHoyN.textContent = String(totalHoy);
+        ventasSemanaN.textContent = String(totalSemana);
+        ventasMesN.textContent = String(totalMes);
+        ventasTotalN.textContent = String(totalTodo);
+
+        if (!byReseller.size) {
+          adVentasTableBody.innerHTML = '<tr><td colspan="6" class="ad-empty">Todavía no hay pedidos registrados.</td></tr>';
+          return;
+        }
+
+        const rows = Array.from(byReseller.entries()).sort((a, b) => b[1].total - a[1].total);
+        adVentasTableBody.innerHTML = rows
+          .map(
+            ([name, r]) => `
+          <tr>
+            <td>${escapeHtml(name)}</td>
+            <td>${r.hoy}</td>
+            <td>${r.semana}</td>
+            <td>${r.mes}</td>
+            <td>${r.total}</td>
+            <td>${formatPrice(r.monto)}</td>
+          </tr>`
+          )
+          .join("");
+      }
+    );
+  }
+
+  function formatPrice(value) {
+    return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value || 0);
+  }
+
+  function fmt(ts) {
+    if (!ts) return "—";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  }
+
+  function listenSessions() {
+    const q = query(collection(db, "resellerSessions"), orderBy("lastSeen", "desc"));
+    onSnapshot(q, (snap) => {
+      if (snap.empty) {
+        tbody.innerHTML = '<tr><td colspan="5" class="ad-empty">Todavía no hay revendedores registrados.</td></tr>';
+        statTotal.textContent = "0";
+        statOnline.textContent = "0";
+        return;
+      }
+
+      let online = 0;
+      const now = Date.now();
+      const rows = [];
+
+      snap.forEach((docSnap) => {
+        const d = docSnap.data();
+        const lastSeenMs = d.lastSeen && d.lastSeen.toDate ? d.lastSeen.toDate().getTime() : 0;
+        const isOnline = now - lastSeenMs < ONLINE_THRESHOLD_MS;
+        if (isOnline) online++;
+
+        rows.push(`
+          <tr>
+            <td><span class="dot ${isOnline ? "online" : "offline"}"></span>${isOnline ? "En línea" : "Desconectado"}</td>
+            <td>${escapeHtml(d.name || "—")}</td>
+            <td>${fmt(d.loggedInAt)}</td>
+            <td>${fmt(d.lastSeen)}</td>
+            <td><button class="ad-del" data-id="${docSnap.id}">Eliminar</button></td>
+          </tr>
+        `);
+      });
+
+      tbody.innerHTML = rows.join("");
+      statTotal.textContent = String(snap.size);
+      statOnline.textContent = String(online);
+
+      tbody.querySelectorAll(".ad-del").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          await deleteDoc(doc(db, "resellerSessions", btn.dataset.id));
+        });
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  /* ================= PRODUCTOS Y PRECIOS ================= */
+  // "products" = catálogo + precio de TIENDA. "resellerPricing" = precio
+  // de REVENDEDORES, colección aparte con el mismo ID de documento que
+  // el producto, para que nunca se mezclen entre sí.
+
+  const adProductsTableBody = document.getElementById("adProductsTableBody");
+  const adImportBox = document.getElementById("adImportBox");
+  const adImportBtn = document.getElementById("adImportBtn");
+  const adAddProductBtn = document.getElementById("adAddProductBtn");
+  const adAddForm = document.getElementById("adAddForm");
+  const adSaveNewProductBtn = document.getElementById("adSaveNewProductBtn");
+  const adCancelNewProductBtn = document.getElementById("adCancelNewProductBtn");
+
+  let productsById = new Map();
+  let resellerPricingById = new Map();
+
+  // Datos originales que estaban hardcodeados en config.js — solo se
+  // usan para el importador inicial (una vez), no se vuelven a tocar.
+  const LEGACY_PRODUCTS = [
+    { name: "110 Diamantes", diamonds: 110, price: 1300, discountPrice: 1160, image: "product-110.jpg", order: 1 },
+    { name: "341 Diamantes", diamonds: 341, price: 3800, discountPrice: 3490, image: "product-341.jpg", order: 2 },
+    { name: "572 Diamantes", diamonds: 572, price: 6000, discountPrice: 5850, image: "product-572.jpg", order: 3 },
+    { name: "1.166 Diamantes", diamonds: 1166, price: 11800, discountPrice: 10850, image: "product-1166.jpg", order: 4 },
+    { name: "2.398 Diamantes", diamonds: 2398, price: 22000, discountPrice: 21250, image: "product-2398.jpg", order: 5 },
+    { name: "6.160 Diamantes", diamonds: 6160, price: 56500, discountPrice: 54900, image: "product-6160.jpg", order: 6 },
+    { name: "Pase Booyah", diamonds: 0, badge: "PASE", price: 2800, image: "product-booyah.jpg", order: 7 },
+  ];
+
+  function listenProducts() {
+    onSnapshot(query(collection(db, "products"), orderBy("order")), (snap) => {
+      productsById = new Map(snap.docs.map((d) => [d.id, { id: d.id, ...d.data() }]));
+      adImportBox.style.display = productsById.size === 0 ? "flex" : "none";
+      renderProductsTable();
+    });
+    onSnapshot(collection(db, "resellerPricing"), (snap) => {
+      resellerPricingById = new Map(snap.docs.map((d) => [d.id, d.data()]));
+      renderProductsTable();
+    });
+  }
+
+  function renderProductsTable() {
+    const fixedProducts = Array.from(productsById.values()).filter((p) => p.type !== "quantity");
+    if (!fixedProducts.length) {
+      adProductsTableBody.innerHTML = '<tr><td colspan="12" class="ad-empty">Todavía no hay productos cargados.</td></tr>';
+      renderQtyProductsTable();
+      return;
+    }
+
+    const rows = fixedProducts.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    adProductsTableBody.innerHTML = rows
+      .map((p) => {
+        const rp = resellerPricingById.get(p.id) || {};
+        return `
+          <tr data-id="${p.id}">
+            <td>
+              <div style="display:flex; flex-direction:column; align-items:flex-start; gap:6px;">
+                ${p.image
+                  ? `<img src="${escapeHtml(p.image)}" alt="" style="width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.12);" />`
+                  : `<div style="width:44px; height:44px; border-radius:6px; border:1px dashed rgba(255,255,255,0.2);"></div>`}
+                <input class="ad-mini-input js-f-image" value="${escapeHtml(p.image || "")}" placeholder="Ej: product-500.jpg" style="min-width:120px;" />
+              </div>
+            </td>
+            <td><input class="ad-name-input js-f-name" value="${escapeHtml(p.name || "")}" /></td>
+            <td><input class="ad-mini-input js-f-bonus" type="number" value="${p.bonus ?? ""}" placeholder="—" style="width:70px;" /></td>
+            <td><input class="ad-mini-input js-f-maxPerPurchase" type="number" value="${p.maxPerPurchase ?? ""}" placeholder="—" style="width:80px;" /></td>
+            <td><input class="ad-mini-input js-f-order" type="number" value="${p.order ?? 0}" style="width:70px;" /></td>
+            <td class="ad-checkbox-row"><input type="checkbox" class="js-f-visible" ${p.visible !== false ? "checked" : ""} /></td>
+            <td class="ad-checkbox-row"><input type="checkbox" class="js-f-outOfStock" ${p.inStock === false ? "checked" : ""} /></td>
+            <td class="grp-store"><input class="ad-mini-input js-f-price" type="number" value="${p.price ?? ""}" /></td>
+            <td class="grp-store"><input class="ad-mini-input js-f-discountPrice" type="number" value="${p.discountPrice ?? ""}" placeholder="—" /></td>
+            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerPrice" type="number" value="${rp.price ?? ""}" /></td>
+            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerDiscountPrice" type="number" value="${rp.discountPrice ?? ""}" placeholder="—" /></td>
+            <td style="display:flex; gap:6px;">
+              <button class="ad-save-row js-save-product">Guardar</button>
+              <button class="ad-del js-del-product">Eliminar</button>
+            </td>
+          </tr>`;
+      })
+      .join("");
+
+    adProductsTableBody.querySelectorAll(".js-save-product").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const val = (sel) => tr.querySelector(sel).value.trim();
+        const numOrNull = (v) => (v === "" ? null : Number(v));
+
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+        try {
+          await updateDoc(doc(db, "products", id), {
+            name: val(".js-f-name"),
+            bonus: numOrNull(val(".js-f-bonus")),
+            maxPerPurchase: numOrNull(val(".js-f-maxPerPurchase")),
+            order: Number(val(".js-f-order")) || 0,
+            visible: tr.querySelector(".js-f-visible").checked,
+            inStock: !tr.querySelector(".js-f-outOfStock").checked,
+            image: val(".js-f-image"),
+            price: Number(val(".js-f-price")) || 0,
+            discountPrice: numOrNull(val(".js-f-discountPrice")),
+          });
+          await setDoc(
+            doc(db, "resellerPricing", id),
+            {
+              price: Number(val(".js-f-resellerPrice")) || 0,
+              discountPrice: numOrNull(val(".js-f-resellerDiscountPrice")),
+            },
+            { merge: true }
+          );
+          btn.textContent = "¡Guardado!";
+        } catch (err) {
+          console.error(err);
+          btn.textContent = "Error";
+        } finally {
+          setTimeout(() => {
+            btn.textContent = "Guardar";
+            btn.disabled = false;
+          }, 1200);
+        }
+      });
+    });
+
+    adProductsTableBody.querySelectorAll(".js-del-product").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const name = tr.querySelector(".js-f-name").value;
+        if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
+        await deleteDoc(doc(db, "products", id));
+        await deleteDoc(doc(db, "resellerPricing", id)).catch(() => {});
+      });
+    });
+
+    renderQtyProductsTable();
+  }
+
+  /* ================= PRODUCTOS "POR CANTIDAD" (Tokens, Cajas, etc.) ================= */
+
+  const adQtyProductsTableBody = document.getElementById("adQtyProductsTableBody");
+  const adAddQtyProductBtn = document.getElementById("adAddQtyProductBtn");
+  const adAddQtyForm = document.getElementById("adAddQtyForm");
+  const adSaveNewQtyProductBtn = document.getElementById("adSaveNewQtyProductBtn");
+  const adCancelNewQtyProductBtn = document.getElementById("adCancelNewQtyProductBtn");
+
+  function renderQtyProductsTable() {
+    const qtyProducts = Array.from(productsById.values())
+      .filter((p) => p.type === "quantity")
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    if (!qtyProducts.length) {
+      adQtyProductsTableBody.innerHTML = '<tr><td colspan="11" class="ad-empty">Todavía no hay productos por cantidad cargados.</td></tr>';
+      return;
+    }
+
+    adQtyProductsTableBody.innerHTML = qtyProducts
+      .map((p) => {
+        const rp = resellerPricingById.get(p.id) || {};
+        return `
+          <tr data-id="${p.id}">
+            <td>
+              <div style="display:flex; flex-direction:column; align-items:flex-start; gap:6px;">
+                ${p.image
+                  ? `<img src="${escapeHtml(p.image)}" alt="" style="width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.12);" />`
+                  : `<div style="width:44px; height:44px; border-radius:6px; border:1px dashed rgba(255,255,255,0.2);"></div>`}
+                <input class="ad-mini-input js-f-image" value="${escapeHtml(p.image || "")}" placeholder="Ej: tokens.jpg" style="min-width:120px;" />
+              </div>
+            </td>
+            <td><input class="ad-name-input js-f-unitName" value="${escapeHtml(p.unitName || p.name || "")}" /></td>
+            <td><input class="ad-mini-input js-f-step" type="number" value="${p.stepSize ?? ""}" style="width:70px;" /></td>
+            <td><input class="ad-mini-input js-f-minSteps" type="number" value="${p.minSteps ?? 1}" style="width:70px;" /></td>
+            <td><input class="ad-mini-input js-f-maxSteps" type="number" value="${p.maxSteps ?? ""}" placeholder="—" style="width:80px;" /></td>
+            <td><input class="ad-mini-input js-f-order" type="number" value="${p.order ?? 0}" style="width:70px;" /></td>
+            <td class="ad-checkbox-row"><input type="checkbox" class="js-f-visible" ${p.visible !== false ? "checked" : ""} /></td>
+            <td class="ad-checkbox-row"><input type="checkbox" class="js-f-outOfStock" ${p.inStock === false ? "checked" : ""} /></td>
+            <td class="grp-store"><input class="ad-mini-input js-f-stepPrice" type="number" value="${p.stepPrice ?? ""}" /></td>
+            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerStepPrice" type="number" value="${rp.stepPrice ?? ""}" /></td>
+            <td style="display:flex; gap:6px;">
+              <button class="ad-save-row js-save-qty-product">Guardar</button>
+              <button class="ad-del js-del-qty-product">Eliminar</button>
+            </td>
+          </tr>`;
+      })
+      .join("");
+
+    adQtyProductsTableBody.querySelectorAll(".js-save-qty-product").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const val = (sel) => tr.querySelector(sel).value.trim();
+        const numOrNull = (v) => (v === "" ? null : Number(v));
+
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+        try {
+          await updateDoc(doc(db, "products", id), {
+            type: "quantity",
+            unitName: val(".js-f-unitName"),
+            name: val(".js-f-unitName"),
+            stepSize: Number(val(".js-f-step")) || 1,
+            minSteps: Number(val(".js-f-minSteps")) || 1,
+            maxSteps: numOrNull(val(".js-f-maxSteps")),
+            order: Number(val(".js-f-order")) || 0,
+            visible: tr.querySelector(".js-f-visible").checked,
+            inStock: !tr.querySelector(".js-f-outOfStock").checked,
+            image: val(".js-f-image"),
+            stepPrice: Number(val(".js-f-stepPrice")) || 0,
+          });
+          await setDoc(
+            doc(db, "resellerPricing", id),
+            { stepPrice: Number(val(".js-f-resellerStepPrice")) || 0 },
+            { merge: true }
+          );
+          btn.textContent = "¡Guardado!";
+        } catch (err) {
+          console.error(err);
+          btn.textContent = "Error";
+        } finally {
+          setTimeout(() => {
+            btn.textContent = "Guardar";
+            btn.disabled = false;
+          }, 1200);
+        }
+      });
+    });
+
+    adQtyProductsTableBody.querySelectorAll(".js-del-qty-product").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const name = tr.querySelector(".js-f-unitName").value;
+        if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
+        await deleteDoc(doc(db, "products", id));
+        await deleteDoc(doc(db, "resellerPricing", id)).catch(() => {});
+      });
+    });
+  }
+
+  adAddQtyProductBtn.addEventListener("click", () => adAddQtyForm.classList.add("open"));
+  adCancelNewQtyProductBtn.addEventListener("click", () => adAddQtyForm.classList.remove("open"));
+
+  adSaveNewQtyProductBtn.addEventListener("click", async () => {
+    const val = (id) => document.getElementById(id).value.trim();
+    const numOrNull = (v) => (v === "" ? null : Number(v));
+    const unitName = val("newQtyName");
+    const step = Number(val("newQtyStep"));
+
+    if (!unitName || !step) {
+      alert("Completá al menos el nombre de la unidad y el paso.");
+      return;
+    }
+
+    adSaveNewQtyProductBtn.disabled = true;
+    adSaveNewQtyProductBtn.textContent = "Creando...";
+    try {
+      const ref = await addDoc(collection(db, "products"), {
+        type: "quantity",
+        unitName,
+        name: unitName,
+        stepSize: step,
+        minSteps: Number(val("newQtyMinSteps")) || 1,
+        maxSteps: numOrNull(val("newQtyMaxSteps")),
+        image: val("newQtyImage"),
+        order: Number(val("newQtyOrder")) || 0,
+        visible: true,
+        inStock: true,
+        stepPrice: Number(val("newQtyStorePrice")) || 0,
+      });
+      await setDoc(doc(db, "resellerPricing", ref.id), {
+        stepPrice: Number(val("newQtyResellerPrice")) || 0,
+      });
+
+      ["newQtyName", "newQtyStep", "newQtyMinSteps", "newQtyMaxSteps", "newQtyImage", "newQtyOrder", "newQtyStorePrice", "newQtyResellerPrice"]
+        .forEach((id) => (document.getElementById(id).value = id === "newQtyMinSteps" || id === "newQtyOrder" ? "1" : ""));
+      adAddQtyForm.classList.remove("open");
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un error al crear el producto. Probá de nuevo.");
+    } finally {
+      adSaveNewQtyProductBtn.disabled = false;
+      adSaveNewQtyProductBtn.textContent = "Crear producto";
+    }
+  });
+
+  adImportBtn.addEventListener("click", async () => {
+    if (!confirm("Esto va a crear los 7 productos originales en Firestore. Usalo solo una vez. ¿Continuar?")) return;
+    adImportBtn.disabled = true;
+    adImportBtn.textContent = "Importando...";
+    try {
+      for (const p of LEGACY_PRODUCTS) {
+        const ref = await addDoc(collection(db, "products"), {
+          name: p.name,
+          diamonds: p.diamonds,
+          badge: p.badge || "",
+          image: p.image || "",
+          order: p.order,
+          visible: true,
+          price: p.price,
+          discountPrice: p.discountPrice ?? null,
+        });
+        // Arranca con el mismo precio que la tienda; después lo ajustás
+        // vos a mano desde esta misma tabla.
+        await setDoc(doc(db, "resellerPricing", ref.id), {
+          price: p.price,
+          discountPrice: p.discountPrice ?? null,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un error importando. Revisá la consola.");
+    } finally {
+      adImportBtn.disabled = false;
+      adImportBtn.textContent = "Importar productos actuales";
+    }
+  });
+
+  adAddProductBtn.addEventListener("click", () => adAddForm.classList.add("open"));
+  adCancelNewProductBtn.addEventListener("click", () => adAddForm.classList.remove("open"));
+
+  adSaveNewProductBtn.addEventListener("click", async () => {
+    const val = (id) => document.getElementById(id).value.trim();
+    const numOrNull = (v) => (v === "" ? null : Number(v));
+
+    const name = val("newName");
+    if (!name) {
+      alert("Ponele un nombre al producto.");
+      return;
+    }
+
+    adSaveNewProductBtn.disabled = true;
+    try {
+      const ref = await addDoc(collection(db, "products"), {
+        type: "fixed",
+        name,
+        diamonds: Number(val("newDiamonds")) || 0,
+        bonus: numOrNull(val("newBonus")),
+        maxPerPurchase: numOrNull(val("newMaxPerPurchase")),
+        badge: val("newBadge"),
+        image: val("newImage"),
+        order: Number(val("newOrder")) || 0,
+        visible: true,
+        inStock: true,
+        price: Number(val("newPrice")) || 0,
+        discountPrice: numOrNull(val("newDiscountPrice")),
+      });
+      await setDoc(doc(db, "resellerPricing", ref.id), {
+        price: Number(val("newResellerPrice")) || 0,
+        discountPrice: numOrNull(val("newResellerDiscountPrice")),
+      });
+
+      ["newName", "newDiamonds", "newBonus", "newMaxPerPurchase", "newBadge", "newImage", "newOrder", "newPrice", "newDiscountPrice", "newResellerPrice", "newResellerDiscountPrice"]
+        .forEach((id) => (document.getElementById(id).value = id === "newDiamonds" || id === "newOrder" ? "1" : ""));
+      adAddForm.classList.remove("open");
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un error creando el producto. Revisá la consola.");
+    } finally {
+      adSaveNewProductBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
