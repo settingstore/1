@@ -33,6 +33,23 @@ service cloud.firestore {
       allow delete: if request.auth != null;
     }
 
+    // Ranking competitivo de revendedores (Top 3 en revendedores.html),
+    // por PLATA GENERADA en el mes calendario actual. Guarda SOLO el
+    // nombre, el mes ("2026-08") y el monto acumulado — nunca datos
+    // de compradores ni el detalle de cada pedido (eso vive aparte,
+    // en resellerOrders, que es admin-only) — por eso puede ser de
+    // lectura pública sin exponer información sensible. Se incrementa
+    // desde el cliente (mismo criterio que resellerOrders/resellerSessions,
+    // sin backend propio) cada vez que se confirma un pedido. El "id"
+    // del documento incluye el mes, así que un mes nuevo arranca sus
+    // propios totales en $0 sin que haga falta borrar nada a mano.
+    match /resellerMonthlyStats/{statsId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if request.auth != null;
+    }
+
     // Catálogo de productos (precios de la TIENDA original, los que
     // ve cualquier visitante en index.html). Lectura pública porque
     // la tienda necesita mostrarlos sin login. Solo el admin logueado

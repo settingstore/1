@@ -9,6 +9,7 @@ import {
   getFirestore,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   collection,
   addDoc,
@@ -18,6 +19,7 @@ import {
   query,
   orderBy,
   serverTimestamp,
+  increment,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth,
@@ -44,6 +46,7 @@ export {
   auth,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   collection,
   addDoc,
@@ -53,6 +56,7 @@ export {
   query,
   orderBy,
   serverTimestamp,
+  increment,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,

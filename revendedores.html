@@ -108,6 +108,44 @@
     color: var(--c-blue-glow);
     margin-bottom: 14px;
   }
+
+  /* Top 3 revendedores */
+  .rv-top3-box {
+    background: rgba(0,168,255,0.04); border: 1px dashed rgba(0,168,255,0.3); border-radius: var(--radius);
+    padding: 18px 16px 16px; margin-bottom: 8px;
+  }
+  .rv-top3-label {
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--c-blue-glow); margin-bottom: 12px; font-weight: 700;
+  }
+  .rv-top3 {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    align-items: end; margin-bottom: 8px;
+  }
+  .rv-top3-card {
+    background: var(--c-card); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius);
+    padding: 16px 10px 14px; text-align: center;
+  }
+  .rv-top3-card.p1 { border: var(--border-glow); box-shadow: var(--shadow-glow); order: 2; padding-top: 22px; }
+  .rv-top3-card.p2 { order: 1; }
+  .rv-top3-card.p3 { order: 3; }
+  .rv-top3-card.me { outline: 2px solid var(--c-blue-glow); outline-offset: 2px; }
+  .rv-top3-medal { font-size: 1.7rem; line-height: 1; margin-bottom: 6px; }
+  .rv-top3-card.p1 .rv-top3-medal { font-size: 2.1rem; }
+  .rv-top3-name {
+    font-family: var(--f-display); font-size: 0.85rem; font-weight: 700; color: var(--c-white);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .rv-top3-you { font-size: 0.68rem; color: var(--c-blue-glow); margin-top: 4px; font-weight: 700; }
+  .rv-top3-empty {
+    grid-column: 1 / -1; text-align: center; padding: 18px; color: var(--c-gray-soft); font-size: 0.85rem;
+  }
+  @media (max-width: 560px) {
+    .rv-top3 { grid-template-columns: 1fr; gap: 8px; }
+    .rv-top3-card.p1, .rv-top3-card.p2, .rv-top3-card.p3 { order: initial; padding-top: 14px; }
+    .rv-top3-card.p1 { order: -1; }
+  }
+  .btn-ghost-active { border-color: var(--c-blue-glow) !important; background: rgba(0,168,255,0.1) !important; color: var(--c-blue-glow); }
 </style>
 </head>
 <body class="font-body bg-base text-white">
@@ -141,8 +179,21 @@
       <h1 class="font-display text-2xl md:text-3xl">¡Bienvenido, <span id="rvNameDisplay"></span>!</h1>
       <p class="text-sm text-[var(--c-gray-soft)] mt-1">Estos son tus precios preferenciales de revendedor. Elegí un paquete y coordinamos el pago por WhatsApp.</p>
     </div>
-    <button type="button" id="rvLogoutBtn" class="btn-ghost text-xs px-4 py-2 rounded-full">No soy yo / salir</button>
+    <div class="flex items-center gap-2 flex-wrap">
+      <button type="button" id="rvTop3ToggleBtn" class="btn-ghost text-xs px-4 py-2 rounded-full">🏆 Top 3 revendedores</button>
+      <button type="button" id="rvLogoutBtn" class="btn-ghost text-xs px-4 py-2 rounded-full">No soy yo / salir</button>
+    </div>
   </header>
+
+  <!-- ===== APARTADO: TOP 3 (colapsado por defecto, sin montos) ===== -->
+  <section class="max-w-6xl mx-auto px-5 pb-2 hidden" id="rvTop3Section">
+    <div class="rv-top3-box">
+      <div class="rv-top3-label">🏆 Top 3 revendedores</div>
+      <div class="rv-top3" id="rvTop3">
+        <div class="rv-top3-empty">Todavía no hay ventas registradas.</div>
+      </div>
+    </div>
+  </section>
 
   <section class="max-w-6xl mx-auto px-5 pb-20">
     <div class="text-center mb-8">
@@ -226,7 +277,7 @@
 
 <script type="module">
   import {
-    db, doc, getDoc, collection, addDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp
+    db, doc, getDoc, collection, addDoc, setDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, increment
   } from "./firebase-init.js";
   import { SETTINGS, NARANJAX_RESELLER } from "./config.js";
 
@@ -243,6 +294,23 @@
   const formatPrice = (value) =>
     new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
 
+  // Los IDs de documento en Firestore no pueden contener "/", así que
+  // sanitizamos el nombre del revendedor para usarlo como parte de la
+  // clave del ranking mensual.
+  function safeStatsKey(name) {
+    const clean = (name || "").trim().replace(/\//g, "-").slice(0, 200);
+    return clean || "sin-nombre";
+  }
+
+  // "2026-08", etc. — se usa como parte de la clave del documento del
+  // ranking, así cada mes calendario junta sus propios totales sin
+  // pisar los de meses anteriores (y sin que haga falta borrar nada
+  // a mano para "reiniciar" el Top 3).
+  function currentMonthKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  }
+
   /* ================= LOGIN ================= */
 
   const loginSection = document.getElementById("rvLoginSection");
@@ -253,6 +321,8 @@
   const msgEl = document.getElementById("rvMsg");
   const nameDisplay = document.getElementById("rvNameDisplay");
   const logoutBtn = document.getElementById("rvLogoutBtn");
+  const top3ToggleBtn = document.getElementById("rvTop3ToggleBtn");
+  const top3Section = document.getElementById("rvTop3Section");
 
   const STORAGE_KEY = "rv_session_id";
 
@@ -282,12 +352,21 @@
     catalogSection.classList.remove("hidden");
     nameDisplay.textContent = name;
     subscribeResellerProducts();
+    subscribeTop3();
   }
 
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem("rv_name");
     window.location.reload();
+  });
+
+  top3ToggleBtn?.addEventListener("click", () => {
+    top3Section.classList.toggle("hidden");
+    top3ToggleBtn.classList.toggle("btn-ghost-active", !top3Section.classList.contains("hidden"));
+    if (!top3Section.classList.contains("hidden")) {
+      top3Section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   });
 
   // Si ya tiene sesión guardada en este navegador, entra directo
@@ -665,6 +744,16 @@
           buyerNickname: checkoutBuyer.nickname,
           createdAt: serverTimestamp(),
         });
+        // Suma el monto de esta venta al total del MES ACTUAL para el
+        // ranking (Top 3). Documento público a propósito, pero solo
+        // guarda nombre + monto acumulado del mes — nunca datos del
+        // comprador ni el detalle de cada pedido.
+        const statsId = `${currentMonthKey()}_${safeStatsKey(currentResellerName)}`;
+        await setDoc(
+          doc(db, "resellerMonthlyStats", statsId),
+          { name: currentResellerName || "—", month: currentMonthKey(), amount: increment(finalPrice(checkoutProduct)) },
+          { merge: true }
+        );
       } catch (err) {
         console.error("No se pudo registrar el pedido:", err);
       }
@@ -704,6 +793,59 @@
     toast.classList.add("show");
     clearTimeout(showToast._t);
     showToast._t = setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  /* ================= TOP 3 REVENDEDORES DEL MES ================= */
+  // Ranking por PLATA GENERADA en el mes calendario actual. Lee
+  // "resellerMonthlyStats" (colección pública de solo nombre + monto
+  // acumulado del mes, sin datos de compradores) en vez de
+  // "resellerOrders" (que sí tiene datos sensibles y solo puede leer
+  // el admin). Se "reinicia" solo: cada mes nuevo arranca en $0 sin
+  // que haga falta borrar nada a mano. A propósito solo se muestran
+  // nombres, nunca montos.
+
+  function subscribeTop3() {
+    const el = document.getElementById("rvTop3");
+    if (!el) return;
+    onSnapshot(collection(db, "resellerMonthlyStats"), (snap) => {
+      const monthKey = currentMonthKey();
+      const all = [];
+      snap.forEach((docSnap) => {
+        const d = docSnap.data();
+        if (d.month === monthKey && (d.amount || 0) > 0) {
+          all.push({ name: d.name || "—", amount: d.amount || 0 });
+        }
+      });
+      all.sort((a, b) => b.amount - a.amount);
+      const top3 = all.slice(0, 3);
+
+      if (!top3.length) {
+        el.innerHTML = '<div class="rv-top3-empty">Todavía no hay ventas registradas este mes.</div>';
+        return;
+      }
+
+      const medals = ["🥇", "🥈", "🥉"];
+      const posClass = ["p1", "p2", "p3"];
+      el.innerHTML = top3
+        .map((r, i) => {
+          const isMe =
+            currentResellerName &&
+            r.name.trim().toLowerCase() === currentResellerName.trim().toLowerCase();
+          return `
+          <div class="rv-top3-card ${posClass[i]}${isMe ? " me" : ""}">
+            <div class="rv-top3-medal">${medals[i]}</div>
+            <div class="rv-top3-name">${escapeHtmlRv(r.name)}</div>
+            ${isMe ? '<div class="rv-top3-you">¡Sos vos!</div>' : ""}
+          </div>`;
+        })
+        .join("");
+    });
+  }
+
+  function escapeHtmlRv(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   renderNaranjaXData();
