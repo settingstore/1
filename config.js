@@ -12,7 +12,7 @@ export const SETTINGS = {
   // reemplazá el archivo logo.png (o cambiá esta ruta) — se usa
   // en el header, el logo grande del Hero y el pop-up de la comunidad.
   logoUrl: "logo.png",
-  whatsappNumber: "5493455286371", // solo números, con código de país (54 = Argentina)
+  whatsappNumber: "5493454309950", // solo números, con código de país (54 = Argentina)
 };
 
 export const BANNER = {
