@@ -115,7 +115,7 @@ function buildWhatsappLink(product, buyer) {
     formatPrice(finalPrice(product)),
   ];
   if (buyer) {
-    lines.push("", " Mi ID (UID):", buyer.uid, "🎮 Nombre en el juego:", buyer.nickname);
+    lines.push("", " Mi ID (UID):", buyer.uid, "Nombre en el juego:", buyer.nickname);
   }
   lines.push("", " Pedido realizado en settings.sbs");
   const msg = lines.join("\n");
