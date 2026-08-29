@@ -106,17 +106,18 @@ const DIAMOND_PLACEHOLDER_SVG = `
 
 function buildWhatsappLink(product, buyer) {
   const lines = [
-    "Hola. Ya realicé el pago, adjunto el comprobante.",
+    "¡Hola!  Ya realicé el pago, te dejo mi comprobante ",
     "",
-    "Quiero comprar:",
+    " Quiero comprar:",
     product.name,
     "",
-    "Precio:",
+    " Precio:",
     formatPrice(finalPrice(product)),
   ];
   if (buyer) {
-    lines.push("", "Mi ID (UID):", buyer.uid, "Nombre en el juego:", buyer.nickname);
+    lines.push("", " Mi ID (UID):", buyer.uid, "🎮 Nombre en el juego:", buyer.nickname);
   }
+  lines.push("", " Pedido realizado en settings.sbs");
   const msg = lines.join("\n");
   return `https://wa.me/${SETTINGS.whatsappNumber}?text=${encodeURIComponent(msg)}`;
 }

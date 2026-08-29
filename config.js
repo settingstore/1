@@ -97,6 +97,25 @@ export const NARANJAX_RESELLER = {
 };
 
 /**
+ * ALIAS PARA REVENDEDORES — MODALIDAD "STOCK"
+ * ------------------------------------------------------------------
+ * Datos de pago que se muestran SOLO cuando un revendedor compra desde
+ * el apartado "Stock" (productos de carga limitada, una unidad por
+ * carga según disponibilidad). Viven por separado del alias de
+ * "Ilimitado" (NARANJAX_RESELLER de arriba), así nunca se mezclan.
+ *
+ * Este bloque es solo el valor de RESPALDO inicial. El real se edita
+ * desde admin.html → pestaña "Datos de pago" → sección "Revendedores
+ * — Stock" y queda guardado en Firestore (settings/paymentResellerStock).
+ */
+export const NARANJAX_RESELLER_STOCK = {
+  holder: "Andrés Velozo",
+  alias: "recargas22",
+  cvu: "",
+  note: "Todo por ID",
+};
+
+/**
  * PRODUCTOS Y PRECIOS
  * ------------------------------------------------------------------
  * Los productos y sus precios YA NO viven acá. Ahora están en

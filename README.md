@@ -80,7 +80,7 @@ Y entrás a `http://localhost:8080`.
 
 ---
 
-## 3. Publicar gratis en GitHub Pages por si Settings quiere editar la web.
+## 3. Publicar gratis en GitHub Pages
 
 1. Creá un repositorio en GitHub y subí todo el contenido de esta carpeta.
 2. Andá a **Settings → Pages**.
@@ -120,7 +120,9 @@ tarde.
 ## 6. Términos y privacidad
 
 `terminos.html` y `privacidad.html` son dos páginas simples, con el
-mismo estilo del sitio, enlazadas desde el pie de página. Hacer
+mismo estilo del sitio, enlazadas desde el pie de página. Son un
+punto de partida razonable para una tienda chica que coordina todo
+por WhatsApp, pero no reemplazan una revisión legal: si querés, hacé
 que un abogado las revise antes de tomarlas como definitivas,
 sobre todo la política de reembolsos.
 
@@ -146,8 +148,28 @@ sin tocar código:
   comprador en el paso 2 del checkout. Se actualiza al instante en el
   sitio.
 
+## 7. Próximos pasos (cuando quieras sumarlos)
 
-## 7. Notas técnicas
+Este proyecto está pensado para poder crecer sin rehacer nada desde
+cero:
+
+- **Dominio propio**: comprás el dominio y lo apuntás a GitHub Pages
+  (o a donde termines alojando el sitio) desde el panel de tu proveedor.
+- **API de pagos** (Mercado Pago, etc.): esto va a requerir un pequeño
+  backend (por ejemplo una función serverless en Vercel o Netlify,
+  gratis y sin tarjeta) porque las claves de pago no pueden vivir en
+  el código público del sitio.
+- **API de preparación/entrega automática de producto**: si en algún
+  momento conseguís acceso a una API mayorista de recargas, se conecta
+  desde ese mismo backend, y ahí sí tendría sentido retomar algo como
+  el panel de administración que armamos antes.
+
+Avisame cuando quieras sumar cualquiera de estos y lo construimos
+sobre esta misma base.
+
+---
+
+## 8. Notas técnicas
 
 - **Sin frameworks**: HTML/CSS/JS puro + Tailwind por CDN.
 - **Animaciones**: AOS (scroll reveal) y GSAP (entrada del Hero), por CDN.

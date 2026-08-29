@@ -2,6 +2,18 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Devuelve settings/resellerAccess ({ code, allowedPhones, ... }).
+    // Se usa para validar, del lado del servidor (no solo en el
+    // JavaScript de la página), que quien crea una sesión de
+    // revendedor tiene el código correcto Y, si hay una lista de
+    // teléfonos autorizados cargada, que su teléfono esté en esa
+    // lista. Así, aunque alguien copie el código o el JS de la
+    // página, Firestore va a rechazar la sesión igual si su número
+    // no está en la lista.
+    function resellerAccessData() {
+      return get(/databases/$(database)/documents/settings/resellerAccess).data;
+    }
+
     // Documentos de configuración (código de acceso de revendedores,
     // datos de pago/alias/CBU, etc). Cualquiera puede LEERLOS (la
     // tienda y el formulario de revendedores los necesitan sin login),
@@ -16,20 +28,31 @@ service cloud.firestore {
     // (heartbeat). Solo el admin puede LEER la lista completa
     // o borrar registros.
     match /resellerSessions/{sessionId} {
-      allow create: if true;
+      // Para crear una sesión hace falta mandar el código correcto Y,
+      // si el admin cargó números autorizados (allowedPhones no está
+      // vacía), que el teléfono normalizado (solo dígitos) esté en esa
+      // lista. Si allowedPhones está vacía (todavía no se configuró),
+      // no se exige esta segunda condición.
+      allow create: if request.resource.data.code == resellerAccessData().code
+        && (
+          resellerAccessData().get('allowedPhones', []).size() == 0 ||
+          request.resource.data.phoneNormalized in resellerAccessData().get('allowedPhones', [])
+        )
+        && !(request.resource.data.phoneNormalized in resellerAccessData().get('blockedPhones', []));
       allow update: if true;
       allow read: if request.auth != null;
       allow delete: if request.auth != null;
     }
 
     // Pedidos de revendedores: se crea uno cada vez que un revendedor
-    // completa el paso 2 del checkout (toca "Ya transferí"). Cualquiera
-    // puede crear (no requiere login, igual que las sesiones), pero
-    // solo el admin puede leer la lista completa para armar las
-    // estadísticas de ventas por revendedor.
+    // completa el paso 2 del checkout (toca "Ya transferí"), siempre
+    // como status "pending". Cualquiera puede crear (no requiere
+    // login, igual que las sesiones), pero solo el admin puede leer la
+    // lista completa, cambiar el status (confirmar/rechazar) o borrar.
     match /resellerOrders/{orderId} {
       allow create: if true;
       allow read: if request.auth != null;
+      allow update: if request.auth != null;
       allow delete: if request.auth != null;
     }
 
@@ -71,6 +94,18 @@ service cloud.firestore {
     // separación 100% segura haría falta backend propio (Cloud
     // Functions) autenticando a cada revendedor.
     match /resellerPricing/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Catálogo de productos de la modalidad "Stock" para revendedores
+    // (cargas limitadas, una unidad por carga según disponibilidad).
+    // Vive en su propia colección, separada de "products", porque acá
+    // el precio ya es el final de revendedor (no hay precio de tienda
+    // asociado). Mismo criterio de acceso que resellerPricing: lectura
+    // pública (la página de revendedores la necesita sin login), solo
+    // el admin puede escribir.
+    match /resellerStockProducts/{productId} {
       allow read: if true;
       allow write: if request.auth != null;
     }

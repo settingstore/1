@@ -52,6 +52,7 @@
 
   /* Panel */
   #adPanel { display: none; max-width: 100%; overflow-x: hidden; }
+  .hidden { display: none !important; }
   .ad-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
   .ad-header h1 { font-family: var(--f-display); font-size: 1.4rem; margin:0; }
   .ad-logout { width: auto; padding: 8px 16px; font-size: 0.85rem; }
@@ -119,11 +120,13 @@
     justify-content:space-between; align-items:center; gap: 12px; flex-wrap: wrap;
   }
   .ad-prod-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius); margin-bottom: 8px; }
-  #adProductsTable { min-width: 1080px; }
-  #adProductsTable th.grp-store { border-left: 2px solid rgba(0,168,255,0.35); }
-  #adProductsTable th.grp-reseller { border-left: 2px solid rgba(0,217,255,0.5); }
-  #adProductsTable td.grp-store { border-left: 2px solid rgba(0,168,255,0.2); }
-  #adProductsTable td.grp-reseller { border-left: 2px solid rgba(0,217,255,0.3); }
+  #adProductsTable { min-width: 640px; }
+  #adProductsPriceTable, #adStockProductsPriceTable { min-width: 640px; }
+  #adQtyProductsPriceTable { min-width: 520px; }
+  .ad-price-table th.grp-store { border-left: 2px solid rgba(0,168,255,0.35); }
+  .ad-price-table th.grp-reseller { border-left: 2px solid rgba(0,217,255,0.5); }
+  .ad-price-table td.grp-store { border-left: 2px solid rgba(0,168,255,0.2); }
+  .ad-price-table td.grp-reseller { border-left: 2px solid rgba(0,217,255,0.3); }
   .ad-mini-input {
     width: 100%; min-width: 90px; padding: 7px 9px; background: var(--c-bg-alt);
     border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: var(--c-white); font-size: 0.85rem;
@@ -207,6 +210,60 @@
     .ad-stat, .ad-code-box, .ad-add-form, table, .ad-table-wrap, .ad-prod-table-wrap { border-radius: 12px; }
   }
 
+  /* ============ Responsive: tablas como tarjetas (sin scroll de costado) ============ */
+  @media (max-width: 700px) {
+    .ad-table-wrap, .ad-prod-table-wrap { overflow-x: visible; }
+    .ad-table-wrap table, .ad-prod-table-wrap table { min-width: 0 !important; width: 100%; }
+
+    .ad-table-wrap thead, .ad-prod-table-wrap thead { display: none; }
+
+    .ad-table-wrap table, .ad-table-wrap tbody, .ad-table-wrap tr,
+    .ad-prod-table-wrap table, .ad-prod-table-wrap tbody, .ad-prod-table-wrap tr {
+      display: block; width: 100%;
+    }
+
+    .ad-table-wrap tr, .ad-prod-table-wrap tr {
+      margin-bottom: 12px; padding: 6px 12px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03);
+    }
+    .ad-table-wrap tr:last-child, .ad-prod-table-wrap tr:last-child { margin-bottom: 0; }
+
+    .ad-table-wrap td, .ad-prod-table-wrap td {
+      display: flex; align-items: center; justify-content: flex-end; text-align: right;
+      gap: 10px; padding: 9px 0; border: none !important;
+      border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    }
+    .ad-table-wrap td:last-child, .ad-prod-table-wrap td:last-child { border-bottom: none !important; }
+
+    .ad-table-wrap td[data-label]::before, .ad-prod-table-wrap td[data-label]::before {
+      content: attr(data-label);
+      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.03em;
+      color: var(--c-gray-soft); font-weight: 700; margin-right: auto; text-align: left; flex-shrink: 0;
+    }
+
+    .ad-table-wrap td.ad-empty, .ad-prod-table-wrap td.ad-empty {
+      display: block; text-align: center; justify-content: center; padding: 16px 0; border-bottom: none !important;
+    }
+
+    .ad-table-wrap td .ad-mini-input, .ad-prod-table-wrap td .ad-mini-input,
+    .ad-table-wrap td .ad-name-input, .ad-prod-table-wrap td .ad-name-input,
+    .ad-table-wrap td select, .ad-prod-table-wrap td select {
+      max-width: 62%; min-width: 0;
+    }
+
+    .ad-table-wrap td[style*="flex"], .ad-prod-table-wrap td[style*="flex"] {
+      justify-content: flex-end; flex-wrap: wrap;
+    }
+    .ad-table-wrap td[style*="flex"] button, .ad-prod-table-wrap td[style*="flex"] button { flex: 1; }
+
+    #adProductsTable td:first-child > div, #adQtyProductsTable td:first-child > div,
+    #adStockProductsTable td:first-child > div {
+      align-items: flex-end; width: 100%;
+    }
+    #adProductsTable td:first-child .ad-mini-input, #adQtyProductsTable td:first-child .ad-mini-input,
+    #adStockProductsTable td:first-child .ad-mini-input { max-width: 100%; }
+  }
+
   /* ============ Responsive: pantallas muy chicas ============ */
   @media (max-width: 380px) {
     .ad-stats { grid-template-columns: 1fr 1fr; }
@@ -243,7 +300,8 @@
   <div class="ad-tabs">
     <button type="button" class="ad-tab active" id="tabBtnRevendedores">Revendedores</button>
     <button type="button" class="ad-tab" id="tabBtnVentas">Ventas revendedores</button>
-    <button type="button" class="ad-tab" id="tabBtnProductos">Productos y precios</button>
+    <button type="button" class="ad-tab" id="tabBtnStock">Stock</button>
+    <button type="button" class="ad-tab" id="tabBtnPrecios">Precios y descuentos</button>
     <button type="button" class="ad-tab" id="tabBtnPagos">Datos de pago</button>
     <button type="button" class="ad-tab" id="tabBtnMantenimiento">Mantenimiento</button>
   </div>
@@ -255,12 +313,26 @@
         <label for="adCodeInput">Código de acceso actual (revendedores / clan)</label>
         <input type="text" id="adCodeInput" placeholder="Cargando..." />
       </div>
-      <button class="ad-btn" id="adCodeSaveBtn">Guardar código</button>
+      <div class="ad-field">
+        <label for="adPhonesInput">Teléfonos autorizados a entrar (uno por línea)</label>
+        <textarea id="adPhonesInput" rows="5" placeholder="Cargando...&#10;Ej: 2611234567&#10;+54 9 261 234-5678" style="width:100%; resize:vertical; font-family:inherit;"></textarea>
+        <p style="font-size:0.75rem; color:var(--c-gray-soft); margin-top:6px;">
+          Solo estos números van a poder ingresar, aunque alguien más tenga el código. Podés
+          escribirlos con o sin espacios/guiones/+54, se normalizan solos. Si dejás esto vacío,
+          cualquiera con el código correcto puede entrar (como antes).
+        </p>
+      </div>
+      <button class="ad-btn" id="adCodeSaveBtn">Guardar código y teléfonos</button>
     </div>
 
     <div class="ad-stats">
       <div class="ad-stat"><div class="n" id="statTotal">0</div><div class="l">Total registrados</div></div>
       <div class="ad-stat"><div class="n" id="statOnline">0</div><div class="l">En línea ahora</div></div>
+    </div>
+
+    <div class="ad-field" style="max-width:360px; margin-bottom:14px;">
+      <label for="adResellerSearchInput">Buscar revendedor</label>
+      <input type="text" id="adResellerSearchInput" placeholder="Nombre o teléfono..." />
     </div>
 
     <div class="ad-table-wrap">
@@ -269,13 +341,14 @@
           <tr>
             <th>Estado</th>
             <th>Nombre</th>
+            <th>Teléfono</th>
             <th>Conectado desde</th>
             <th>Última actividad</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="adTableBody">
-          <tr><td colspan="5" class="ad-empty">Cargando...</td></tr>
+          <tr><td colspan="6" class="ad-empty">Cargando...</td></tr>
         </tbody>
       </table>
     </div>
@@ -288,6 +361,62 @@
       "Ya transferí, enviar comprobante" en /revendedores.html. El monto es el precio de
       revendedor que tenía el producto en ese momento.
     </p>
+
+    <div class="ad-section-label" style="display:flex; align-items:center; gap:10px;">
+      <span>Pedidos pendientes de confirmar</span>
+      <span id="adPendingCount" style="display:inline-block; padding:2px 10px; background:rgba(0,168,255,0.12); border:1px solid rgba(0,168,255,0.35); border-radius:20px; font-size:0.75rem; color:var(--c-blue-glow, #00D9FF);">0</span>
+    </div>
+    <p style="font-size:0.78rem; color:var(--c-gray-soft); max-width:620px; margin-bottom:12px;">
+      Ningún pedido cuenta para el Top 3 ni para el monto vendido hasta que lo confirmés acá
+      viendo que la transferencia llegó de verdad. Así nadie puede inflar su ranking clickeando
+      "Comprar" sin haber vendido nada real.
+    </p>
+    <div class="ad-prod-table-wrap" style="margin-bottom:32px;">
+      <table id="adPendingTable">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Revendedor</th>
+            <th>Teléfono</th>
+            <th>Producto</th>
+            <th>Monto</th>
+            <th>Comprador (UID / nick)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="adPendingTableBody">
+          <tr><td colspan="7" class="ad-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ad-section-label" style="display:flex; align-items:center; gap:10px;">
+      <span>Todos los pedidos (corregir precio / estado)</span>
+      <button class="ad-btn secondary" id="adToggleAllOrdersBtn" style="width:auto; padding:6px 14px; font-size:0.72rem; text-transform:none; letter-spacing:normal;">Mostrar</button>
+    </div>
+    <p style="font-size:0.78rem; color:var(--c-gray-soft); max-width:620px; margin-bottom:12px;">
+      Para cuando un pedido se cargó mal (precio equivocado, producto que no era, etc.). Cambiá
+      el precio o el estado y tocá "Guardar" — el monto del ranking se ajusta solo (suma o resta
+      la diferencia según corresponda). "Eliminar" borra el pedido por completo y también
+      descuenta su monto del ranking si estaba confirmado. Se muestran los últimos 100.
+    </p>
+    <div class="ad-prod-table-wrap hidden" id="adAllOrdersWrap" style="margin-bottom:32px;">
+      <table id="adAllOrdersTable">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Revendedor</th>
+            <th>Producto</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="adAllOrdersTableBody">
+          <tr><td colspan="6" class="ad-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <div class="ad-stats" id="ventasResumen">
       <div class="ad-stat"><div class="n" id="ventasHoyN">0</div><div class="l">Pedidos hoy</div></div>
@@ -306,7 +435,10 @@
 
     <div class="ad-section-label" style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:32px;">
       <span>Ranking por mes (histórico)</span>
-      <select id="adMonthSelect" class="ad-mini-input" style="width:auto; min-width:160px;"></select>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select id="adMonthSelect" class="ad-mini-input" style="width:auto; min-width:160px;"></select>
+        <button class="ad-btn secondary" id="adAddAdjustmentBtn" style="width:auto; padding:6px 14px; font-size:0.72rem; text-transform:none; letter-spacing:normal;">+ Ajuste manual</button>
+      </div>
     </div>
     <p style="font-size:0.78rem; color:var(--c-gray-soft); max-width:620px; margin-bottom:12px;">
       Quién generó más plata en un mes puntual, incluidos los meses ya cerrados — así no se
@@ -319,18 +451,21 @@
             <th>#</th>
             <th>Revendedor</th>
             <th>Monto generado</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="adMonthTableBody">
-          <tr><td colspan="3" class="ad-empty">Cargando...</td></tr>
+          <tr><td colspan="4" class="ad-empty">Cargando...</td></tr>
         </tbody>
       </table>
     </div>
     <p style="font-size:0.72rem; color:var(--c-gray-soft); margin:-4px 0 20px;">
-      El podio de arriba (con montos) es solo para vos. El botón de "Recalcular" actualiza el
-      ranking público de <em>/revendedores.html</em> (sin montos, solo posiciones) con la
-      cantidad de ventas históricas de cada uno. Usalo la primera vez o si notás que el
-      ranking público no coincide con la realidad — las ventas nuevas se suman solas.
+      El monto de esta tabla es EDITABLE: cambialo y tocá "Guardar" en la fila para ajustarlo
+      a mano (por ejemplo, si un pedido se cargó con el precio mal o hace falta corregir algo
+      para que coincida con el saldo real). Este valor es el que ve todo el mundo en el Top 3
+      público de <em>/revendedores.html</em> — se actualiza al instante. El botón "Recalcular"
+      de más abajo reconstruye el monto del MES ACTUAL desde los pedidos confirmados, por si
+      alguna vez preferís volver a partir de ahí en vez de ajustar a mano.
     </p>
 
     <div class="ad-prod-table-wrap">
@@ -352,8 +487,13 @@
     </div>
   </div>
 
-  <!-- ===== TAB: PRODUCTOS Y PRECIOS ===== -->
-  <div class="ad-panel" id="panelProductos">
+  <!-- ===== TAB: STOCK ===== -->
+  <div class="ad-panel" id="panelStock">
+    <div class="ad-field" style="max-width:360px; margin-bottom:18px;">
+      <label for="adProductSearchInput">Buscar producto</label>
+      <input type="text" id="adProductSearchInput" placeholder="Nombre del producto o unidad..." />
+    </div>
+
     <div class="ad-import-box" id="adImportBox" style="display:none;">
       <span>Todavía no cargaste productos en Firestore. Podés importar los 7 productos actuales (los mismos que estaban en config.js) para arrancar y después editarlos acá.</span>
       <button class="ad-btn" id="adImportBtn" style="width:auto; white-space:nowrap;">Importar productos actuales</button>
@@ -361,7 +501,9 @@
 
     <div class="ad-prod-toolbar">
       <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:520px;">
-        Precio tienda = lo que ve cualquier visitante en la web. Precio revendedor = lo que ve solo quien entra con el código en /revendedores.html. Son dos columnas separadas: cambiar una no toca la otra.
+        Acá manejás los datos del producto (nombre, imagen, bono, orden, visibilidad) y si está
+        <strong>en stock o no</strong>. Los precios y descuentos se editan aparte, en la pestaña
+        "Precios y descuentos".
       </p>
       <button class="ad-btn" id="adAddProductBtn" style="width:auto;">+ Agregar producto</button>
     </div>
@@ -409,6 +551,144 @@
             <th>Orden</th>
             <th>Visible</th>
             <th>Sin stock</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="adProductsTableBody">
+          <tr><td colspan="8" class="ad-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===== SECCIÓN: PRODUCTOS POR CANTIDAD (Tokens, Cajas, etc.) ===== -->
+    <div style="margin-top:36px; padding-top:28px; border-top:1px solid rgba(255,255,255,0.08);">
+      <div class="ad-prod-toolbar">
+        <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:560px;">
+          Productos donde el cliente elige la cantidad (ej: Tokens de 50 en 50, Cajas de 10 en 10).
+          El precio se calcula como cantidad × precio por unidad, y se muestra igual en
+          tienda y en revendedores.html, cada uno con su propio precio.
+        </p>
+        <button class="ad-btn" id="adAddQtyProductBtn" style="width:auto;">+ Agregar producto por cantidad</button>
+      </div>
+
+      <div class="ad-add-form" id="adAddQtyForm">
+        <div class="ad-section-label">Producto nuevo</div>
+        <div class="ad-add-grid">
+          <div><label>Nombre de la unidad</label><input class="ad-mini-input" id="newQtyName" placeholder="Ej: Tokens" /></div>
+          <div><label>De cuánto en cuánto (paso)</label><input class="ad-mini-input" id="newQtyStep" type="number" placeholder="Ej: 50" /></div>
+          <div><label>Mínimo de pasos</label><input class="ad-mini-input" id="newQtyMinSteps" type="number" value="1" /></div>
+          <div><label>Máximo de pasos (opcional)</label><input class="ad-mini-input" id="newQtyMaxSteps" type="number" placeholder="Sin límite" /></div>
+          <div><label>Imagen (nombre de archivo)</label><input class="ad-mini-input" id="newQtyImage" placeholder="Ej: tokens.jpg" /></div>
+          <div><label>Orden</label><input class="ad-mini-input" id="newQtyOrder" type="number" value="1" /></div>
+        </div>
+        <div class="ad-section-label">Precio por unidad</div>
+        <div class="ad-add-grid">
+          <div><label>Tienda</label><input class="ad-mini-input" id="newQtyStorePrice" type="number" placeholder="Ej: 55" /></div>
+          <div><label>Revendedor</label><input class="ad-mini-input" id="newQtyResellerPrice" type="number" placeholder="Ej: 55" /></div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top: 6px;">
+          <button class="ad-btn" id="adSaveNewQtyProductBtn" style="width:auto;">Crear producto</button>
+          <button class="ad-btn secondary" id="adCancelNewQtyProductBtn" style="width:auto;">Cancelar</button>
+        </div>
+      </div>
+
+      <div class="ad-prod-table-wrap">
+        <table id="adQtyProductsTable">
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Unidad</th>
+              <th>Paso</th>
+              <th>Mín. pasos</th>
+              <th>Máx. pasos</th>
+              <th>Orden</th>
+              <th>Visible</th>
+              <th>Sin stock</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="adQtyProductsTableBody">
+            <tr><td colspan="9" class="ad-empty">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN: PRODUCTOS "POR STOCK" (revendedores, carga limitada) — aparte, misma pestaña ===== -->
+    <div style="margin-top:36px; padding-top:28px; border-top:1px solid rgba(255,255,255,0.08);">
+      <div class="ad-import-box" id="adImportStockBox" style="display:none;">
+        <span>Todavía no cargaste productos de Stock. Podés importar la lista inicial (110, 341, 572, 1.166, 2.398, 6.160 diamantes + Pase) para arrancar y después editarla acá.</span>
+        <button class="ad-btn" id="adImportStockBtn" style="width:auto; white-space:nowrap;">Importar lista inicial de Stock</button>
+      </div>
+
+      <div class="ad-prod-toolbar">
+        <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:560px;">
+          Catálogo exclusivo de revendedores para la modalidad <strong>Stock</strong> (carga limitada,
+          una unidad por carga según disponibilidad). Marcá "Sin stock" cuando se agote la carga,
+          hasta reponer.
+        </p>
+        <button class="ad-btn" id="adAddStockProductBtn" style="width:auto;">+ Agregar producto de Stock</button>
+      </div>
+
+      <div class="ad-add-form" id="adAddStockForm">
+        <div class="ad-section-label">Producto nuevo (Stock)</div>
+        <div class="ad-add-grid">
+          <div><label>Nombre</label><input class="ad-mini-input" id="newStockName" placeholder="Ej: 500 Diamantes" /></div>
+          <div><label>Diamantes (0 si es un pase)</label><input class="ad-mini-input" id="newStockDiamonds" type="number" value="0" /></div>
+          <div><label>Bono (opcional)</label><input class="ad-mini-input" id="newStockBonus" type="number" placeholder="Ej: 50" /></div>
+          <div><label>Máximo por compra (uds., opcional)</label><input class="ad-mini-input" id="newStockMaxPerPurchase" type="number" placeholder="Ej: 1" /></div>
+          <div><label>Badge (si no son diamantes)</label><input class="ad-mini-input" id="newStockBadge" placeholder="Ej: PASE" /></div>
+          <div><label>Imagen (nombre de archivo)</label><input class="ad-mini-input" id="newStockImage" placeholder="Ej: product-500.jpg" /></div>
+          <div><label>Orden</label><input class="ad-mini-input" id="newStockOrder" type="number" value="1" /></div>
+        </div>
+        <div class="ad-section-label">Precio de Stock</div>
+        <div class="ad-add-grid">
+          <div><label>Precio</label><input class="ad-mini-input" id="newStockPrice" type="number" placeholder="0" /></div>
+          <div><label>Precio con descuento (opcional)</label><input class="ad-mini-input" id="newStockDiscountPrice" type="number" placeholder="" /></div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top: 6px;">
+          <button class="ad-btn" id="adSaveNewStockProductBtn" style="width:auto;">Crear producto</button>
+          <button class="ad-btn secondary" id="adCancelNewStockProductBtn" style="width:auto;">Cancelar</button>
+        </div>
+      </div>
+
+      <div class="ad-prod-table-wrap">
+        <table id="adStockProductsTable">
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Producto</th>
+              <th>Bono</th>
+              <th>Máx. por compra</th>
+              <th>Orden</th>
+              <th>Visible</th>
+              <th>Sin stock</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="adStockProductsTableBody">
+            <tr><td colspan="8" class="ad-empty">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: PRECIOS Y DESCUENTOS ===== -->
+  <div class="ad-panel" id="panelPrecios">
+    <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:560px; margin-bottom:16px;">
+      Precio tienda = lo que ve cualquier visitante en la web. Precio revendedor = lo que ve solo
+      quien entra con el código en /revendedores.html. Para crear productos nuevos o manejar
+      stock/visibilidad, andá a la pestaña "Stock".
+    </p>
+
+    <div class="ad-section-label">Productos</div>
+    <div class="ad-prod-table-wrap">
+      <table id="adProductsPriceTable" class="ad-price-table">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Producto</th>
             <th class="grp-store">Precio tienda</th>
             <th class="grp-store">Descuento tienda</th>
             <th class="grp-reseller">Precio revendedor</th>
@@ -416,64 +696,48 @@
             <th></th>
           </tr>
         </thead>
-        <tbody id="adProductsTableBody">
-          <tr><td colspan="12" class="ad-empty">Cargando...</td></tr>
+        <tbody id="adProductsPriceTableBody">
+          <tr><td colspan="7" class="ad-empty">Cargando...</td></tr>
         </tbody>
       </table>
     </div>
-  </div>
 
-  <!-- ===== SECCIÓN: PRODUCTOS POR CANTIDAD (Tokens, Cajas, etc.) ===== -->
-  <div class="ad-panel" id="panelProductosCantidad" style="margin-top:36px; padding-top:28px; border-top:1px solid rgba(255,255,255,0.08);">
-    <div class="ad-prod-toolbar">
-      <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:560px;">
-        Productos donde el cliente elige la cantidad (ej: Tokens de 50 en 50, Cajas de 10 en 10).
-        El precio se calcula como cantidad × precio por unidad, y se muestra igual en
-        tienda y en revendedores.html, cada uno con su propio precio.
-      </p>
-      <button class="ad-btn" id="adAddQtyProductBtn" style="width:auto;">+ Agregar producto por cantidad</button>
-    </div>
-
-    <div class="ad-add-form" id="adAddQtyForm">
-      <div class="ad-section-label">Producto nuevo</div>
-      <div class="ad-add-grid">
-        <div><label>Nombre de la unidad</label><input class="ad-mini-input" id="newQtyName" placeholder="Ej: Tokens" /></div>
-        <div><label>De cuánto en cuánto (paso)</label><input class="ad-mini-input" id="newQtyStep" type="number" placeholder="Ej: 50" /></div>
-        <div><label>Mínimo de pasos</label><input class="ad-mini-input" id="newQtyMinSteps" type="number" value="1" /></div>
-        <div><label>Máximo de pasos (opcional)</label><input class="ad-mini-input" id="newQtyMaxSteps" type="number" placeholder="Sin límite" /></div>
-        <div><label>Imagen (nombre de archivo)</label><input class="ad-mini-input" id="newQtyImage" placeholder="Ej: tokens.jpg" /></div>
-        <div><label>Orden</label><input class="ad-mini-input" id="newQtyOrder" type="number" value="1" /></div>
-      </div>
-      <div class="ad-section-label">Precio por unidad</div>
-      <div class="ad-add-grid">
-        <div><label>Tienda</label><input class="ad-mini-input" id="newQtyStorePrice" type="number" placeholder="Ej: 55" /></div>
-        <div><label>Revendedor</label><input class="ad-mini-input" id="newQtyResellerPrice" type="number" placeholder="Ej: 55" /></div>
-      </div>
-      <div style="display:flex; gap:10px; margin-top: 6px;">
-        <button class="ad-btn" id="adSaveNewQtyProductBtn" style="width:auto;">Crear producto</button>
-        <button class="ad-btn secondary" id="adCancelNewQtyProductBtn" style="width:auto;">Cancelar</button>
-      </div>
-    </div>
-
+    <div class="ad-section-label" style="margin-top:32px;">Productos por cantidad</div>
     <div class="ad-prod-table-wrap">
-      <table id="adQtyProductsTable">
+      <table id="adQtyProductsPriceTable" class="ad-price-table">
         <thead>
           <tr>
             <th>Imagen</th>
             <th>Unidad</th>
-            <th>Paso</th>
-            <th>Mín. pasos</th>
-            <th>Máx. pasos</th>
-            <th>Orden</th>
-            <th>Visible</th>
-            <th>Sin stock</th>
             <th class="grp-store">Precio/unidad tienda</th>
             <th class="grp-reseller">Precio/unidad revendedor</th>
             <th></th>
           </tr>
         </thead>
-        <tbody id="adQtyProductsTableBody">
-          <tr><td colspan="11" class="ad-empty">Cargando...</td></tr>
+        <tbody id="adQtyProductsPriceTableBody">
+          <tr><td colspan="5" class="ad-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ad-section-label" style="margin-top:32px;">Productos de Stock (revendedores)</div>
+    <p style="font-size:0.75rem; color:var(--c-gray-soft); max-width:560px; margin: -8px 0 14px;">
+      Es un precio final propio: no tiene columna de "precio tienda" porque estos productos nunca
+      se muestran en index.html.
+    </p>
+    <div class="ad-prod-table-wrap">
+      <table id="adStockProductsPriceTable" class="ad-price-table">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Descuento</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="adStockProductsPriceTableBody">
+          <tr><td colspan="5" class="ad-empty">Cargando...</td></tr>
         </tbody>
       </table>
     </div>
@@ -520,6 +784,31 @@
       </div>
       <button class="ad-btn" id="paySaveRvBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar datos de revendedores</button>
     </div>
+
+    <div class="ad-section-label">Revendedores — Stock (carga limitada)</div>
+    <p style="font-size:0.75rem; color:var(--c-gray-soft); max-width:560px; margin: -8px 0 14px;">
+      Se muestra solo cuando el revendedor compra un producto del apartado "Stock". El campo
+      "Nota" es opcional (ej: "Todo por ID") y aparece debajo del CVU en el paso 2 del checkout.
+    </p>
+    <div class="ad-code-box" style="flex-direction:column; align-items:stretch; gap:14px;">
+      <div class="ad-field">
+        <label for="payHolderStock">Titular</label>
+        <input type="text" id="payHolderStock" placeholder="Nombre y apellido" />
+      </div>
+      <div class="ad-field">
+        <label for="payAliasStock">Alias</label>
+        <input type="text" id="payAliasStock" placeholder="Ej: recargas22" />
+      </div>
+      <div class="ad-field">
+        <label for="payCvuStock">CVU / CBU (opcional)</label>
+        <input type="text" id="payCvuStock" placeholder="Dejar vacío si no aplica" />
+      </div>
+      <div class="ad-field">
+        <label for="payNoteStock">Nota (opcional)</label>
+        <input type="text" id="payNoteStock" placeholder="Ej: Todo por ID" />
+      </div>
+      <button class="ad-btn" id="paySaveStockBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar datos de Stock</button>
+    </div>
   </div>
 
   <!-- ===== TAB: MANTENIMIENTO ===== -->
@@ -541,16 +830,33 @@
       </div>
       <button class="ad-btn" id="maintenanceSaveBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar</button>
     </div>
+
+    <div class="ad-section-label" style="margin-top:32px;">Revendedores (revendedores.html)</div>
+    <p style="font-size:0.8rem; color:var(--c-gray-soft); max-width:560px; margin-bottom:16px;">
+      Interruptor independiente del de arriba: tapa solo /revendedores.html con su propia
+      pantalla de "en mantenimiento", sin afectar a index.html ni a este panel.
+    </p>
+    <div class="ad-code-box" style="flex-direction:column; align-items:stretch; gap:14px; max-width:520px;">
+      <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:600;">
+        <input type="checkbox" id="maintenanceResellerActive" style="width:18px; height:18px;" />
+        Revendedores en mantenimiento
+      </label>
+      <div class="ad-field">
+        <label for="maintenanceResellerMessage">Mensaje para los revendedores (opcional)</label>
+        <textarea id="maintenanceResellerMessage" rows="3" placeholder="Estamos actualizando precios/stock. Volvemos en breve." style="resize:vertical; min-height:70px;"></textarea>
+      </div>
+      <button class="ad-btn" id="maintenanceResellerSaveBtn" style="width:auto; align-self:flex-start; padding:12px 24px;">Guardar</button>
+    </div>
   </div>
 </div>
 
 <script type="module">
   import {
     db, auth, doc, getDoc, updateDoc, setDoc, deleteDoc, collection,
-    addDoc, onSnapshot, query, orderBy, signInWithEmailAndPassword,
+    addDoc, onSnapshot, query, orderBy, increment, signInWithEmailAndPassword,
     onAuthStateChanged, signOut,
   } from "./firebase-init.js";
-  import { NARANJAX, NARANJAX_RESELLER } from "./config.js";
+  import { NARANJAX, NARANJAX_RESELLER, NARANJAX_RESELLER_STOCK } from "./config.js";
 
   const loginWrap = document.getElementById("adLoginWrap");
   const panel = document.getElementById("adPanel");
@@ -560,6 +866,7 @@
   const emailInput = document.getElementById("adEmail");
   const passInput = document.getElementById("adPass");
   const codeInput = document.getElementById("adCodeInput");
+  const phonesInput = document.getElementById("adPhonesInput");
   const codeSaveBtn = document.getElementById("adCodeSaveBtn");
   const tbody = document.getElementById("adTableBody");
   const statTotal = document.getElementById("statTotal");
@@ -585,11 +892,14 @@
       loadCode();
       listenSessions();
       listenProducts();
+      listenStockProducts();
       listenVentas();
       listenMonthlyStats();
       loadPayment();
       loadPaymentReseller();
+      loadPaymentResellerStock();
       loadMaintenance();
+      loadMaintenanceReseller();
     } else {
       loginWrap.style.display = "flex";
       panel.style.display = "none";
@@ -600,20 +910,22 @@
 
   const tabBtnRevendedores = document.getElementById("tabBtnRevendedores");
   const tabBtnVentas = document.getElementById("tabBtnVentas");
-  const tabBtnProductos = document.getElementById("tabBtnProductos");
+  const tabBtnStock = document.getElementById("tabBtnStock");
+  const tabBtnPrecios = document.getElementById("tabBtnPrecios");
   const tabBtnPagos = document.getElementById("tabBtnPagos");
   const tabBtnMantenimiento = document.getElementById("tabBtnMantenimiento");
   const panelRevendedores = document.getElementById("panelRevendedores");
   const panelVentas = document.getElementById("panelVentas");
-  const panelProductos = document.getElementById("panelProductos");
-  const panelProductosCantidad = document.getElementById("panelProductosCantidad");
+  const panelStock = document.getElementById("panelStock");
+  const panelPrecios = document.getElementById("panelPrecios");
   const panelPagos = document.getElementById("panelPagos");
   const panelMantenimiento = document.getElementById("panelMantenimiento");
 
   const allTabs = [
     [tabBtnRevendedores, panelRevendedores],
     [tabBtnVentas, panelVentas],
-    [tabBtnProductos, panelProductos],
+    [tabBtnStock, panelStock],
+    [tabBtnPrecios, panelPrecios],
     [tabBtnPagos, panelPagos],
     [tabBtnMantenimiento, panelMantenimiento],
   ];
@@ -624,21 +936,36 @@
         b.classList.toggle("active", b === btn);
         p.classList.toggle("active", p === panel);
       });
-      panelProductosCantidad.classList.toggle("active", panel === panelProductos);
     });
   });
 
   async function loadCode() {
     const ref = doc(db, "settings", "resellerAccess");
     const snap = await getDoc(ref);
-    codeInput.value = snap.exists() ? snap.data().code : "";
+    const data = snap.exists() ? snap.data() : {};
+    codeInput.value = data.code || "";
+    // Mostramos lo que el admin escribió tal cual (allowedPhonesRaw),
+    // así conserva su formato (espacios, +54, guiones) al reabrir el
+    // panel. allowedPhones (solo dígitos) es lo que de verdad se usa
+    // para validar el acceso, tanto en revendedores.html como en las
+    // reglas de Firestore.
+    phonesInput.value = data.allowedPhonesRaw || (Array.isArray(data.allowedPhones) ? data.allowedPhones.join("\n") : "");
   }
 
   codeSaveBtn.addEventListener("click", async () => {
     const ref = doc(db, "settings", "resellerAccess");
-    await setDoc(ref, { code: codeInput.value.trim() }, { merge: true });
+    const allowedPhonesRaw = phonesInput.value;
+    const allowedPhones = allowedPhonesRaw
+      .split("\n")
+      .map((line) => line.replace(/\D/g, ""))
+      .filter((digits) => digits.length > 0);
+    await setDoc(
+      ref,
+      { code: codeInput.value.trim(), allowedPhones, allowedPhonesRaw },
+      { merge: true }
+    );
     codeSaveBtn.textContent = "¡Guardado!";
-    setTimeout(() => (codeSaveBtn.textContent = "Guardar código"), 1500);
+    setTimeout(() => (codeSaveBtn.textContent = "Guardar código y teléfonos"), 1500);
   });
 
   /* ================= DATOS DE PAGO (ALIAS / CBU) ================= */
@@ -728,6 +1055,53 @@
     }
   });
 
+  /* ================= DATOS DE PAGO — REVENDEDORES · STOCK ================= */
+  // Alias/CVU propios para la modalidad "Stock" dentro de
+  // /revendedores/ (carga limitada), separados tanto de la tienda
+  // como del alias "Ilimitado" de revendedores (settings/paymentResellerStock).
+
+  const payHolderStockInput = document.getElementById("payHolderStock");
+  const payAliasStockInput = document.getElementById("payAliasStock");
+  const payCvuStockInput = document.getElementById("payCvuStock");
+  const payNoteStockInput = document.getElementById("payNoteStock");
+  const paySaveStockBtn = document.getElementById("paySaveStockBtn");
+
+  async function loadPaymentResellerStock() {
+    const ref = doc(db, "settings", "paymentResellerStock");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : NARANJAX_RESELLER_STOCK;
+    payHolderStockInput.value = data.holder || "";
+    payAliasStockInput.value = data.alias || "";
+    payCvuStockInput.value = data.cvu || "";
+    payNoteStockInput.value = data.note || "";
+  }
+
+  paySaveStockBtn.addEventListener("click", async () => {
+    const ref = doc(db, "settings", "paymentResellerStock");
+    paySaveStockBtn.disabled = true;
+    try {
+      await setDoc(
+        ref,
+        {
+          holder: payHolderStockInput.value.trim(),
+          alias: payAliasStockInput.value.trim(),
+          cvu: payCvuStockInput.value.trim(),
+          note: payNoteStockInput.value.trim(),
+        },
+        { merge: true }
+      );
+      paySaveStockBtn.textContent = "¡Guardado!";
+    } catch (err) {
+      console.error(err);
+      paySaveStockBtn.textContent = "Error";
+    } finally {
+      setTimeout(() => {
+        paySaveStockBtn.textContent = "Guardar datos de Stock";
+        paySaveStockBtn.disabled = false;
+      }, 1500);
+    }
+  });
+
   /* ================= MANTENIMIENTO ================= */
   // Interruptor global en Firestore (settings/maintenance). Cuando
   // "active" es true, app.js tapa index.html con una pantalla de
@@ -765,6 +1139,43 @@
       setTimeout(() => {
         maintenanceSaveBtn.textContent = "Guardar";
         maintenanceSaveBtn.disabled = false;
+      }, 1500);
+    }
+  });
+
+  // Interruptor independiente para /revendedores.html (settings/maintenanceReseller).
+  const maintenanceResellerActiveInput = document.getElementById("maintenanceResellerActive");
+  const maintenanceResellerMessageInput = document.getElementById("maintenanceResellerMessage");
+  const maintenanceResellerSaveBtn = document.getElementById("maintenanceResellerSaveBtn");
+
+  async function loadMaintenanceReseller() {
+    const ref = doc(db, "settings", "maintenanceReseller");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : { active: false, message: "" };
+    maintenanceResellerActiveInput.checked = !!data.active;
+    maintenanceResellerMessageInput.value = data.message || "";
+  }
+
+  maintenanceResellerSaveBtn.addEventListener("click", async () => {
+    const ref = doc(db, "settings", "maintenanceReseller");
+    maintenanceResellerSaveBtn.disabled = true;
+    try {
+      await setDoc(
+        ref,
+        {
+          active: maintenanceResellerActiveInput.checked,
+          message: maintenanceResellerMessageInput.value.trim(),
+        },
+        { merge: true }
+      );
+      maintenanceResellerSaveBtn.textContent = "¡Guardado!";
+    } catch (err) {
+      console.error(err);
+      maintenanceResellerSaveBtn.textContent = "Error";
+    } finally {
+      setTimeout(() => {
+        maintenanceResellerSaveBtn.textContent = "Guardar";
+        maintenanceResellerSaveBtn.disabled = false;
       }, 1500);
     }
   });
@@ -811,10 +1222,18 @@
         const month = startOfMonth();
 
         const byReseller = new Map();
+        const pendingOrders = [];
+        const allOrders = [];
         let totalHoy = 0, totalSemana = 0, totalMes = 0, totalTodo = 0;
 
         snap.forEach((docSnap) => {
           const d = docSnap.data();
+          // Los pedidos de antes de este cambio no tienen "status": se
+          // consideran confirmados (así no se pierde ni recalcula nada
+          // de lo que ya estaba contando para el ranking). Los nuevos
+          // arrancan en "pending" y solo pasan a "confirmed" cuando el
+          // admin los aprueba a mano.
+          const status = d.status || "confirmed";
           const createdMs = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().getTime() : 0;
           const name = d.resellerName || "—";
           const price = Number(d.price) || 0;
@@ -824,14 +1243,31 @@
           }
           const r = byReseller.get(name);
           r.total++;
-          r.monto += price;
           totalTodo++;
           if (createdMs >= today.getTime()) { r.hoy++; totalHoy++; }
           if (createdMs >= week.getTime()) { r.semana++; totalSemana++; }
-          if (createdMs >= month.getTime()) { r.mes++; r.montoMes += price; totalMes++; }
+          if (createdMs >= month.getTime()) { r.mes++; totalMes++; }
+
+          // El monto vendido (podium, ranking por mes, recalcular Top 3)
+          // solo suma pedidos CONFIRMADOS — así un pedido pendiente o
+          // rechazado nunca infla la plata generada de nadie.
+          if (status === "confirmed") {
+            r.monto += price;
+            if (createdMs >= month.getTime()) r.montoMes += price;
+          }
+
+          if (status === "pending") {
+            pendingOrders.push({ id: docSnap.id, ...d });
+          }
+
+          if (allOrders.length < 100) {
+            allOrders.push({ id: docSnap.id, ...d, status });
+          }
         });
 
         lastByReseller = byReseller;
+        renderPendingOrders(pendingOrders);
+        renderAllOrders(allOrders);
 
         ventasHoyN.textContent = String(totalHoy);
         ventasSemanaN.textContent = String(totalSemana);
@@ -875,8 +1311,218 @@
           </tr>`
           )
           .join("");
+        applyResponsiveLabels(adVentasTableBody);
       }
     );
+  }
+
+  /* ================= PEDIDOS PENDIENTES DE CONFIRMAR ================= */
+  // El monto de un pedido solo se suma al ranking cuando el admin lo
+  // confirma acá, viendo que la transferencia llegó de verdad. Evita
+  // que cualquiera infle su propio Top 3 clickeando "Comprar" en falso.
+
+  const adPendingTableBody = document.getElementById("adPendingTableBody");
+  const adPendingCount = document.getElementById("adPendingCount");
+
+  function monthKeyFromTimestamp(ts) {
+    const date = ts && ts.toDate ? ts.toDate() : new Date();
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  }
+
+  function renderPendingOrders(pendingOrders) {
+    adPendingCount.textContent = String(pendingOrders.length);
+
+    if (!pendingOrders.length) {
+      adPendingTableBody.innerHTML = '<tr><td colspan="7" class="ad-empty">No hay pedidos pendientes.</td></tr>';
+      return;
+    }
+
+    adPendingTableBody.innerHTML = pendingOrders
+      .map(
+        (o) => `
+      <tr data-id="${o.id}">
+        <td>${fmt(o.createdAt)}</td>
+        <td>${escapeHtml(o.resellerName || "—")}</td>
+        <td>${escapeHtml(o.resellerPhone || "—")}</td>
+        <td>${escapeHtml(o.productName || "—")}</td>
+        <td>${formatPrice(o.price)}</td>
+        <td>${escapeHtml(o.buyerUid || "—")} / ${escapeHtml(o.buyerNickname || "—")}</td>
+        <td style="display:flex; gap:6px;">
+          <button class="ad-save-row js-confirm-order">Confirmar</button>
+          <button class="ad-del js-reject-order">Rechazar</button>
+        </td>
+      </tr>`
+      )
+      .join("");
+    applyResponsiveLabels(adPendingTableBody);
+
+    adPendingTableBody.querySelectorAll(".js-confirm-order").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const order = pendingOrders.find((o) => o.id === id);
+        if (!order) return;
+
+        btn.disabled = true;
+        btn.textContent = "Confirmando...";
+        try {
+          await updateDoc(doc(db, "resellerOrders", id), { status: "confirmed" });
+
+          // Recién ahora se suma al ranking público del mes del pedido
+          // (no necesariamente "hoy", por si se confirma tarde).
+          const monthKey = monthKeyFromTimestamp(order.createdAt);
+          const statsId = `${monthKey}_${safeStatsKey(order.resellerName)}`;
+          await setDoc(
+            doc(db, "resellerMonthlyStats", statsId),
+            { name: order.resellerName || "—", month: monthKey, amount: increment(Number(order.price) || 0) },
+            { merge: true }
+          );
+        } catch (err) {
+          console.error(err);
+          alert("Hubo un error al confirmar. Probá de nuevo.");
+          btn.disabled = false;
+          btn.textContent = "Confirmar";
+        }
+      });
+    });
+
+    adPendingTableBody.querySelectorAll(".js-reject-order").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        if (!confirm("¿Rechazar este pedido? No va a contar como venta.")) return;
+        btn.disabled = true;
+        try {
+          await updateDoc(doc(db, "resellerOrders", id), { status: "rejected" });
+        } catch (err) {
+          console.error(err);
+          alert("Hubo un error al rechazar. Probá de nuevo.");
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  /* ================= TODOS LOS PEDIDOS (corregir errores) ================= */
+  // A diferencia de "Pedidos pendientes", acá se ven y editan TODOS
+  // los pedidos (los últimos 100), incluidos los ya confirmados, para
+  // poder arreglar un precio mal cargado o un estado equivocado. El
+  // ranking mensual se ajusta solo por la DIFERENCIA entre lo que
+  // aportaba antes y lo que aporta después, así nunca queda
+  // desincronizado.
+
+  const adAllOrdersTableBody = document.getElementById("adAllOrdersTableBody");
+  const adAllOrdersWrap = document.getElementById("adAllOrdersWrap");
+  const adToggleAllOrdersBtn = document.getElementById("adToggleAllOrdersBtn");
+
+  adToggleAllOrdersBtn?.addEventListener("click", () => {
+    const willShow = adAllOrdersWrap.classList.contains("hidden");
+    adAllOrdersWrap.classList.toggle("hidden", !willShow);
+    adToggleAllOrdersBtn.textContent = willShow ? "Ocultar" : "Mostrar";
+  });
+
+  // Cuánto le aporta hoy este pedido al monto del ranking (0 si no
+  // está confirmado).
+  function orderContribution(order) {
+    return order.status === "confirmed" ? Number(order.price) || 0 : 0;
+  }
+
+  // Suma/resta en resellerMonthlyStats la diferencia entre el aporte
+  // viejo y el nuevo de un pedido, en el mes en el que se creó.
+  async function adjustMonthlyStats(order, oldContribution, newContribution) {
+    const delta = newContribution - oldContribution;
+    if (!delta) return;
+    const monthKey = monthKeyFromTimestamp(order.createdAt);
+    const statsId = `${monthKey}_${safeStatsKey(order.resellerName)}`;
+    await setDoc(
+      doc(db, "resellerMonthlyStats", statsId),
+      { name: order.resellerName || "—", month: monthKey, amount: increment(delta) },
+      { merge: true }
+    );
+  }
+
+  function renderAllOrders(allOrders) {
+    if (!allOrders.length) {
+      adAllOrdersTableBody.innerHTML = '<tr><td colspan="6" class="ad-empty">Todavía no hay pedidos registrados.</td></tr>';
+      return;
+    }
+
+    adAllOrdersTableBody.innerHTML = allOrders
+      .map(
+        (o) => `
+      <tr data-id="${o.id}">
+        <td>${fmt(o.createdAt)}</td>
+        <td>${escapeHtml(o.resellerName || "—")}</td>
+        <td>${escapeHtml(o.productName || "—")}</td>
+        <td><input class="ad-mini-input js-order-price" type="number" value="${Number(o.price) || 0}" style="width:110px;" /></td>
+        <td>
+          <select class="ad-mini-input js-order-status">
+            <option value="pending" ${o.status === "pending" ? "selected" : ""}>Pendiente</option>
+            <option value="confirmed" ${o.status === "confirmed" ? "selected" : ""}>Confirmado</option>
+            <option value="rejected" ${o.status === "rejected" ? "selected" : ""}>Rechazado</option>
+          </select>
+        </td>
+        <td style="display:flex; gap:6px;">
+          <button class="ad-save-row js-save-order">Guardar</button>
+          <button class="ad-del js-delete-order">Eliminar</button>
+        </td>
+      </tr>`
+      )
+      .join("");
+    applyResponsiveLabels(adAllOrdersTableBody);
+
+    adAllOrdersTableBody.querySelectorAll(".js-save-order").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const order = allOrders.find((o) => o.id === id);
+        if (!order) return;
+
+        const newPrice = Number(tr.querySelector(".js-order-price").value) || 0;
+        const newStatus = tr.querySelector(".js-order-status").value;
+
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+        try {
+          const oldContribution = orderContribution(order);
+          const newContribution = newStatus === "confirmed" ? newPrice : 0;
+
+          await updateDoc(doc(db, "resellerOrders", id), { price: newPrice, status: newStatus });
+          await adjustMonthlyStats(order, oldContribution, newContribution);
+
+          btn.textContent = "¡Guardado!";
+        } catch (err) {
+          console.error(err);
+          btn.textContent = "Error";
+        } finally {
+          setTimeout(() => {
+            btn.textContent = "Guardar";
+            btn.disabled = false;
+          }, 1200);
+        }
+      });
+    });
+
+    adAllOrdersTableBody.querySelectorAll(".js-delete-order").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const order = allOrders.find((o) => o.id === id);
+        if (!order) return;
+        if (!confirm("¿Eliminar este pedido? También se descuenta del ranking si estaba confirmado.")) return;
+
+        btn.disabled = true;
+        try {
+          const oldContribution = orderContribution(order);
+          await deleteDoc(doc(db, "resellerOrders", id));
+          await adjustMonthlyStats(order, oldContribution, 0);
+        } catch (err) {
+          console.error(err);
+          alert("Hubo un error al eliminar. Probá de nuevo.");
+          btn.disabled = false;
+        }
+      });
+    });
   }
 
   function formatPrice(value) {
@@ -941,16 +1587,69 @@
     adMonthTableBody.innerHTML = rows
       .map(
         (r, i) => `
-      <tr>
+      <tr data-name="${escapeHtml(r.name || "—")}" data-month="${monthKey}">
         <td>${i + 1}</td>
         <td>${escapeHtml(r.name || "—")}</td>
-        <td>${formatPrice(r.amount)}</td>
+        <td><input class="ad-mini-input js-amount" type="number" value="${r.amount}" style="width:130px;" /></td>
+        <td><button class="ad-save-row js-save-amount">Guardar</button></td>
       </tr>`
       )
       .join("");
+    applyResponsiveLabels(adMonthTableBody);
+
+    adMonthTableBody.querySelectorAll(".js-save-amount").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const name = tr.dataset.name;
+        const month = tr.dataset.month;
+        const newAmount = Number(tr.querySelector(".js-amount").value) || 0;
+
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+        try {
+          await setDoc(doc(db, "resellerMonthlyStats", `${month}_${safeStatsKey(name)}`), {
+            name,
+            month,
+            amount: newAmount,
+          });
+          btn.textContent = "¡Guardado!";
+        } catch (err) {
+          console.error(err);
+          btn.textContent = "Error";
+        } finally {
+          setTimeout(() => {
+            btn.textContent = "Guardar";
+            btn.disabled = false;
+          }, 1200);
+        }
+      });
+    });
   }
 
   adMonthSelect.addEventListener("change", renderMonthTable);
+
+  // Ajuste manual: crea (o pisa) el monto de un revendedor para el mes
+  // elegido, incluso si todavía no tiene ningún pedido confirmado ese
+  // mes — para dar de alta un ajuste puntual sin pasar por un pedido.
+  const adAddAdjustmentBtn = document.getElementById("adAddAdjustmentBtn");
+  adAddAdjustmentBtn?.addEventListener("click", async () => {
+    const name = prompt("Nombre del revendedor (tal como aparece en el ranking):");
+    if (!name || !name.trim()) return;
+    const amountStr = prompt(`Monto para ${monthKeyLabel(adMonthSelect.value)}:`, "0");
+    if (amountStr == null) return;
+    const amount = Number(amountStr) || 0;
+
+    try {
+      await setDoc(doc(db, "resellerMonthlyStats", `${adMonthSelect.value}_${safeStatsKey(name.trim())}`), {
+        name: name.trim(),
+        month: adMonthSelect.value,
+        amount,
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un error al guardar el ajuste.");
+    }
+  });
 
   // Mismo criterio de sanitización que usa revendedores.html para
   // armar la clave del documento en "resellerMonthlyStats" (los IDs
@@ -1005,11 +1704,19 @@
     return d.toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
   }
 
+  const adResellerSearchInput = document.getElementById("adResellerSearchInput");
+
+  // Teléfonos bloqueados: viven junto al código en settings/resellerAccess
+  // (campo blockedPhones), separado de allowedPhones. Un revendedor
+  // bloqueado no puede volver a entrar a /revendedores.html aunque tenga
+  // el código y esté en la lista de autorizados, hasta que lo desbloqueen.
+  let blockedPhonesCache = [];
+
   function listenSessions() {
     const q = query(collection(db, "resellerSessions"), orderBy("lastSeen", "desc"));
     onSnapshot(q, (snap) => {
       if (snap.empty) {
-        tbody.innerHTML = '<tr><td colspan="5" class="ad-empty">Todavía no hay revendedores registrados.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="ad-empty">Todavía no hay revendedores registrados.</td></tr>';
         statTotal.textContent = "0";
         statOnline.textContent = "0";
         return;
@@ -1024,19 +1731,27 @@
         const lastSeenMs = d.lastSeen && d.lastSeen.toDate ? d.lastSeen.toDate().getTime() : 0;
         const isOnline = now - lastSeenMs < ONLINE_THRESHOLD_MS;
         if (isOnline) online++;
+        const phoneNorm = d.phoneNormalized || (d.phone || "").replace(/\D/g, "");
+        const isBlocked = blockedPhonesCache.includes(phoneNorm);
 
         rows.push(`
-          <tr>
-            <td><span class="dot ${isOnline ? "online" : "offline"}"></span>${isOnline ? "En línea" : "Desconectado"}</td>
-            <td>${escapeHtml(d.name || "—")}</td>
+          <tr data-id="${docSnap.id}" data-phone="${escapeHtml(phoneNorm)}">
+            <td><span class="dot ${isOnline ? "online" : "offline"}"></span>${isOnline ? "En línea" : "Desconectado"}${isBlocked ? ' <span style="color:#ff5a5a; font-size:0.72rem;">(bloqueado)</span>' : ""}</td>
+            <td class="js-name-cell">${escapeHtml(d.name || "—")}</td>
+            <td>${escapeHtml(d.phone || "—")}</td>
             <td>${fmt(d.loggedInAt)}</td>
             <td>${fmt(d.lastSeen)}</td>
-            <td><button class="ad-del" data-id="${docSnap.id}">Eliminar</button></td>
+            <td style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="ad-btn secondary js-edit-reseller" style="width:auto; padding:6px 12px; font-size:0.72rem; text-transform:none; letter-spacing:normal;">Editar</button>
+              <button class="ad-btn secondary js-block-reseller" style="width:auto; padding:6px 12px; font-size:0.72rem; text-transform:none; letter-spacing:normal;">${isBlocked ? "Desbloquear" : "Bloquear"}</button>
+              <button class="ad-del" data-id="${docSnap.id}">Eliminar</button>
+            </td>
           </tr>
         `);
       });
 
       tbody.innerHTML = rows.join("");
+      applyResponsiveLabels(tbody);
       statTotal.textContent = String(snap.size);
       statOnline.textContent = String(online);
 
@@ -1045,8 +1760,58 @@
           await deleteDoc(doc(db, "resellerSessions", btn.dataset.id));
         });
       });
+
+      tbody.querySelectorAll(".js-edit-reseller").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const tr = btn.closest("tr");
+          const nameCell = tr.querySelector(".js-name-cell");
+          const currentName = nameCell.textContent.trim();
+          const newName = prompt("Nuevo nombre para este revendedor:", currentName === "—" ? "" : currentName);
+          if (newName === null || !newName.trim()) return;
+          await updateDoc(doc(db, "resellerSessions", tr.dataset.id), { name: newName.trim() });
+        });
+      });
+
+      tbody.querySelectorAll(".js-block-reseller").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const tr = btn.closest("tr");
+          const phoneNorm = tr.dataset.phone;
+          if (!phoneNorm) return;
+          const ref = doc(db, "settings", "resellerAccess");
+          const nowBlocked = blockedPhonesCache.includes(phoneNorm);
+          const next = nowBlocked
+            ? blockedPhonesCache.filter((p) => p !== phoneNorm)
+            : [...blockedPhonesCache, phoneNorm];
+          btn.disabled = true;
+          try {
+            await setDoc(ref, { blockedPhones: next }, { merge: true });
+          } catch (err) {
+            console.error(err);
+          } finally {
+            btn.disabled = false;
+          }
+        });
+      });
+
+      applyResellerFilter();
+    });
+
+    onSnapshot(doc(db, "settings", "resellerAccess"), (snap) => {
+      const data = snap.exists() ? snap.data() : {};
+      blockedPhonesCache = Array.isArray(data.blockedPhones) ? data.blockedPhones : [];
     });
   }
+
+  function applyResellerFilter() {
+    if (!adResellerSearchInput) return;
+    const term = adResellerSearchInput.value.trim().toLowerCase();
+    tbody.querySelectorAll("tr").forEach((tr) => {
+      if (tr.querySelector("td.ad-empty")) return;
+      tr.style.display = !term || tr.textContent.toLowerCase().includes(term) ? "" : "none";
+    });
+  }
+
+  adResellerSearchInput?.addEventListener("input", applyResellerFilter);
 
   function escapeHtml(str) {
     const div = document.createElement("div");
@@ -1054,12 +1819,58 @@
     return div.innerHTML;
   }
 
+  // Copia el texto de cada <th> como data-label en su columna, para que
+  // en mobile las tablas se puedan mostrar como tarjetas apiladas (ver
+  // CSS de @media max-width:700px) en vez de scrollear de costado.
+  function applyResponsiveLabels(tbody) {
+    if (!tbody) return;
+    const table = tbody.closest("table");
+    if (!table) return;
+    const headers = Array.from(table.querySelectorAll("thead th")).map((th) => th.textContent.trim());
+    Array.from(tbody.children).forEach((tr) => {
+      const cells = Array.from(tr.children);
+      if (cells.length === 1 && cells[0].hasAttribute("colspan")) return;
+      cells.forEach((td, i) => {
+        if (headers[i]) td.setAttribute("data-label", headers[i]);
+        else td.removeAttribute("data-label");
+      });
+    });
+  }
+
+  /* ================= BUSCADOR DE PRODUCTOS ================= */
+  // Un solo cuadro (pestaña "Stock") filtra las filas de las 3 tablas de
+  // productos ahí, y también las de "Precios y descuentos", por nombre.
+  // Solo esconde filas ya renderizadas (no vuelve a pedir nada a
+  // Firestore), así que se llama de nuevo después de cada render.
+  const adProductSearchInput = document.getElementById("adProductSearchInput");
+
+  function applyProductFilter() {
+    if (!adProductSearchInput) return;
+    const term = adProductSearchInput.value.trim().toLowerCase();
+    const sel = [
+      "#adProductsTable tbody tr[data-id]",
+      "#adQtyProductsTable tbody tr[data-id]",
+      "#adStockProductsTable tbody tr[data-id]",
+      "#adProductsPriceTable tbody tr[data-id]",
+      "#adQtyProductsPriceTable tbody tr[data-id]",
+      "#adStockProductsPriceTable tbody tr[data-id]",
+    ].join(", ");
+    document.querySelectorAll(sel).forEach((tr) => {
+      const nameEl = tr.querySelector(".js-f-name, .js-f-unitName");
+      const text = (nameEl ? nameEl.value : tr.textContent).toLowerCase();
+      tr.style.display = !term || text.includes(term) ? "" : "none";
+    });
+  }
+
+  adProductSearchInput?.addEventListener("input", applyProductFilter);
+
   /* ================= PRODUCTOS Y PRECIOS ================= */
   // "products" = catálogo + precio de TIENDA. "resellerPricing" = precio
   // de REVENDEDORES, colección aparte con el mismo ID de documento que
   // el producto, para que nunca se mezclen entre sí.
 
   const adProductsTableBody = document.getElementById("adProductsTableBody");
+  const adProductsPriceTableBody = document.getElementById("adProductsPriceTableBody");
   const adImportBox = document.getElementById("adImportBox");
   const adImportBtn = document.getElementById("adImportBtn");
   const adAddProductBtn = document.getElementById("adAddProductBtn");
@@ -1097,16 +1908,17 @@
   function renderProductsTable() {
     const fixedProducts = Array.from(productsById.values()).filter((p) => p.type !== "quantity");
     if (!fixedProducts.length) {
-      adProductsTableBody.innerHTML = '<tr><td colspan="12" class="ad-empty">Todavía no hay productos cargados.</td></tr>';
+      adProductsTableBody.innerHTML = '<tr><td colspan="8" class="ad-empty">Todavía no hay productos cargados.</td></tr>';
+      adProductsPriceTableBody.innerHTML = '<tr><td colspan="7" class="ad-empty">Todavía no hay productos cargados.</td></tr>';
       renderQtyProductsTable();
       return;
     }
 
     const rows = fixedProducts.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
+    /* ---- Tabla de STOCK (identidad + visible + sin stock) ---- */
     adProductsTableBody.innerHTML = rows
       .map((p) => {
-        const rp = resellerPricingById.get(p.id) || {};
         return `
           <tr data-id="${p.id}">
             <td>
@@ -1123,10 +1935,6 @@
             <td><input class="ad-mini-input js-f-order" type="number" value="${p.order ?? 0}" style="width:70px;" /></td>
             <td class="ad-checkbox-row"><input type="checkbox" class="js-f-visible" ${p.visible !== false ? "checked" : ""} /></td>
             <td class="ad-checkbox-row"><input type="checkbox" class="js-f-outOfStock" ${p.inStock === false ? "checked" : ""} /></td>
-            <td class="grp-store"><input class="ad-mini-input js-f-price" type="number" value="${p.price ?? ""}" /></td>
-            <td class="grp-store"><input class="ad-mini-input js-f-discountPrice" type="number" value="${p.discountPrice ?? ""}" placeholder="—" /></td>
-            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerPrice" type="number" value="${rp.price ?? ""}" /></td>
-            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerDiscountPrice" type="number" value="${rp.discountPrice ?? ""}" placeholder="—" /></td>
             <td style="display:flex; gap:6px;">
               <button class="ad-save-row js-save-product">Guardar</button>
               <button class="ad-del js-del-product">Eliminar</button>
@@ -1134,6 +1942,7 @@
           </tr>`;
       })
       .join("");
+    applyResponsiveLabels(adProductsTableBody);
 
     adProductsTableBody.querySelectorAll(".js-save-product").forEach((btn) => {
       btn.addEventListener("click", async () => {
@@ -1153,17 +1962,7 @@
             visible: tr.querySelector(".js-f-visible").checked,
             inStock: !tr.querySelector(".js-f-outOfStock").checked,
             image: val(".js-f-image"),
-            price: Number(val(".js-f-price")) || 0,
-            discountPrice: numOrNull(val(".js-f-discountPrice")),
           });
-          await setDoc(
-            doc(db, "resellerPricing", id),
-            {
-              price: Number(val(".js-f-resellerPrice")) || 0,
-              discountPrice: numOrNull(val(".js-f-resellerDiscountPrice")),
-            },
-            { merge: true }
-          );
           btn.textContent = "¡Guardado!";
         } catch (err) {
           console.error(err);
@@ -1188,12 +1987,71 @@
       });
     });
 
+    /* ---- Tabla de PRECIOS Y DESCUENTOS ---- */
+    adProductsPriceTableBody.innerHTML = rows
+      .map((p) => {
+        const rp = resellerPricingById.get(p.id) || {};
+        return `
+          <tr data-id="${p.id}">
+            <td>
+              ${p.image
+                ? `<img src="${escapeHtml(p.image)}" alt="" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.12);" />`
+                : `<div style="width:40px; height:40px; border-radius:6px; border:1px dashed rgba(255,255,255,0.2);"></div>`}
+            </td>
+            <td style="white-space:nowrap;">${escapeHtml(p.name || "")}</td>
+            <td class="grp-store"><input class="ad-mini-input js-f-price" type="number" value="${p.price ?? ""}" /></td>
+            <td class="grp-store"><input class="ad-mini-input js-f-discountPrice" type="number" value="${p.discountPrice ?? ""}" placeholder="—" /></td>
+            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerPrice" type="number" value="${rp.price ?? ""}" /></td>
+            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerDiscountPrice" type="number" value="${rp.discountPrice ?? ""}" placeholder="—" /></td>
+            <td><button class="ad-save-row js-save-product-price">Guardar</button></td>
+          </tr>`;
+      })
+      .join("");
+    applyResponsiveLabels(adProductsPriceTableBody);
+
+    adProductsPriceTableBody.querySelectorAll(".js-save-product-price").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const val = (sel) => tr.querySelector(sel).value.trim();
+        const numOrNull = (v) => (v === "" ? null : Number(v));
+
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+        try {
+          await updateDoc(doc(db, "products", id), {
+            price: Number(val(".js-f-price")) || 0,
+            discountPrice: numOrNull(val(".js-f-discountPrice")),
+          });
+          await setDoc(
+            doc(db, "resellerPricing", id),
+            {
+              price: Number(val(".js-f-resellerPrice")) || 0,
+              discountPrice: numOrNull(val(".js-f-resellerDiscountPrice")),
+            },
+            { merge: true }
+          );
+          btn.textContent = "¡Guardado!";
+        } catch (err) {
+          console.error(err);
+          btn.textContent = "Error";
+        } finally {
+          setTimeout(() => {
+            btn.textContent = "Guardar";
+            btn.disabled = false;
+          }, 1200);
+        }
+      });
+    });
+
     renderQtyProductsTable();
+    applyProductFilter();
   }
 
   /* ================= PRODUCTOS "POR CANTIDAD" (Tokens, Cajas, etc.) ================= */
 
   const adQtyProductsTableBody = document.getElementById("adQtyProductsTableBody");
+  const adQtyProductsPriceTableBody = document.getElementById("adQtyProductsPriceTableBody");
   const adAddQtyProductBtn = document.getElementById("adAddQtyProductBtn");
   const adAddQtyForm = document.getElementById("adAddQtyForm");
   const adSaveNewQtyProductBtn = document.getElementById("adSaveNewQtyProductBtn");
@@ -1205,13 +2063,14 @@
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
     if (!qtyProducts.length) {
-      adQtyProductsTableBody.innerHTML = '<tr><td colspan="11" class="ad-empty">Todavía no hay productos por cantidad cargados.</td></tr>';
+      adQtyProductsTableBody.innerHTML = '<tr><td colspan="9" class="ad-empty">Todavía no hay productos por cantidad cargados.</td></tr>';
+      adQtyProductsPriceTableBody.innerHTML = '<tr><td colspan="5" class="ad-empty">Todavía no hay productos por cantidad cargados.</td></tr>';
       return;
     }
 
+    /* ---- Tabla de STOCK ---- */
     adQtyProductsTableBody.innerHTML = qtyProducts
       .map((p) => {
-        const rp = resellerPricingById.get(p.id) || {};
         return `
           <tr data-id="${p.id}">
             <td>
@@ -1229,8 +2088,6 @@
             <td><input class="ad-mini-input js-f-order" type="number" value="${p.order ?? 0}" style="width:70px;" /></td>
             <td class="ad-checkbox-row"><input type="checkbox" class="js-f-visible" ${p.visible !== false ? "checked" : ""} /></td>
             <td class="ad-checkbox-row"><input type="checkbox" class="js-f-outOfStock" ${p.inStock === false ? "checked" : ""} /></td>
-            <td class="grp-store"><input class="ad-mini-input js-f-stepPrice" type="number" value="${p.stepPrice ?? ""}" /></td>
-            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerStepPrice" type="number" value="${rp.stepPrice ?? ""}" /></td>
             <td style="display:flex; gap:6px;">
               <button class="ad-save-row js-save-qty-product">Guardar</button>
               <button class="ad-del js-del-qty-product">Eliminar</button>
@@ -1238,6 +2095,7 @@
           </tr>`;
       })
       .join("");
+    applyResponsiveLabels(adQtyProductsTableBody);
 
     adQtyProductsTableBody.querySelectorAll(".js-save-qty-product").forEach((btn) => {
       btn.addEventListener("click", async () => {
@@ -1260,13 +2118,7 @@
             visible: tr.querySelector(".js-f-visible").checked,
             inStock: !tr.querySelector(".js-f-outOfStock").checked,
             image: val(".js-f-image"),
-            stepPrice: Number(val(".js-f-stepPrice")) || 0,
           });
-          await setDoc(
-            doc(db, "resellerPricing", id),
-            { stepPrice: Number(val(".js-f-resellerStepPrice")) || 0 },
-            { merge: true }
-          );
           btn.textContent = "¡Guardado!";
         } catch (err) {
           console.error(err);
@@ -1288,6 +2140,56 @@
         if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
         await deleteDoc(doc(db, "products", id));
         await deleteDoc(doc(db, "resellerPricing", id)).catch(() => {});
+      });
+    });
+
+    /* ---- Tabla de PRECIOS Y DESCUENTOS ---- */
+    adQtyProductsPriceTableBody.innerHTML = qtyProducts
+      .map((p) => {
+        const rp = resellerPricingById.get(p.id) || {};
+        return `
+          <tr data-id="${p.id}">
+            <td>
+              ${p.image
+                ? `<img src="${escapeHtml(p.image)}" alt="" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.12);" />`
+                : `<div style="width:40px; height:40px; border-radius:6px; border:1px dashed rgba(255,255,255,0.2);"></div>`}
+            </td>
+            <td style="white-space:nowrap;">${escapeHtml(p.unitName || p.name || "")}</td>
+            <td class="grp-store"><input class="ad-mini-input js-f-stepPrice" type="number" value="${p.stepPrice ?? ""}" /></td>
+            <td class="grp-reseller"><input class="ad-mini-input js-f-resellerStepPrice" type="number" value="${rp.stepPrice ?? ""}" /></td>
+            <td><button class="ad-save-row js-save-qty-product-price">Guardar</button></td>
+          </tr>`;
+      })
+      .join("");
+    applyResponsiveLabels(adQtyProductsPriceTableBody);
+
+    adQtyProductsPriceTableBody.querySelectorAll(".js-save-qty-product-price").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const val = (sel) => tr.querySelector(sel).value.trim();
+
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+        try {
+          await updateDoc(doc(db, "products", id), {
+            stepPrice: Number(val(".js-f-stepPrice")) || 0,
+          });
+          await setDoc(
+            doc(db, "resellerPricing", id),
+            { stepPrice: Number(val(".js-f-resellerStepPrice")) || 0 },
+            { merge: true }
+          );
+          btn.textContent = "¡Guardado!";
+        } catch (err) {
+          console.error(err);
+          btn.textContent = "Error";
+        } finally {
+          setTimeout(() => {
+            btn.textContent = "Guardar";
+            btn.disabled = false;
+          }, 1200);
+        }
       });
     });
   }
@@ -1335,6 +2237,239 @@
     } finally {
       adSaveNewQtyProductBtn.disabled = false;
       adSaveNewQtyProductBtn.textContent = "Crear producto";
+    }
+  });
+
+  /* ================= PRODUCTOS "POR STOCK" (revendedores, carga limitada) ================= */
+  // Colección aparte ("resellerStockProducts"): acá el precio ya es el
+  // final de revendedor, no hay columna de tienda porque estos
+  // productos nunca se muestran en index.html.
+
+  const adStockProductsTableBody = document.getElementById("adStockProductsTableBody");
+  const adStockProductsPriceTableBody = document.getElementById("adStockProductsPriceTableBody");
+  const adImportStockBox = document.getElementById("adImportStockBox");
+  const adImportStockBtn = document.getElementById("adImportStockBtn");
+  const adAddStockProductBtn = document.getElementById("adAddStockProductBtn");
+  const adAddStockForm = document.getElementById("adAddStockForm");
+  const adSaveNewStockProductBtn = document.getElementById("adSaveNewStockProductBtn");
+  const adCancelNewStockProductBtn = document.getElementById("adCancelNewStockProductBtn");
+
+  let stockProductsById = new Map();
+
+  // Precios de partida sugeridos para la modalidad Stock (distintos a
+  // los de Ilimitado): solo se usan para el importador inicial, una
+  // vez. Después se editan a mano desde esta misma tabla.
+  const LEGACY_STOCK_PRODUCTS = [
+    { name: "110 Diamantes", diamonds: 110, price: 1000, image: "product-110.jpg", order: 1 },
+    { name: "341 Diamantes", diamonds: 341, price: 3200, image: "product-341.jpg", order: 2 },
+    { name: "572 Diamantes", diamonds: 572, price: 4500, image: "product-572.jpg", order: 3 },
+    { name: "1.166 Diamantes", diamonds: 1166, price: 9000, image: "product-1166.jpg", order: 4 },
+    { name: "2.398 Diamantes", diamonds: 2398, price: 18000, image: "product-2398.jpg", order: 5 },
+    { name: "6.160 Diamantes", diamonds: 6160, price: 40000, image: "product-6160.jpg", order: 6 },
+    { name: "Pase Booyah", diamonds: 0, badge: "PASE", price: 1600, image: "product-booyah.jpg", order: 7 },
+  ];
+
+  function listenStockProducts() {
+    onSnapshot(query(collection(db, "resellerStockProducts"), orderBy("order")), (snap) => {
+      stockProductsById = new Map(snap.docs.map((d) => [d.id, { id: d.id, ...d.data() }]));
+      adImportStockBox.style.display = stockProductsById.size === 0 ? "flex" : "none";
+      renderStockProductsTable();
+    });
+  }
+
+  function renderStockProductsTable() {
+    const rows = Array.from(stockProductsById.values()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    if (!rows.length) {
+      adStockProductsTableBody.innerHTML = '<tr><td colspan="8" class="ad-empty">Todavía no hay productos de Stock cargados.</td></tr>';
+      adStockProductsPriceTableBody.innerHTML = '<tr><td colspan="5" class="ad-empty">Todavía no hay productos de Stock cargados.</td></tr>';
+      applyProductFilter();
+      return;
+    }
+
+    /* ---- Tabla de STOCK ---- */
+    adStockProductsTableBody.innerHTML = rows
+      .map((p) => {
+        return `
+          <tr data-id="${p.id}">
+            <td>
+              <div style="display:flex; flex-direction:column; align-items:flex-start; gap:6px;">
+                ${p.image
+                  ? `<img src="${escapeHtml(p.image)}" alt="" style="width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.12);" />`
+                  : `<div style="width:44px; height:44px; border-radius:6px; border:1px dashed rgba(255,255,255,0.2);"></div>`}
+                <input class="ad-mini-input js-f-image" value="${escapeHtml(p.image || "")}" placeholder="Ej: product-500.jpg" style="min-width:120px;" />
+              </div>
+            </td>
+            <td><input class="ad-name-input js-f-name" value="${escapeHtml(p.name || "")}" /></td>
+            <td><input class="ad-mini-input js-f-bonus" type="number" value="${p.bonus ?? ""}" placeholder="—" style="width:70px;" /></td>
+            <td><input class="ad-mini-input js-f-maxPerPurchase" type="number" value="${p.maxPerPurchase ?? ""}" placeholder="—" style="width:80px;" /></td>
+            <td><input class="ad-mini-input js-f-order" type="number" value="${p.order ?? 0}" style="width:70px;" /></td>
+            <td class="ad-checkbox-row"><input type="checkbox" class="js-f-visible" ${p.visible !== false ? "checked" : ""} /></td>
+            <td class="ad-checkbox-row"><input type="checkbox" class="js-f-outOfStock" ${p.inStock === false ? "checked" : ""} /></td>
+            <td style="display:flex; gap:6px;">
+              <button class="ad-save-row js-save-product">Guardar</button>
+              <button class="ad-del js-del-product">Eliminar</button>
+            </td>
+          </tr>`;
+      })
+      .join("");
+    applyResponsiveLabels(adStockProductsTableBody);
+
+    adStockProductsTableBody.querySelectorAll(".js-save-product").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const val = (sel) => tr.querySelector(sel).value.trim();
+        const numOrNull = (v) => (v === "" ? null : Number(v));
+
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+        try {
+          await updateDoc(doc(db, "resellerStockProducts", id), {
+            name: val(".js-f-name"),
+            bonus: numOrNull(val(".js-f-bonus")),
+            maxPerPurchase: numOrNull(val(".js-f-maxPerPurchase")),
+            order: Number(val(".js-f-order")) || 0,
+            visible: tr.querySelector(".js-f-visible").checked,
+            inStock: !tr.querySelector(".js-f-outOfStock").checked,
+            image: val(".js-f-image"),
+          });
+          btn.textContent = "¡Guardado!";
+        } catch (err) {
+          console.error(err);
+          btn.textContent = "Error";
+        } finally {
+          setTimeout(() => {
+            btn.textContent = "Guardar";
+            btn.disabled = false;
+          }, 1200);
+        }
+      });
+    });
+
+    adStockProductsTableBody.querySelectorAll(".js-del-product").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const name = tr.querySelector(".js-f-name").value;
+        if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
+        await deleteDoc(doc(db, "resellerStockProducts", id));
+      });
+    });
+
+    /* ---- Tabla de PRECIOS Y DESCUENTOS ---- */
+    adStockProductsPriceTableBody.innerHTML = rows
+      .map((p) => {
+        return `
+          <tr data-id="${p.id}">
+            <td>
+              ${p.image
+                ? `<img src="${escapeHtml(p.image)}" alt="" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.12);" />`
+                : `<div style="width:40px; height:40px; border-radius:6px; border:1px dashed rgba(255,255,255,0.2);"></div>`}
+            </td>
+            <td style="white-space:nowrap;">${escapeHtml(p.name || "")}</td>
+            <td><input class="ad-mini-input js-f-price" type="number" value="${p.price ?? ""}" /></td>
+            <td><input class="ad-mini-input js-f-discountPrice" type="number" value="${p.discountPrice ?? ""}" placeholder="—" /></td>
+            <td><button class="ad-save-row js-save-stock-product-price">Guardar</button></td>
+          </tr>`;
+      })
+      .join("");
+    applyResponsiveLabels(adStockProductsPriceTableBody);
+
+    adStockProductsPriceTableBody.querySelectorAll(".js-save-stock-product-price").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const val = (sel) => tr.querySelector(sel).value.trim();
+        const numOrNull = (v) => (v === "" ? null : Number(v));
+
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+        try {
+          await updateDoc(doc(db, "resellerStockProducts", id), {
+            price: Number(val(".js-f-price")) || 0,
+            discountPrice: numOrNull(val(".js-f-discountPrice")),
+          });
+          btn.textContent = "¡Guardado!";
+        } catch (err) {
+          console.error(err);
+          btn.textContent = "Error";
+        } finally {
+          setTimeout(() => {
+            btn.textContent = "Guardar";
+            btn.disabled = false;
+          }, 1200);
+        }
+      });
+    });
+
+    applyProductFilter();
+  }
+
+  adImportStockBtn.addEventListener("click", async () => {
+    if (!confirm("Esto va a crear la lista inicial de productos de Stock en Firestore. Usalo solo una vez. ¿Continuar?")) return;
+    adImportStockBtn.disabled = true;
+    adImportStockBtn.textContent = "Importando...";
+    try {
+      for (const p of LEGACY_STOCK_PRODUCTS) {
+        await addDoc(collection(db, "resellerStockProducts"), {
+          name: p.name,
+          diamonds: p.diamonds,
+          badge: p.badge || "",
+          image: p.image || "",
+          order: p.order,
+          visible: true,
+          inStock: true,
+          price: p.price,
+          discountPrice: p.discountPrice ?? null,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un error importando. Revisá la consola.");
+    } finally {
+      adImportStockBtn.disabled = false;
+      adImportStockBtn.textContent = "Importar lista inicial de Stock";
+    }
+  });
+
+  adAddStockProductBtn.addEventListener("click", () => adAddStockForm.classList.add("open"));
+  adCancelNewStockProductBtn.addEventListener("click", () => adAddStockForm.classList.remove("open"));
+
+  adSaveNewStockProductBtn.addEventListener("click", async () => {
+    const val = (id) => document.getElementById(id).value.trim();
+    const numOrNull = (v) => (v === "" ? null : Number(v));
+
+    const name = val("newStockName");
+    if (!name) {
+      alert("Ponele un nombre al producto.");
+      return;
+    }
+
+    adSaveNewStockProductBtn.disabled = true;
+    try {
+      await addDoc(collection(db, "resellerStockProducts"), {
+        name,
+        diamonds: Number(val("newStockDiamonds")) || 0,
+        bonus: numOrNull(val("newStockBonus")),
+        maxPerPurchase: numOrNull(val("newStockMaxPerPurchase")),
+        badge: val("newStockBadge"),
+        image: val("newStockImage"),
+        order: Number(val("newStockOrder")) || 0,
+        visible: true,
+        inStock: true,
+        price: Number(val("newStockPrice")) || 0,
+        discountPrice: numOrNull(val("newStockDiscountPrice")),
+      });
+
+      ["newStockName", "newStockDiamonds", "newStockBonus", "newStockMaxPerPurchase", "newStockBadge", "newStockImage", "newStockOrder", "newStockPrice", "newStockDiscountPrice"]
+        .forEach((id) => (document.getElementById(id).value = id === "newStockOrder" ? "1" : ""));
+      adAddStockForm.classList.remove("open");
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un error creando el producto. Revisá la consola.");
+    } finally {
+      adSaveNewStockProductBtn.disabled = false;
     }
   });
 
