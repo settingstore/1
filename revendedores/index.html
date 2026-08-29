@@ -896,19 +896,19 @@
 
   function buildWhatsappLink(product, buyer) {
     const lines = [
-      "¡Hola! 💙 Soy revendedor y ya realicé el pago, te dejo mi comprobante ✅",
+      "¡Hola!  Soy revendedor y ya realicé el pago, te dejo mi comprobante ",
       "",
-      "🔷 Quiero comprar:",
+      " Quiero comprar:",
       product.name,
     ];
     if (product._source === "stock") {
-      lines.push("", "📦 Modalidad: STOCK (una por carga, según disponibilidad)");
+      lines.push("", " Modalidad: STOCK (una por carga, según disponibilidad)");
     }
-    lines.push("", "🔹 Precio revendedor:", formatPrice(finalPrice(product)));
+    lines.push("", " Precio revendedor:", formatPrice(finalPrice(product)));
     if (buyer) {
-      lines.push("", "🆔 Mi ID (UID):", buyer.uid, "🎮 Nombre en el juego:", buyer.nickname);
+      lines.push("", " Mi ID (UID):", buyer.uid, " Nombre en el juego:", buyer.nickname);
     }
-    lines.push("", "🛒 Pedido realizado en settings.sbs");
+    lines.push("", " Pedido realizado en settings.sbs");
     const msg = lines.join("\n");
     return `https://wa.me/${SETTINGS.whatsappNumber}?text=${encodeURIComponent(msg)}`;
   }
