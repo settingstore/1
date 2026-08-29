@@ -28,7 +28,7 @@ export const BANNER = {
 
 export const SOCIALS = {
   instagram: "https://instagram.com/settingsstore",
-  whatsapp: "https://wa.me/5493455286371",
+  whatsapp: "https://wa.me/5493454309950",
 };
 
 /**
