@@ -12,7 +12,7 @@ export const SETTINGS = {
   // reemplazá el archivo logo.png (o cambiá esta ruta) — se usa
   // en el header, el logo grande del Hero y el pop-up de la comunidad.
   logoUrl: "logo.png",
-  whatsappNumber: "5493454309950", // solo números, con código de país (54 = Argentina)
+  whatsappNumber: "13349436349", // solo números, con código de país (1 = EE.UU.) — número único para PEDIDOS y consultas
 };
 
 export const BANNER = {
@@ -22,13 +22,13 @@ export const BANNER = {
   // Fotos de fondo del Hero. Se elige una según el tamaño de pantalla:
   // imageUrlMobile en celulares y imageUrlDesktop en pantallas más
   // grandes. Para cambiarlas, reemplazá los archivos o estas rutas.
-  imageUrlMobile: "hero-bg-mobile.jpg",
-  imageUrlDesktop: "hero-bg-desktop.jpg",
+  imageUrlMobile: "/hero-bg-mobile.jpg",
+  imageUrlDesktop: "/hero-bg-desktop.jpg",
 };
 
 export const SOCIALS = {
   instagram: "https://instagram.com/settingsstore",
-  whatsapp: "https://wa.me/5493454309950",
+  whatsapp: "https://wa.me/13349436349",
 };
 
 /**
@@ -52,10 +52,6 @@ export const COMMUNITY = {
     {
       label: "Compra y venta",
       url: "https://chat.whatsapp.com/EO1yP8w3TiG9xO7ubeWSe8?s=cl&p=a&ilr=1",
-    },
-    {
-      label: "Grupo de diamantes",
-      url: "https://chat.whatsapp.com/EjxyTmWCJHHHvaLktqS4eI?s=cl&p=a&ilr=1",
     },
   ],
 };

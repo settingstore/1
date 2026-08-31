@@ -19,7 +19,7 @@
   tailwind.config = {
     theme: {
       extend: {
-        colors: { base: '#050505', electric: '#00A8FF', glow: '#00D9FF' },
+        colors: { base: '#03060f', electric: '#4DE3FC', glow: '#4DE3FC' },
         fontFamily: { display: ['Orbitron', 'sans-serif'], body: ['Inter', 'sans-serif'] },
       },
     },
@@ -101,8 +101,8 @@
   .rv-badge {
     display: inline-block;
     padding: 4px 10px;
-    background: rgba(0,168,255,0.12);
-    border: 1px solid rgba(0,168,255,0.35);
+    background: rgba(0,149,255,0.12);
+    border: 1px solid rgba(0,149,255,0.35);
     border-radius: 20px;
     font-size: 0.75rem;
     color: var(--c-blue-glow);
@@ -111,7 +111,7 @@
 
   /* Top 3 revendedores */
   .rv-top3-box {
-    background: rgba(0,168,255,0.04); border: 1px dashed rgba(0,168,255,0.3); border-radius: var(--radius);
+    background: rgba(0,149,255,0.04); border: 1px dashed rgba(0,149,255,0.3); border-radius: var(--radius);
     padding: 18px 16px 16px; margin-bottom: 8px;
   }
   .rv-top3-label {
@@ -145,7 +145,7 @@
     .rv-top3-card.p1, .rv-top3-card.p2, .rv-top3-card.p3 { order: initial; padding-top: 14px; }
     .rv-top3-card.p1 { order: -1; }
   }
-  .btn-ghost-active { border-color: var(--c-blue-glow) !important; background: rgba(0,168,255,0.1) !important; color: var(--c-blue-glow); }
+  .btn-ghost-active { border-color: var(--c-blue-glow) !important; background: rgba(0,149,255,0.1) !important; color: var(--c-blue-glow); }
 
   /* Selector de modalidad: Ilimitado / Stock */
   .rv-mode-toggle {
@@ -174,6 +174,8 @@
 </style>
 </head>
 <body class="font-body bg-base text-white">
+<div class="site-bg" aria-hidden="true" style="background-image:url('../bg-blur.jpg')"></div>
+<div class="site-bg-overlay" aria-hidden="true"></div>
 
 <!-- ============ MANTENIMIENTO (revendedores) ============ -->
 <div class="rv-wrap" id="rvMaintenanceOverlay" style="display:none;">
@@ -186,6 +188,7 @@
 <!-- ============ LOGIN ============ -->
 <div class="rv-wrap" id="rvLoginSection">
   <div class="rv-card">
+    <a href="../" class="btn-ghost inline-block text-xs px-4 py-2 rounded-full mb-5">← Volver a la tienda</a>
     <h1>Acceso Revendedores</h1>
     <p class="sub">Ingresá tu nombre, tu teléfono y el código que te compartieron.</p>
 
@@ -218,6 +221,7 @@
       <p class="text-sm text-[var(--c-gray-soft)] mt-1">Estos son tus precios preferenciales de revendedor. Elegí un paquete y coordinamos el pago por WhatsApp.</p>
     </div>
     <div class="flex items-center gap-2 flex-wrap">
+      <a href="../" class="btn-ghost text-xs px-4 py-2 rounded-full">← Volver a la tienda</a>
       <button type="button" id="rvLogoutBtn" class="btn-ghost text-xs px-4 py-2 rounded-full">No soy yo / salir</button>
     </div>
   </header>
@@ -602,7 +606,7 @@
         <linearGradient id="diamondGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#e9f6ff"/>
           <stop offset="55%" stop-color="#7fd6ff"/>
-          <stop offset="100%" stop-color="#00a8ff"/>
+          <stop offset="100%" stop-color="#0095ff"/>
         </linearGradient>
       </defs>
     </svg>`;

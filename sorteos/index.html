@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Cookies: se define el consentimiento ANTES de cargar Analytics -->
+  <script src="../cookie-consent.js"></script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-91SP8S0PM3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-91SP8S0PM3');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sorteos — Settings Store</title>
+  <meta name="description" content="Muy pronto vas a poder participar de los sorteos de Settings Store. Unite a la comunidad para ser el primero en enterarte." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://settings.sbs/sorteos/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Sorteos — Settings Store" />
+  <meta property="og:description" content="Muy pronto vas a poder participar de los sorteos de Settings Store. Unite a la comunidad para ser el primero en enterarte." />
+  <meta property="og:url" content="https://settings.sbs/sorteos/" />
+  <meta property="og:locale" content="es_AR" />
+
+  <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="../favicon-48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="../favicon-512.png" />
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { base: '#03060f', electric: '#4DE3FC', glow: '#4DE3FC' },
+          fontFamily: { display: ['Orbitron', 'sans-serif'], body: ['Inter', 'sans-serif'] },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="../styles.css" />
+
+  <style>
+    /* ============ Pantalla de carga de Sorteos ============ */
+    #sorteos-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      background:
+        radial-gradient(60% 55% at 50% 38%, rgba(0, 149, 255, 0.14), transparent 70%),
+        var(--c-bg);
+      transition: opacity .5s ease;
+    }
+    #sorteos-loader.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loader-orbit {
+      position: relative;
+      width: 190px;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .loader-orbit::before,
+    .loader-orbit::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(77, 227, 252, 0.18);
+    }
+    .loader-orbit::after {
+      inset: 22px;
+      border-color: rgba(77, 227, 252, 0.28);
+      animation: loader-spin 6s linear infinite;
+    }
+    .loader-orbit .loader-dot {
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      margin-left: -3px;
+      border-radius: 50%;
+      background: var(--c-blue-glow);
+      box-shadow: 0 0 10px 2px var(--c-blue-glow);
+      animation: loader-spin 3.2s linear infinite;
+      transform-origin: 3px 97px;
+    }
+    @keyframes loader-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .loader-logo {
+      width: 76px;
+      height: auto;
+      filter: drop-shadow(0 0 18px rgba(77, 227, 252, .55));
+      animation: loader-pulse 2s ease-in-out infinite;
+    }
+    @keyframes loader-pulse {
+      0%, 100% { transform: scale(1); opacity: .92; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
+    .loader-bar-track {
+      width: 220px;
+      max-width: 70vw;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+    .loader-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--c-blue-deep), var(--c-blue-glow));
+      box-shadow: 0 0 12px rgba(77, 227, 252, .6);
+      transition: width .18s ease-out;
+    }
+    .loader-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      width: 220px;
+      max-width: 70vw;
+      font-size: 11px;
+      color: var(--c-gray-soft);
+      letter-spacing: .05em;
+    }
+    #sorteos-content {
+      opacity: 0;
+      transition: opacity .6s ease;
+      /* Colores de respaldo: si por lo que sea el CDN de Tailwind no
+         llega a cargar (bloqueo de red, adblock, etc.), el texto NUNCA
+         debe quedar negro sobre el fondo oscuro. */
+      color: #e7ecf3;
+    }
+    #sorteos-content.is-visible { opacity: 1; }
+    #sorteos-content h1 { color: #ffffff; }
+    #sorteos-content p { color: #aeb7c7; }
+    #sorteos-content a { color: inherit; }
+    #sorteos-content footer a:hover { color: var(--c-blue-glow, #4de3fc); }
+
+    .prize-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+
+<body class="font-body bg-base text-white">
+  <div class="site-bg" aria-hidden="true"></div>
+  <div class="site-bg-overlay" aria-hidden="true"></div>
+
+  <!-- ============ PANTALLA DE CARGA ============ -->
+  <div id="sorteos-loader">
+    <div class="loader-orbit">
+      <div class="loader-dot"></div>
+      <img src="../logo.png" alt="Settings Store" class="loader-logo" />
+    </div>
+    <div class="text-center">
+      <p class="font-display text-sm tracking-[0.35em] text-white mb-1">SETTINGS STORE</p>
+      <p class="text-[11px] tracking-[0.3em] text-electric">SORTEOS</p>
+    </div>
+    <div>
+      <div class="loader-bar-track">
+        <div class="loader-bar-fill" id="loader-bar-fill"></div>
+      </div>
+      <div class="loader-bar-labels mt-2">
+        <span>0%</span>
+        <span id="loader-percent">0%</span>
+        <span>100%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CONTENIDO ============ -->
+  <div id="sorteos-content">
+    <!-- ============ HEADER ============ -->
+    <header class="fixed top-0 inset-x-0 z-50 glass">
+      <nav class="max-w-6xl mx-auto flex items-center justify-between px-5 py-3">
+        <a href="../" class="flex items-center gap-2">
+          <img src="../logo.png" alt="Settings Store" class="js-logo h-8 w-auto" />
+        </a>
+        <div class="flex items-center gap-3">
+          <a href="../diamantes/" class="hidden sm:inline text-sm text-gray-300 hover:text-electric transition-colors">Diamantes</a>
+          <a href="../extra/" class="hidden sm:inline text-sm text-gray-300 hover:text-electric transition-colors">Extra</a>
+          <a href="../" class="btn-ghost px-5 py-2 rounded-full text-sm">← Volver a la tienda</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- ============ SORTEOS: PRÓXIMAMENTE ============ -->
+    <main class="min-h-screen flex items-center justify-center px-5 pt-28 pb-20">
+      <div class="gem-card glass-strong glow-border p-8 md:p-14 max-w-xl w-full text-center" data-aos="zoom-in">
+        <div class="diamond-pulse mx-auto mb-6"></div>
+        <span class="prize-badge glass glow-border text-electric mb-5">🎁 Sorteos</span>
+        <h1 class="font-display text-2xl md:text-4xl mb-4 text-glow">Próximamente</h1>
+        <p class="text-sm md:text-base text-gray-300 leading-relaxed mb-8">
+          Unite a la comunidad para ser el primero en enterarte cuando abramos los sorteos.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a href="#" target="_blank" rel="noopener" class="js-community-main btn-primary w-full sm:w-auto text-center px-6 py-3 rounded-full text-sm">Unirme a la comunidad</a>
+          <a href="../" class="btn-ghost w-full sm:w-auto text-center px-6 py-3 rounded-full text-sm">Volver a la tienda</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="py-8 text-center text-xs text-gray-500">
+      <p>&copy; <span class="js-year"></span> Settings Store. Todos los derechos reservados.</p>
+      <p class="mt-2 flex items-center justify-center gap-4 flex-wrap">
+        <a href="../terminos/" class="hover:text-electric transition-colors">Términos y condiciones</a>
+        <span class="text-gray-700">·</span>
+        <a href="../privacidad/" class="hover:text-electric transition-colors">Política de privacidad</a>
+        <span class="text-gray-700">·</span>
+        <a href="../revendedores/" class="hover:text-electric transition-colors">Revendedores</a>
+      </p>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+  <script type="module">
+    import { COMMUNITY } from "/config.js";
+
+    // El botón "Unirme a la comunidad" de Sorteos apunta puntualmente al
+    // Grupo oficial de recargas (no al canal ni al grupo genérico).
+    const recargasGroup = COMMUNITY.groups?.find((g) =>
+      g.label?.toLowerCase().includes("recargas")
+    );
+    const communityUrl = recargasGroup?.url || COMMUNITY.mainGroupUrl;
+
+    document.querySelectorAll(".js-community-main").forEach((el) => {
+      el.href = communityUrl;
+    });
+    document.querySelectorAll(".js-year").forEach((el) => {
+      el.textContent = new Date().getFullYear();
+    });
+
+    if (window.AOS) {
+      window.AOS.init({ once: true, duration: 600, easing: "ease-out-cubic" });
+    }
+
+    // Pantalla de carga: siempre se muestra al entrar a /sorteos, con una
+    // barra de 0% a 100%, y recién ahí se revela el contenido de abajo.
+    const loader = document.getElementById("sorteos-loader");
+    const fill = document.getElementById("loader-bar-fill");
+    const percentLabel = document.getElementById("loader-percent");
+    const content = document.getElementById("sorteos-content");
+
+    let progress = 0;
+    const duration = 1600; // ms
+    const start = performance.now();
+
+    function tick(now) {
+      const elapsed = now - start;
+      progress = Math.min(100, Math.round((elapsed / duration) * 100));
+      fill.style.width = progress + "%";
+      percentLabel.textContent = progress + "%";
+
+      if (progress < 100) {
+        requestAnimationFrame(tick);
+      } else {
+        setTimeout(() => {
+          loader.classList.add("is-hidden");
+          content.classList.add("is-visible");
+          setTimeout(() => loader.remove(), 550);
+        }, 250);
+      }
+    }
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

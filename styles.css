@@ -4,13 +4,19 @@
    ============================================================ */
 
 :root { 
+  /* Le decimos al navegador que este sitio es oscuro por diseño, para
+     que Chrome/Edge no intenten "auto-oscurecer" u invertir colores de
+     texto (lo que puede volver algunas letras negras sobre fondo oscuro). */
+  color-scheme: dark;
+
   /* Colores base */
-  --c-bg: #050505;
-  --c-bg-alt: #0a0e14;
-  --c-card: #0d1117;
-  --c-blue: #00a8ff;
-  --c-blue-glow: #00d9ff;
-  --c-blue-deep: #0066cc;
+  --c-bg: #03060f;
+  --c-bg-alt: #070c1a;
+  --c-card: #0a0f1e;
+  --c-blue: #0095ff;
+  --c-blue-glow: #4de3fc;
+  --c-blue-deep: #005acc;
+  --c-celeste: #4de3fc;
   --c-white: #ffffff;
   --c-gray: #1a1f2b;
   --c-gray-soft: #8b95a7;
@@ -21,9 +27,9 @@
 
   /* Layout */
   --radius: 14px;
-  --border-glow: 1px solid rgba(0, 168, 255, 0.35);
+  --border-glow: 1px solid rgba(77, 227, 252, 0.4);
   --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 24px rgba(0, 168, 255, 0.25);
+  --shadow-glow: 0 0 24px rgba(77, 227, 252, 0.28);
 }
 
 * { box-sizing: border-box; }
@@ -72,16 +78,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* ============ Glow utilities ============ */
 .glow-border {
-  border: 1px solid rgba(0, 168, 255, 0.4);
-  box-shadow: 0 0 0 1px rgba(0, 168, 255, 0.08), var(--shadow-glow);
+  border: 1px solid rgba(77, 227, 252, 0.45);
+  box-shadow: 0 0 0 1px rgba(77, 227, 252, 0.1), var(--shadow-glow);
   transition: box-shadow .35s ease, border-color .35s ease, transform .35s ease;
 }
 .glow-border:hover {
   border-color: var(--c-blue-glow);
-  box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.25), 0 0 36px rgba(0, 217, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(77, 227, 252, 0.3), 0 0 36px rgba(77, 227, 252, 0.4);
 }
 
-.text-glow { text-shadow: 0 0 18px rgba(0, 168, 255, 0.55); }
+.text-glow { text-shadow: 0 0 18px rgba(0, 149, 255, 0.55); }
 
 /* ============ Signature element: faceted "gem-cut" card ============
    Una esquina biselada evoca el corte de un diamante — identidad
@@ -97,7 +103,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   inset: 0;
   padding: 1px;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
-  background: linear-gradient(135deg, rgba(0,217,255,.55), rgba(0,168,255,0) 40%, rgba(0,168,255,0) 60%, rgba(0,217,255,.4));
+  background: linear-gradient(135deg, rgba(77,227,252,.55), rgba(0,149,255,0) 40%, rgba(0,149,255,0) 60%, rgba(77,227,252,.4));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -115,20 +121,38 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 
 .hero-gradient {
   background:
-    radial-gradient(60% 50% at 50% 0%, rgba(0, 168, 255, 0.16), transparent 70%),
-    radial-gradient(40% 40% at 85% 20%, rgba(0, 217, 255, 0.10), transparent 70%),
-    linear-gradient(180deg, #050505 0%, #05070a 60%, #050505 100%);
+    radial-gradient(60% 50% at 50% 0%, rgba(0, 149, 255, 0.16), transparent 70%),
+    radial-gradient(40% 40% at 85% 20%, rgba(77, 227, 252, 0.10), transparent 70%),
+    linear-gradient(180deg, #03060f 0%, #050a15 60%, #03060f 100%);
+}
+
+/* Fondo global: imagen borrosa fija detrás de todo el contenido, con
+   una capa oscura encima para mantener la legibilidad del texto. */
+.site-bg {
+  position: fixed;
+  inset: -60px;
+  background: url('bg-blur.jpg') center/cover no-repeat;
+  filter: blur(45px) saturate(1.15) brightness(0.6);
+  z-index: -2;
+  pointer-events: none;
+}
+.site-bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(3,6,15,.55) 0%, rgba(3,6,15,.82) 55%, rgba(3,6,15,.92) 100%);
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Botones */
 .btn-primary {
-  background: linear-gradient(135deg, var(--c-blue), var(--c-blue-deep));
-  color: #fff;
+  background: linear-gradient(135deg, #5EE7FF, #12ADD9);
+  color: #04141c;
   font-weight: 600;
-  box-shadow: 0 0 26px rgba(0, 168, 255, 0.45);
+  box-shadow: 0 0 26px rgba(77, 227, 252, 0.5);
   transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(0, 217, 255, 0.6); filter: brightness(1.08); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(77, 227, 252, 0.7); filter: brightness(1.08); }
 .btn-primary:active { transform: translateY(0); }
 
 .btn-ghost {
@@ -137,11 +161,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   color: var(--c-white);
   transition: border-color .25s ease, background .25s ease, transform .25s ease;
 }
-.btn-ghost:hover { border-color: var(--c-blue); background: rgba(0,168,255,0.08); transform: translateY(-2px); }
+.btn-ghost:hover { border-color: var(--c-blue); background: rgba(0,149,255,0.08); transform: translateY(-2px); }
 
 /* Skeleton loading */
 .skeleton {
-  background: linear-gradient(90deg, #0d1117 25%, #151b24 37%, #0d1117 63%);
+  background: linear-gradient(90deg, #0a0f1e 25%, #131a2c 37%, #0a0f1e 63%);
   background-size: 400% 100%;
   animation: skeleton-loading 1.4s ease infinite;
 }
@@ -157,12 +181,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   bottom: 32px;
   transform: translate(-50%, 20px);
   background: rgba(13,17,23,.95);
-  border: 1px solid rgba(0,217,255,.5);
+  border: 1px solid rgba(77,227,252,.5);
   color: #fff;
   padding: 10px 20px;
   border-radius: 999px;
   font-size: 14px;
-  box-shadow: 0 0 24px rgba(0,168,255,.4);
+  box-shadow: 0 0 24px rgba(0,149,255,.4);
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s ease, transform .25s ease;
@@ -182,19 +206,113 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   50% { opacity: 1; filter: drop-shadow(0 0 10px var(--c-blue-glow)); }
 }
 
-/* Mobile nav */
-.mobile-menu { transition: max-height .35s ease, opacity .3s ease; overflow: hidden; }
+/* ============ Barra de navegación rápida (móvil) ============
+   Va entre el banner y el título de "Recargas", no dentro del header:
+   los 6 accesos entran en 2 filas, sin necesidad de desplazarse. */
+.mobile-quicknav__list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 8px 10px;
+}
+.mobile-quicknav__pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 7px 4px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  line-height: 1.1;
+  font-weight: 500;
+  color: var(--c-gray-soft);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+}
+.mobile-quicknav__pill:hover,
+.mobile-quicknav__pill:active {
+  color: var(--c-white);
+  border-color: rgba(77, 227, 252, .5);
+  background: rgba(77, 227, 252, .08);
+}
+
+/* Compensa la altura real del header fijo (que en móvil incluye la
+   barra rápida de arriba) para que nunca tape el contenido de abajo
+   (por ejemplo el banner) ni al saltar directo a una sección con un
+   ancla (#...). El valor exacto de --header-h lo calcula app.js según
+   el alto real del header en cada momento (cambia entre pantallas). */
+.hero-offset {
+  padding-top: var(--header-h, 76px);
+  transition: padding-top .15s ease;
+}
+#diamantes, #extra, #comunidad, #como-comprar, #pagos, #contacto, #inicio {
+  scroll-margin-top: var(--header-h, 76px);
+}
 
 /* Sección "Cómo comprar" — línea conectora */
 .step-line {
-  background: linear-gradient(180deg, rgba(0,168,255,.6), rgba(0,168,255,0));
+  background: linear-gradient(180deg, rgba(0,149,255,.6), rgba(0,149,255,0));
 }
 @media (min-width: 768px) {
-  .step-line-h { background: linear-gradient(90deg, rgba(0,168,255,.6), rgba(0,168,255,0)); }
+  .step-line-h { background: linear-gradient(90deg, rgba(0,149,255,.6), rgba(0,149,255,0)); }
+}
+
+/* ============ Sección "Cómo comprar" — fondo celeste ============
+   Antes era negro (#05070a), igual al resto de las franjas del
+   sitio. Ahora tiene un fondo celeste propio (mismo tono que el
+   acento de marca --c-celeste) para diferenciarse visualmente del
+   resto de las secciones. */
+.section-celeste {
+  background:
+    radial-gradient(65% 70% at 50% 0%, rgba(77, 227, 252, 0.30), transparent 65%),
+    linear-gradient(180deg, #0d3a57 0%, #0a2c44 45%, #071f33 100%);
+}
+.section-celeste .glass {
+  background: rgba(13, 40, 60, 0.55);
+}
+
+/* ============ Botones grandes del hub (página de inicio) ============
+   Reemplazan la grilla de productos en "/": llevan a /diamantes/ y
+   /extra/. */
+.hub-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 24px;
+  transition: transform .3s ease, box-shadow .35s ease, border-color .35s ease;
+}
+.hub-card:hover { transform: translateY(-4px); }
+.hub-card__icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 0 14px rgba(77, 227, 252, 0.5));
+}
+.hub-card__title {
+  font-family: var(--f-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+.hub-card__desc {
+  font-size: 0.9rem;
+  color: var(--c-gray-soft);
+  margin-bottom: 24px;
+}
+
+/* Botón "ir a la otra sección" al final de cada grilla de productos */
+.cross-link-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
 }
 
 /* Copiar botón feedback */
-.copy-btn.copied { border-color: #00d9ff; color: #00d9ff; }
+.copy-btn.copied { border-color: #4de3fc; color: #4de3fc; }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -259,12 +377,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(60% 55% at 50% 40%, rgba(5,5,5,0) 0%, rgba(5,5,5,.55) 65%, rgba(5,5,5,.95) 100%),
-    linear-gradient(180deg, rgba(5,5,5,.25) 0%, rgba(5,5,5,.55) 55%, #050505 100%);
+    radial-gradient(60% 55% at 50% 40%, rgba(3,6,15,0) 0%, rgba(3,6,15,.55) 65%, rgba(3,6,15,.95) 100%),
+    linear-gradient(180deg, rgba(3,6,15,.25) 0%, rgba(3,6,15,.55) 55%, #03060f 100%);
 }
 
 /* Ícono de diamante por defecto en las tarjetas de producto */
-.diamond-icon { filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.45)); }
+.diamond-icon { filter: drop-shadow(0 0 10px rgba(77, 227, 252, 0.45)); }
 
 /* Etiqueta de descuento sobre la tarjeta de producto */
 .discount-badge {
@@ -296,7 +414,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: radial-gradient(80% 80% at 50% 30%, rgba(0,168,255,0.10), transparent 70%), var(--c-bg-alt);
+  background: radial-gradient(80% 80% at 50% 30%, rgba(0,149,255,0.10), transparent 70%), var(--c-bg-alt);
 }
 .pack-card__media img {
   width: 100%;
@@ -375,8 +493,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   height: 34px;
   flex-shrink: 0;
   border-radius: 999px;
-  border: 1px solid rgba(0, 168, 255, 0.4);
-  background: rgba(0, 168, 255, 0.08);
+  border: 1px solid rgba(0, 149, 255, 0.4);
+  background: rgba(0, 149, 255, 0.08);
   color: var(--c-white);
   font-size: 1.1rem;
   font-weight: 700;
@@ -384,7 +502,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
 }
-.qty-btn:hover:not(:disabled) { background: rgba(0, 168, 255, 0.2); }
+.qty-btn:hover:not(:disabled) { background: rgba(0, 149, 255, 0.2); }
 .qty-btn:active:not(:disabled) { transform: scale(0.94); }
 .qty-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .qty-value {
@@ -485,7 +603,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .modal-input:focus {
   outline: none;
   border-color: var(--c-blue-glow);
-  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(77, 227, 252, 0.15);
 }
 .modal-input::placeholder { color: rgba(255,255,255,0.3); }
 
@@ -570,7 +688,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: radial-gradient(80% 80% at 50% 30%, rgba(0,168,255,0.10), transparent 70%), var(--c-bg);
+  background: radial-gradient(80% 80% at 50% 30%, rgba(0,149,255,0.10), transparent 70%), var(--c-bg);
 }
 .maintenance-card {
   max-width: 440px;

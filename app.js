@@ -26,6 +26,21 @@ let PRODUCTS = [];
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
+// Las imágenes de producto se guardan en Firestore como nombres de
+// archivo sueltos (ej: "product-341.jpg"), y el logo/banner en
+// config.js también son nombres sueltos (ej: "logo.svg"). Estas rutas
+// están pensadas para vivir junto a este mismo archivo (app.js), en
+// la raíz del sitio — sin importar si el sitio está en el dominio raíz
+// o dentro de una subcarpeta de GitHub Pages (ej: /pruebas/). Por eso
+// las resolvemos siempre contra la ubicación real de este módulo
+// (import.meta.url) en vez de asumir "/" como raíz del dominio.
+const SITE_BASE_URL = new URL(".", import.meta.url);
+const resolveAsset = (path) => {
+  if (!path) return path;
+  if (/^([a-z]+:)?\/\//i.test(path) || path.startsWith("data:")) return path;
+  return new URL(path.replace(/^\/+/, ""), SITE_BASE_URL).href;
+};
+
 const formatPrice = (value) =>
   new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
 
@@ -53,8 +68,9 @@ function showToast(message) {
 
 function renderBrand() {
   $$(".js-store-name").forEach((el) => (el.textContent = SETTINGS.storeName));
-  $$(".js-logo").forEach((el) => (el.src = SETTINGS.logoUrl));
-  document.title = `${SETTINGS.storeName} — Diamantes Free Fire`;
+  $$(".js-logo").forEach((el) => (el.src = resolveAsset(SETTINGS.logoUrl)));
+  // No tocamos document.title acá: cada página ya trae su propio
+  // <title> (Inicio / Diamantes / Extra / etc.) definido en el <head>.
 }
 
 /* ================= RENDER: HERO / BANNER ================= */
@@ -69,9 +85,11 @@ function renderBanner() {
     let currentUrl = "";
     const applyHeroBg = () => {
       const isMobile = window.matchMedia("(max-width: 767px)").matches;
-      const url = isMobile
-        ? BANNER.imageUrlMobile || BANNER.imageUrlDesktop
-        : BANNER.imageUrlDesktop || BANNER.imageUrlMobile;
+      const url = resolveAsset(
+        isMobile
+          ? BANNER.imageUrlMobile || BANNER.imageUrlDesktop
+          : BANNER.imageUrlDesktop || BANNER.imageUrlMobile
+      );
       if (url === currentUrl) return; // evita re-pintar el fondo sin necesidad
       currentUrl = url;
       heroBg.style.backgroundImage = `linear-gradient(180deg, rgba(5,5,5,.35), rgba(5,5,5,.9)), url('${url}')`;
@@ -99,7 +117,7 @@ const DIAMOND_PLACEHOLDER_SVG = `
       <linearGradient id="diamondGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#e9f6ff"/>
         <stop offset="55%" stop-color="#7fd6ff"/>
-        <stop offset="100%" stop-color="#00a8ff"/>
+        <stop offset="100%" stop-color="#0095ff"/>
       </linearGradient>
     </defs>
   </svg>`;
@@ -126,7 +144,7 @@ function productCardTemplate(product, index) {
   if (product.type === "quantity") return quantityCardTemplate(product, index);
 
   const img = product.image
-    ? `<img src="${product.image}" alt="${product.name}" loading="lazy">`
+    ? `<img src="${resolveAsset(product.image)}" alt="${product.name}" loading="lazy">`
     : `<div class="w-full h-full flex items-center justify-center">${DIAMOND_PLACEHOLDER_SVG}</div>`;
 
   const hasDiscount = product.discountPrice != null && product.discountPrice < product.price;
@@ -177,7 +195,7 @@ function productCardTemplate(product, index) {
 // (cantidad / stepSize) * stepPrice.
 function quantityCardTemplate(product, index) {
   const img = product.image
-    ? `<img src="${product.image}" alt="${product.name}" loading="lazy">`
+    ? `<img src="${resolveAsset(product.image)}" alt="${product.name}" loading="lazy">`
     : `<div class="w-full h-full flex items-center justify-center">${DIAMOND_PLACEHOLDER_SVG}</div>`;
 
   const step = Number(product.stepSize) || 1;
@@ -219,24 +237,28 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-function renderProducts() {
-  const grid = $("#products-grid");
+// Un producto es "diamante" cuando NO es del tipo "por cantidad" (Tokens,
+// Cajas) y tiene una cantidad de diamantes cargada (> 0). Todo lo demás
+// (diamonds === 0/vacío → pases y tarjetas mensuales, o type === "quantity"
+// → tokens y cajas de tokens) cae en la sección "Extra".
+const isDiamondProduct = (p) => p.type !== "quantity" && Number(p.diamonds) > 0;
+
+function renderProductGrid(gridId, products) {
+  const grid = $(gridId);
   if (!grid) return;
 
-  const visible = PRODUCTS.filter((p) => p.visible !== false).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
-  if (!visible.length) {
+  if (!products.length) {
     grid.innerHTML = `<p class="col-span-full text-center text-[var(--c-gray-soft)]">Pronto vamos a agregar productos. ¡Volvé más tarde!</p>`;
     return;
   }
 
   // Guardamos el índice real (dentro de PRODUCTS) en cada tarjeta para
   // poder recuperar el producto elegido cuando se abra el checkout.
-  grid.innerHTML = visible
+  grid.innerHTML = products
     .map((product) => productCardTemplate(product, PRODUCTS.indexOf(product)))
     .join("");
 
-  $$(".js-buy-btn").forEach((btn) => {
+  grid.querySelectorAll(".js-buy-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const product = PRODUCTS[Number(btn.dataset.productIndex)];
       if (product) openCheckout(product);
@@ -244,6 +266,16 @@ function renderProducts() {
   });
 
   bindQuantityCards(grid);
+}
+
+function renderProducts() {
+  const visible = PRODUCTS.filter((p) => p.visible !== false).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  const diamondProducts = visible.filter(isDiamondProduct);
+  const extraProducts = visible.filter((p) => !isDiamondProduct(p));
+
+  renderProductGrid("#products-grid", diamondProducts);
+  renderProductGrid("#products-grid-extra", extraProducts);
 }
 
 // Engancha los selectores +/- de las tarjetas "por cantidad" (Tokens,
@@ -321,6 +353,12 @@ function renderSocials() {
       if (SOCIALS[key]) el.href = SOCIALS[key];
     });
   });
+
+  // Enlaces de "Soporte" (nav de escritorio, nav rápida de móvil y
+  // footer): todos apuntan al mismo WhatsApp de pedidos/soporte.
+  $$(".js-support-link").forEach((el) => {
+    if (SOCIALS.whatsapp) el.href = SOCIALS.whatsapp;
+  });
 }
 
 /* ================= RENDER: COMUNIDAD DE WHATSAPP ================= */
@@ -336,7 +374,7 @@ function renderCommunity() {
       .map(
         (g) => `
       <a href="${g.url}" target="_blank" rel="noopener"
-         class="glass glow-border rounded-lg px-4 py-3 text-sm text-center text-gray-300 hover:text-electric transition-colors">
+         class="glass glow-border rounded-lg px-4 py-3 text-sm text-center text-gray-300 hover:text-electric transition-colors w-full sm:w-auto sm:min-w-[180px]">
         ${g.label}
       </a>`
       )
@@ -478,23 +516,25 @@ function bindCopyButtons() {
   });
 }
 
-/* ================= INTERACCIÓN: MENÚ MÓVIL ================= */
+/* ================= LAYOUT: ALTO REAL DEL HEADER ================= */
 
-function bindMobileMenu() {
-  const toggle = $("#menu-toggle");
-  const menu = $("#mobile-menu");
-  if (!toggle || !menu) return;
-  toggle.addEventListener("click", () => {
-    const isOpen = menu.classList.toggle("open");
-    menu.style.maxHeight = isOpen ? menu.scrollHeight + "px" : "0px";
-    toggle.setAttribute("aria-expanded", String(isOpen));
-  });
-  $$("#mobile-menu a").forEach((a) =>
-    a.addEventListener("click", () => {
-      menu.classList.remove("open");
-      menu.style.maxHeight = "0px";
-    })
-  );
+// El header fijo mide distinto según el ancho de pantalla (en móvil
+// suma la barra rápida de accesos). Medimos su alto real y lo
+// guardamos en --header-h para que el banner y las secciones de abajo
+// nunca queden tapados, sin necesidad de "adivinar" un valor fijo.
+function syncHeaderHeight() {
+  const header = $("#site-header");
+  if (!header) return;
+  const setVar = () => {
+    document.documentElement.style.setProperty("--header-h", `${header.offsetHeight}px`);
+  };
+  setVar();
+  window.addEventListener("load", setVar);
+  window.addEventListener("resize", setVar);
+  window.addEventListener("orientationchange", setVar);
+  if (window.ResizeObserver) {
+    new ResizeObserver(setVar).observe(header);
+  }
 }
 
 /* ================= MANTENIMIENTO ================= */
@@ -510,7 +550,7 @@ function showMaintenanceOverlay(message) {
     overlay.id = "maintenance-overlay";
     overlay.innerHTML = `
       <div class="glass glow-border maintenance-card">
-        <img src="${SETTINGS.logoUrl}" alt="${SETTINGS.storeName}" class="maintenance-logo" />
+        <img src="${resolveAsset(SETTINGS.logoUrl)}" alt="${SETTINGS.storeName}" class="maintenance-logo" />
         <h1>Estamos en mantenimiento</h1>
         <p id="maintenance-message"></p>
       </div>`;
@@ -540,7 +580,7 @@ function subscribeMaintenance() {
 /* ================= INIT ================= */
 
 function init() {
-  bindMobileMenu();
+  syncHeaderHeight();
   bindCopyButtons();
   bindCheckout();
   bindGroupPopup();
@@ -569,7 +609,9 @@ function init() {
   }
 
   if (window.gsap) {
-    gsap.from("#productos .text-center", { y: 24, opacity: 0, duration: 0.9, ease: "power3.out" });
+    // Anima el título de la sección "hero" de la página actual, sea
+    // cual sea (#inicio, #diamantes o #extra).
+    gsap.from(".hero-offset .text-center", { y: 24, opacity: 0, duration: 0.9, ease: "power3.out" });
   }
 
   document.body.classList.remove("opacity-0");
