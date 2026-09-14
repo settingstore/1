@@ -12,7 +12,7 @@ export const SETTINGS = {
   // reemplazá el archivo logo.png (o cambiá esta ruta) — se usa
   // en el header, el logo grande del Hero y el pop-up de la comunidad.
   logoUrl: "logo.png",
-  whatsappNumber: "13349436349", // solo números, con código de país (1 = EE.UU.) — número único para PEDIDOS y consultas
+  whatsappNumber: "5493455286371", // solo números, con código de país (1 = EE.UU.) — número único para PEDIDOS y consultas
 };
 
 export const BANNER = {
@@ -28,7 +28,7 @@ export const BANNER = {
 
 export const SOCIALS = {
   instagram: "https://instagram.com/settingsstore",
-  whatsapp: "https://wa.me/13349436349",
+  whatsapp: "https://wa.me/5493455286371",
 };
 
 /**
